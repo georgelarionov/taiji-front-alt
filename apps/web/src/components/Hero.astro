@@ -7,7 +7,7 @@
 // Фон-видео: WebM (VP9) для Chrome/Firefox + MP4 фолбэк для Safari; постер —
 // hero-bg.webp (первый кадр до загрузки видео). Импортируются как URL'ы.
 import HeroSlider, { type HeroSlide } from "./HeroSlider";
-import { topNav } from "../config/nav";
+import Header from "./Header.astro";
 import heroVideoWebm from "../assets/hero/hero-video.webm";
 import heroVideoMp4 from "../assets/hero/hero-video.mp4";
 // Отдельное видео под мобилу (<1024px) — грузится вместо тяжёлого десктопного.
@@ -16,8 +16,7 @@ import heroVideoMp4 from "../assets/hero/hero-video.mp4";
 import heroVideoMobileWebm from "../assets/hero/hero-video-mobile.webm";
 import heroVideoMobileMp4 from "../assets/hero/hero-video-mobile.mp4";
 import heroBg from "../assets/hero/hero-bg.webp";
-// Логотип и эмблема — отдаём как есть (WebP-лого обычным <img>, эмблема — SVG ?url).
-import headLogo from "../assets/hero/logo-white.webp";
+// Эмблема РАН для нижней плашки — отдаём как есть (SVG ?url).
 import ranEmblem from "../assets/hero/ran-emblem.svg?url";
 
 // Пока 3 одинаковых слайда — контент и фон продублированы (будут различаться,
@@ -46,50 +45,8 @@ const slides: HeroSlide[] = [baseSlide, baseSlide, baseSlide];
 ---
 
 <HeroSlider slides={slides} client:load>
-  {/* ───────── Шапка (статичная, нулевой JS) ───────── */}
-  <header
-    slot="header"
-    class="gutter-x flex min-h-[94px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:gap-8 max-lg:pt-3 max-lg:pb-4"
-  >
-    <a href="/" class="flex items-center gap-4" aria-label="На главную">
-      <img
-        src={headLogo.src}
-        width={headLogo.width}
-        height={headLogo.height}
-        alt="Логотип Общества изучения традиционного тайцзицюань"
-        class="h-[54px] w-auto shrink-0 object-contain max-lg:h-10"
-      />
-    </a>
-
-    <nav class="flex items-center gap-14">
-      <ul class="flex items-center gap-12 max-lg:hidden">
-        {
-          topNav.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="relative flex h-[94px] items-center font-display text-[15px] font-semibold leading-[1.1] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-[1px] after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <button
-        type="button"
-        data-menu-open
-        aria-label="Открыть меню"
-        aria-haspopup="dialog"
-        aria-controls="site-menu"
-        aria-expanded="false"
-        class="-m-3.5 flex cursor-pointer flex-col gap-2 rounded-[2px] p-3.5 transition-colors hover:bg-white/15 max-lg:m-0 max-lg:-mr-1.5 max-lg:grid max-lg:h-11 max-lg:w-11 max-lg:place-content-center max-lg:gap-1.5 max-lg:p-0"
-      >
-        <span class="block h-0.5 w-10 rounded-[1px] bg-white max-lg:w-7"></span>
-        <span class="block h-0.5 w-10 rounded-[1px] bg-white max-lg:w-7"></span>
-      </button>
-    </nav>
-  </header>
+  {/* ───────── Шапка (статичная, нулевой JS) — единый Header.astro ───────── */}
+  <Header slot="header" variant="overlay" />
 
   {/* ───────── Нижняя плашка (статичная, нулевой JS) ───────── */}
   <div
