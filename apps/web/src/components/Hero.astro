@@ -7,6 +7,7 @@
 // Фон-видео: WebM (VP9) для Chrome/Firefox + MP4 фолбэк для Safari; постер —
 // hero-bg.webp (первый кадр до загрузки видео). Импортируются как URL'ы.
 import HeroSlider, { type HeroSlide } from "./HeroSlider";
+import { topNav } from "../config/nav";
 import heroVideoWebm from "../assets/hero/hero-video.webm";
 import heroVideoMp4 from "../assets/hero/hero-video.mp4";
 // Отдельное видео под мобилу (<1024px) — грузится вместо тяжёлого десктопного.
@@ -18,14 +19,6 @@ import heroBg from "../assets/hero/hero-bg.webp";
 // Логотип и эмблема — отдаём как есть (WebP-лого обычным <img>, эмблема — SVG ?url).
 import headLogo from "../assets/hero/logo-white.webp";
 import ranEmblem from "../assets/hero/ran-emblem.svg?url";
-
-const navItems = [
-  "Тайцзицюань",
-  "Исследования",
-  "Об Обществе",
-  "Мероприятия",
-  "Новости",
-];
 
 // Пока 3 одинаковых слайда — контент и фон продублированы (будут различаться,
 // когда появятся реальные материалы/ассеты под каждый слайд).
@@ -71,13 +64,13 @@ const slides: HeroSlide[] = [baseSlide, baseSlide, baseSlide];
     <nav class="flex items-center gap-14">
       <ul class="flex items-center gap-12 max-lg:hidden">
         {
-          navItems.map((item) => (
+          topNav.map((item) => (
             <li>
               <a
-                href="#"
+                href={item.href}
                 class="relative flex h-[94px] items-center font-display text-[15px] font-semibold leading-[1.1] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-[1px] after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
               >
-                {item}
+                {item.label}
               </a>
             </li>
           ))

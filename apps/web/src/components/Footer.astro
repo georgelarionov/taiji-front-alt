@@ -2,6 +2,7 @@
 // Футер — из design/design.pen, фрейм «footer». Фон accent (#023c97) на всю ширину.
 // Сверху нав-колонки + соцсети, по центру баннер (лого + название + каллиграфия),
 // снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
+import { navCols, bigLinks } from "../config/nav";
 import logo from "../assets/footer/logo.png";
 import chineseText from "../assets/footer/chinese-text.svg?url";
 import ornament from "../assets/footer/ornament.png";
@@ -9,14 +10,6 @@ import social1 from "../assets/footer/social-1.png";
 import socialTg from "../assets/footer/social-telegram.png";
 import socialWa from "../assets/footer/social-whatsapp.png";
 import socialVk from "../assets/footer/social-vk.png";
-
-const navCols = [
-  { title: "Тайцзицюань", links: ["История", "Теория", "Практика", "Персоналии"] },
-  { title: "Общество", links: ["Миссии и ценности", "Команда", "Партнеры", "Документы"] },
-  { title: "Исследования", links: ["Источники", "Публикации"] },
-];
-// четвёртая колонка — крупные ссылки без подпунктов
-const bigLinks = ["Новости", "Мероприятия", "Медиа-архив", "Контакты"];
 
 const socials = [
   { src: social1.src, alt: "Мессенджер", w: 20, h: 19 },
@@ -44,8 +37,8 @@ const socials = [
                 <ul class="flex flex-col gap-[12px] opacity-[0.86]">
                   {col.links.map((l) => (
                     <li>
-                      <a href="#" class="link-underline font-display text-[15px] font-medium leading-tight">
-                        {l}
+                      <a href={l.href} class="link-underline font-display text-[15px] font-medium leading-tight">
+                        {l.label}
                       </a>
                     </li>
                   ))}
@@ -61,8 +54,8 @@ const socials = [
             <ul class="flex flex-col gap-[12px] opacity-[0.86]">
               {navCols[1].links.map((l) => (
                 <li>
-                  <a href="#" class="link-underline font-display text-[15px] font-medium leading-tight">
-                    {l}
+                  <a href={l.href} class="link-underline font-display text-[15px] font-medium leading-tight">
+                    {l.label}
                   </a>
                 </li>
               ))}
@@ -71,8 +64,8 @@ const socials = [
           <div class="flex flex-col gap-[14px]">
             {
               bigLinks.map((l) => (
-                <a href="#" class="link-underline font-display text-[18px] font-semibold leading-tight">
-                  {l}
+                <a href={l.href} class="link-underline font-display text-[18px] font-semibold leading-tight">
+                  {l.label}
                 </a>
               ))
             }
@@ -86,8 +79,8 @@ const socials = [
               <ul class="flex flex-col gap-4 opacity-[0.86]">
                 {col.links.map((l) => (
                   <li>
-                    <a href="#" class="link-underline font-display text-base font-semibold">
-                      {l}
+                    <a href={l.href} class="link-underline font-display text-base font-semibold">
+                      {l.label}
                     </a>
                   </li>
                 ))}
@@ -99,8 +92,8 @@ const socials = [
         <div class="flex flex-col gap-4 max-lg:hidden">
           {
             bigLinks.map((l) => (
-              <a href="#" class="link-underline self-start font-display text-2xl font-semibold">
-                {l}
+              <a href={l.href} class="link-underline self-start font-display text-2xl font-semibold">
+                {l.label}
               </a>
             ))
           }

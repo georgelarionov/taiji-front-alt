@@ -8,28 +8,21 @@
 // Логотип — тот же полный локап, что в шапке Hero, но синяя версия (меню на
 // светлом фоне): blue-logo.webp, отдаём обычным <img> (плоский бренд-растр, см.
 // гайдлайн по ассетам — не <Image>). Размер совпадает с лого в шапке (h-10 моб).
-// Нав-структура 1:1 с Footer; иконки соцсетей — готовые SVG-кнопки (56×56 с
-// рамкой и чёрным глифом), отдаём обычным <img> (см. гайдлайн по SVG-ассетам).
+// Нав-структура — общий источник src/config/nav (тот же конфиг, что у Footer);
+// иконки соцсетей — готовые SVG-кнопки (56×56 с рамкой и чёрным глифом), отдаём
+// обычным <img> (см. гайдлайн по SVG-ассетам).
+import { navCols, bigLinks } from "../config/nav";
 import menuLogo from "../assets/menu/blue-logo.webp";
 import socialMessenger from "../assets/menu/social-messenger.svg?url";
 import socialTelegram from "../assets/menu/social-telegram.svg?url";
 import socialWhatsapp from "../assets/menu/social-whatsapp.svg?url";
 import socialVk from "../assets/menu/social-vk.svg?url";
 
-// Колонки с подпунктами (как в футере, но состав по фрейму menu).
-const navCols = [
-  { title: "Тайцзицюань", links: ["История", "Теория", "Практика", "Персоналии"] },
-  { title: "Общество", links: ["Миссии и ценности", "Команда", "Партнеры"] },
-  { title: "Исследования", links: ["Источники", "Публикации"] },
-];
-// Четвёртая колонка — крупные ссылки без подпунктов.
-const bigLinks = ["Новости", "Мероприятия", "Медиа-архив", "Контакты"];
-
 // Мобильная навигация: единый плоский список топ-уровня с разделителями.
 // Порядок по дизайну uZNPI: колонки navCols по заголовкам, затем bigLinks.
 const mobileNavLinks = [
   ...navCols.map((col) => col.title),
-  ...bigLinks,
+  ...bigLinks.map((b) => b.label),
 ];
 
 const socials = [
@@ -96,7 +89,7 @@ const socials = [
           navCols.map((col, i) => (
             <div data-menu-item style={`--i:${i}`} class="flex flex-col gap-4">
               <h2 class="font-display text-2xl font-semibold">
-                <a href="#" class="link-underline">
+                <a href={col.href} class="link-underline">
                   {col.title}
                 </a>
               </h2>
@@ -104,10 +97,10 @@ const socials = [
                 {col.links.map((l) => (
                   <li>
                     <a
-                      href="#"
+                      href={l.href}
                       class="link-underline font-display text-base font-semibold"
                     >
-                      {l}
+                      {l.label}
                     </a>
                   </li>
                 ))}
@@ -119,10 +112,10 @@ const socials = [
           {
             bigLinks.map((l) => (
               <a
-                href="#"
+                href={l.href}
                 class="link-underline self-start font-display text-2xl font-semibold"
               >
-                {l}
+                {l.label}
               </a>
             ))
           }
