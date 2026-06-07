@@ -113,6 +113,34 @@ export default function HeroSlider({
     if (p) p.catch(() => {});
   }, [index, revealed, mounted, isMobile]);
 
+  // Пауза при уходе блока из вьюпорта: контент z-10 наезжает сверху и полностью
+  // перекрывает hero — декодер зря крутит невидимый кадр (батарея/CPU на мобиле).
+  // IntersectionObserver на корневой section: ratio→0 паузит активное видео,
+  // возврат во вьюпорт возобновляет .play() — но только если revealed И не
+  // reduced-motion (консистентно с гейтом воспроизведения выше). Дополнительный
+  // слой поверх pause-неактивных/play-активного по смене index — их не трогает.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const active = videoRefs.current[index];
+        if (!active) return;
+        if (entry.intersectionRatio <= 0) {
+          active.pause();
+          return;
+        }
+        if (!revealed) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const p = active.play();
+        if (p) p.catch(() => {});
+      },
+      { threshold: [0, 0.01] },
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, [index, revealed]);
+
   return (
     <section
       ref={rootRef}
