@@ -71,7 +71,7 @@ export default function AboutInfo({
           />
           {/* gap текст↔иконка: десктоп 12px, мобила 16px (по фидбэку — больше) */}
           <span className="flex items-center gap-3 max-lg:gap-4">
-            <span className="relative font-display text-sm font-bold leading-[1.2] text-ink/50 transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 after:content-[''] group-hover:text-ink group-hover:after:scale-x-100">
+            <span className="relative font-display text-sm font-bold leading-[1.2] text-ink/70 transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 after:content-[''] group-hover:text-ink group-hover:after:scale-x-100">
               ПОДРОБНЕЕ
             </span>
             <svg
