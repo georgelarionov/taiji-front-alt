@@ -35,8 +35,8 @@ function init() {
     overlay.classList.add("is-open");
     root.classList.add("menu-open");
     setExpanded(true);
-    // Фокус на первый интерактивный элемент (крестик), чтобы Esc/таб работали сразу.
-    overlay.querySelector<HTMLElement>(SELECTOR_FOCUSABLE)?.focus();
+    // Фокус на крестик (он есть в оверлее всегда), чтобы Esc/таб работали сразу.
+    overlay.querySelector<HTMLElement>("[data-menu-close]")?.focus();
   };
 
   const close = () => {
