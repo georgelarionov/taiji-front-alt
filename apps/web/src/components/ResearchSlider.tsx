@@ -47,6 +47,13 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
   const inView = useInView(viewportRef, { once: true, margin: "-80px" });
   const reduce = useReducedMotion();
 
+  // mounted=false на SSR и до гидрации → статический HTML карточек уходит видимым
+  // (initial={false} = состояние 'shown', без opacity:0/translateY). Вход-анимация
+  // включается ТОЛЬКО после гидрации (mounted=true), как reveal-система под html.js.
+  // Так без JS / при падении гидрации / reduced-motion карточки остаются видимы.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Видимая ширина = от левого края контейнера до правого края вьюпорта
   // (карточки full-bleed вправо). maxScroll не даёт уехать в пустоту за последней.
   // rightGap зависит от вьюпорта (44px десктоп / 15px мобила — симметрично гаттеру).
@@ -93,9 +100,16 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
             <motion.a
               key={i}
               href="#"
-              initial={reduce ? false : { opacity: 0, y: 40 }}
+              // initial={false} → SSR/no-JS/до гидрации рендерит 'shown' (видимо).
+              // 'hidden' (вход-анимация) применяется только после гидрации и не под
+              // reduced-motion: mounted && !reduce. Иначе всегда 'shown'.
+              variants={{
+                hidden: { opacity: 0, y: 40 },
+                shown: { opacity: 1, y: 0 },
+              }}
+              initial={false}
               animate={
-                inView || reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+                mounted && !reduce ? (inView ? "shown" : "hidden") : "shown"
               }
               transition={{
                 duration: 1.25,
