@@ -3,6 +3,7 @@
 // Сверху нав-колонки + соцсети, по центру баннер (лого + название + каллиграфия),
 // снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
 import { navCols, bigLinks } from "../config/nav";
+import { socials } from "../config/socials";
 import logo from "../assets/footer/logo.png";
 import chineseText from "../assets/footer/chinese-text.svg?url";
 import ornament from "../assets/footer/ornament.png";
@@ -11,12 +12,14 @@ import socialTg from "../assets/footer/social-telegram.png";
 import socialWa from "../assets/footer/social-whatsapp.png";
 import socialVk from "../assets/footer/social-vk.png";
 
-const socials = [
-  { src: social1.src, alt: "Мессенджер", w: 20, h: 19 },
-  { src: socialTg.src, alt: "Telegram", w: 20, h: 15 },
-  { src: socialWa.src, alt: "WhatsApp", w: 20, h: 20 },
-  { src: socialVk.src, alt: "ВКонтакте", w: 28, h: 17 },
-];
+// Локальная карта id → png-ассет + его размеры (состав/alt/href — из общего
+// config/socials). Ассеты футера отличаются от меню (png vs svg) и по размерам.
+const socialIcons: Record<string, { src: string; w: number; h: number }> = {
+  messenger: { src: social1.src, w: 20, h: 19 },
+  telegram: { src: socialTg.src, w: 20, h: 15 },
+  whatsapp: { src: socialWa.src, w: 20, h: 20 },
+  vk: { src: socialVk.src, w: 28, h: 17 },
+};
 ---
 
 <footer class="overflow-x-clip bg-accent text-white">
@@ -109,11 +112,16 @@ const socials = [
           {
             socials.map((s) => (
               <a
-                href="#"
+                href={s.href}
                 aria-label={s.alt}
                 class="grid h-14 w-14 place-items-center border border-white/40 transition-colors hover:bg-white/10 max-lg:h-[56px] max-lg:w-[56px] max-lg:border-white/30"
               >
-                <img src={s.src} width={s.w} height={s.h} alt={s.alt} />
+                <img
+                  src={socialIcons[s.id].src}
+                  width={socialIcons[s.id].w}
+                  height={socialIcons[s.id].h}
+                  alt={s.alt}
+                />
               </a>
             ))
           }

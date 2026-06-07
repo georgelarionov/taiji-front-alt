@@ -12,24 +12,26 @@
 // иконки соцсетей — готовые SVG-кнопки (56×56 с рамкой и чёрным глифом), отдаём
 // обычным <img> (см. гайдлайн по SVG-ассетам).
 import { navCols, bigLinks } from "../config/nav";
+import { socials } from "../config/socials";
 import menuLogo from "../assets/menu/blue-logo.webp";
 import socialMessenger from "../assets/menu/social-messenger.svg?url";
 import socialTelegram from "../assets/menu/social-telegram.svg?url";
 import socialWhatsapp from "../assets/menu/social-whatsapp.svg?url";
 import socialVk from "../assets/menu/social-vk.svg?url";
 
+// Локальная карта id → svg-ассет (состав/alt/href — из общего config/socials).
+const socialIcons: Record<string, string> = {
+  messenger: socialMessenger,
+  telegram: socialTelegram,
+  whatsapp: socialWhatsapp,
+  vk: socialVk,
+};
+
 // Мобильная навигация: единый плоский список топ-уровня с разделителями.
 // Порядок по дизайну uZNPI: колонки navCols по заголовкам, затем bigLinks.
 const mobileNavLinks = [
   ...navCols.map((col) => col.title),
   ...bigLinks.map((b) => b.label),
-];
-
-const socials = [
-  { src: socialMessenger, alt: "Мессенджер" },
-  { src: socialTelegram, alt: "Telegram" },
-  { src: socialWhatsapp, alt: "WhatsApp" },
-  { src: socialVk, alt: "ВКонтакте" },
 ];
 ---
 
@@ -148,11 +150,11 @@ const socials = [
             {
               socials.map((s) => (
                 <a
-                  href="#"
+                  href={s.href}
                   aria-label={s.alt}
                   class="grid h-14 w-14 place-items-center border border-black/10 transition-colors hover:bg-ink/5"
                 >
-                  <img src={s.src} width={56} height={56} alt={s.alt} />
+                  <img src={socialIcons[s.id]} width={56} height={56} alt={s.alt} />
                 </a>
               ))
             }
@@ -169,11 +171,11 @@ const socials = [
           {
             socials.map((s) => (
               <a
-                href="#"
+                href={s.href}
                 aria-label={s.alt}
                 class="grid h-14 w-14 place-items-center transition-colors hover:bg-ink/5"
               >
-                <img src={s.src} width={56} height={56} alt={s.alt} />
+                <img src={socialIcons[s.id]} width={56} height={56} alt={s.alt} />
               </a>
             ))
           }
