@@ -170,6 +170,37 @@ html.js [data-reveal-bg] {
   }
 }
 
+/* --- Подчёркивание «Подробнее» (group-hover) ---
+   Линия снизу (accent @ 50%, 2px), растёт слева направо при наведении на
+   РОДИТЕЛЬСКИЙ .group (а не на саму ссылку). Воспроизводит дословно бывшую
+   after:-цепочку (after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-accent/50
+   after:origin-left after:scale-x-0 after:transition-transform after:duration-300
+   group-hover:after:scale-x-100). Единый источник вместо дублей в
+   About/News/ResearchSlider/Contacts. */
+.link-underline-group {
+  position: relative;
+}
+.link-underline-group::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px; /* h-0.5 */
+  background-color: color-mix(in srgb, var(--color-accent) 50%, transparent); /* bg-accent/50 */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.group:hover .link-underline-group::after {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .link-underline-group::after {
+    transition: none;
+  }
+}
+
 /* --- Скроллбар (весь сайт) ---
    Тонкий синий ползунок (accent) на прозрачной подложке.
    Firefox — scrollbar-color/width; WebKit/Blink — ::-webkit-scrollbar. */

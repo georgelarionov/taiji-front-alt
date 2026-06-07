@@ -28,7 +28,7 @@ const MOBILE = { cardW: 320, gap: 16, rightGap: 16 };
 // (group-hover). Растёт слева направо (origin-left). Линия — accent c opacity 50%.
 // inline-block — линия по ширине текста, не по ширине обёртки; relative — база для after.
 const MORE_CLASS =
-  "relative inline-block font-display text-base font-semibold text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 group-hover:after:scale-x-100 max-lg:text-[15px]";
+  "link-underline-group inline-block font-display text-base font-semibold text-accent max-lg:text-[15px]";
 
 export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
   const viewportRef = useRef<HTMLDivElement>(null);
