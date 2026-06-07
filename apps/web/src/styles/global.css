@@ -224,6 +224,18 @@ html {
   background-color: var(--color-accent-soft);
 }
 
+/* --- Видимый focus-ring (весь сайт) ---
+   Один глобальный :focus-visible, читаемый и на тёмном hero, и на синих кнопках:
+   accent-обводка + белое «гало» (box-shadow) для контраста на любом фоне.
+   :where(...) — нулевая специфичность, чтобы компоненты могли переопределить.
+   Только :focus-visible (клавиатура), мышь ринг не получает. outline:none нигде не вводим. */
+:where(a, button, [tabindex], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, #ffffff 70%, transparent);
+}
+
 /* --- Лоудер (брендовый сплэш) ---
    Виден ТОЛЬКО при html.loading — класс ставит инлайн-скрипт в BaseLayout ДО
    пейнта и лишь при первом заходе за сессию без reduced-motion. Так нет флэша
