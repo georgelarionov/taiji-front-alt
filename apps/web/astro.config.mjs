@@ -4,12 +4,17 @@ import { defineConfig, fontProviders } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
+import sitemap from '@astrojs/sitemap';
+
 // Локальные woff2 лежат в src/assets/fonts/ (доки Astro не рекомендуют public/ — иначе дубли в сборке).
 const fontsDir = './src/assets/fonts';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  // TODO: заменить на реальный домен проекта (плейсхолдер .example) — нужно для canonical/OG/sitemap
+  site: 'https://taiji-society.example',
+
+  integrations: [react(), sitemap()],
 
   // Astro 6 Fonts API: скачивает/оптимизирует, генерирует @font-face, preload-ссылки и
   // метрически подогнанные fallback-шрифты (минимум CLS). Self-hosted, без сторонних запросов в рантайме.
