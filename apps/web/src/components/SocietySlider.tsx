@@ -68,9 +68,9 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
               <p className="font-display text-sm font-bold tracking-[-0.14px] text-accent max-lg:text-[13px]">
                 {s.role}
               </p>
-              <p className="font-serif text-[39px] font-semibold leading-none text-ink max-lg:text-[28px] max-lg:leading-[1.05]">
+              <h3 className="font-serif text-[39px] font-semibold leading-none text-ink max-lg:text-[28px] max-lg:leading-[1.05]">
                 {s.name}
-              </p>
+              </h3>
             </div>
             <div className="flex flex-col gap-3 max-lg:order-3">
               <p className="font-display text-base font-semibold tracking-[-0.16px] text-ink max-lg:text-[15px]">
