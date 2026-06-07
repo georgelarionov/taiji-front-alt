@@ -43,8 +43,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
       {/* Сменяемый контент (фейд по смене слайда) */}
       <div
         key={index}
-        style={{ animation: "fade-in 0.35s ease both" }}
-        className="flex flex-col gap-9 max-lg:gap-7"
+        className="flex flex-col gap-9 max-lg:gap-7 animate-[fade-in_0.35s_ease_both] motion-reduce:animate-none"
       >
         {/* Карточка персоны: на мобиле (<lg) фото и текст в столбик */}
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">

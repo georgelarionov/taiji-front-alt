@@ -125,7 +125,7 @@ export default function HeroSlider({
           <div
             key={i}
             aria-hidden={i !== index}
-            className="absolute inset-0 transition-opacity duration-700 ease-out"
+            className="absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none"
             style={{ opacity: i === index ? 1 : 0 }}
           >
             {slide.bg.type === "video" ? (
