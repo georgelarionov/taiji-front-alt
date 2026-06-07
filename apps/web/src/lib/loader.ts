@@ -144,7 +144,9 @@ function scheduleRun() {
   if (typeof requestIdleCallback === "function") {
     idleHandle = requestIdleCallback(run, { timeout: 500 });
   } else {
-    idleHandle = setTimeout(run, 200);
+    // window.setTimeout → DOM-overload (number), а не Node (Timeout): apps/web —
+    // браузерный код, @types/node иначе ломает тип idleHandle (ts2322).
+    idleHandle = window.setTimeout(run, 200);
   }
 }
 
