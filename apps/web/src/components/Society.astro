@@ -8,14 +8,14 @@ import { INFO_PATH } from "../lib/icons";
 import SocietySlider, { type SocietySlide } from "./SocietySlider.tsx";
 // Фото персоны в слайде — это <Image> нельзя рендерить внутри React-острова,
 // поэтому оптимизируем здесь через getImage() и передаём готовый src в слайдер.
-import personSrc from "../assets/block5/person-1.png";
-import person2Src from "../assets/block5/person-2.webp";
+import personSrc from "../assets/society/person-1.png";
+import person2Src from "../assets/society/person-2.webp";
 // Каллиграфия «传统太极拳学会» — плоский брендовый раст (с уже встроенной кривой):
 // plain <img src={import.src}>, не <Image> (см. конвенции).
-import caliSrc from "../assets/block5/cali-symbol-5block.png";
+import caliSrc from "../assets/society/cali-symbol-5block.png";
 // Декоративный мазок над nav-кнопками (с альфой) — плоский раст → plain <img>,
 // не <Image> (как фон в Research).
-import brushSrc from "../assets/block5/bg-item-society.png";
+import brushSrc from "../assets/society/bg-item-society.png";
 
 // бокс фото 190×254 (как в PEN); 480w webp покрывает ретину и w-full на мобиле
 const person = await getImage({ src: personSrc, width: 480, format: "webp" });
