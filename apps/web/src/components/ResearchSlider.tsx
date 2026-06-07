@@ -82,10 +82,14 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
   // Свайп пальцем по треку (мобайл): шаг = одна карточка, как у стрелок.
   useSwipe(viewportRef, { onLeft: next, onRight: prev });
 
-  const atStart = offset >= 0;
-  const atEnd = maxScroll > 0 && offset <= -maxScroll;
+  // Число дискретных позиций (точек) выводим из самой прокрутки, а не хардкодим:
+  // maxScroll/step ≈ сколько шагов карточки помещается, +1 за стартовую позицию.
+  // maxScroll===0 → всё влезло, одна позиция (точки/стрелки не нужны).
   const progress = maxScroll > 0 ? -offset / maxScroll : 0;
-  const activeDot = Math.min(2, Math.floor(progress * 3 + 1e-6));
+  const steps = maxScroll > 0 ? Math.round(maxScroll / step) + 1 : 1;
+  const activeDot = maxScroll > 0 ? Math.round(progress * (steps - 1)) : 0;
+  const atStart = offset >= 0;
+  const atEnd = maxScroll === 0 || offset <= -maxScroll;
 
   return (
     <div>
@@ -175,16 +179,18 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
           </svg>
         </button>
 
-        <div className="flex items-center gap-2">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className={`h-1 rounded-full bg-ink transition-all duration-300 ${
-                i === activeDot ? "w-[65px]" : "w-6 opacity-35"
-              }`}
-            />
-          ))}
-        </div>
+        {steps > 1 ? (
+          <div className="flex items-center gap-2">
+            {Array.from({ length: steps }).map((_, i) => (
+              <span
+                key={i}
+                className={`h-1 rounded-full bg-ink transition-all duration-300 ${
+                  i === activeDot ? "w-[65px]" : "w-6 opacity-35"
+                }`}
+              />
+            ))}
+          </div>
+        ) : null}
 
         <button
           type="button"
