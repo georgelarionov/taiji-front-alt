@@ -42,6 +42,39 @@
   --font-display: var(--font-manrope);
 }
 
+/* --- Семантическая типошкала (классы-композиты) ---
+   Стандарт для НОВЫХ страниц: семейство + размер (десктоп) + leading + вес,
+   с мобильным max-lg: оверрайдом. Существующие компоненты под них не рефакторим. */
+@layer components {
+  .text-h1 {
+    @apply font-serif text-[60px] leading-[1.05] max-lg:text-[40px];
+  }
+  .text-h2 {
+    @apply font-display text-[40px] font-semibold leading-[1.1] max-lg:text-[30px];
+  }
+  .text-h2-compact {
+    @apply font-display text-[32px] font-semibold leading-[1.1] max-lg:text-[26px];
+  }
+  .text-banner {
+    @apply font-display text-[40px] font-extrabold leading-[1.1] max-lg:text-[22px];
+  }
+  .text-h3 {
+    @apply font-display text-2xl font-semibold leading-tight max-lg:text-[20px];
+  }
+  .text-name {
+    @apply font-serif text-[39px] font-semibold leading-none max-lg:text-[28px];
+  }
+  .text-body {
+    @apply font-sans text-base leading-relaxed max-lg:text-[15px];
+  }
+  .text-eyebrow {
+    @apply font-display text-[12px] font-bold uppercase tracking-wide;
+  }
+  .text-caption {
+    @apply font-display text-sm font-semibold max-lg:text-[13px];
+  }
+}
+
 /* --- Lenis smooth scroll (recommended base styles) --- */
 html.lenis,
 html.lenis body {
