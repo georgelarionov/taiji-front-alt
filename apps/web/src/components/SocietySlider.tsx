@@ -84,7 +84,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
           <p className="font-serif text-xl font-semibold text-ink/50 max-lg:text-lg">
             Приветственная цитата:
           </p>
-          <blockquote className="border border-black/15 py-6 pl-6 pr-9 font-sans text-base font-medium leading-[1.375] text-ink max-lg:p-5 max-lg:text-[14px]">
+          <blockquote className="border border-border py-6 pl-6 pr-9 font-sans text-base font-medium leading-[1.375] text-ink max-lg:p-5 max-lg:text-[14px]">
             {s.quote}
           </blockquote>
         </div>

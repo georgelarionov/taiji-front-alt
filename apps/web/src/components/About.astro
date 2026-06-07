@@ -83,10 +83,10 @@ const cards: { title: string; desc: string; image?: ImageMetadata }[] = [
             <a
               href="#"
               data-reveal
-              class="group relative flex min-h-[263px] cursor-pointer flex-col justify-between overflow-hidden border border-black/15 p-7 max-lg:min-h-0 max-lg:justify-start max-lg:gap-12 max-lg:p-6"
+              class="group relative flex min-h-[263px] cursor-pointer flex-col justify-between overflow-hidden border border-border p-7 max-lg:min-h-0 max-lg:justify-start max-lg:gap-12 max-lg:p-6"
             >
               {/* hover-подложка */}
-              <div class="pointer-events-none absolute inset-2 bg-[#f7f5f4] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div class="pointer-events-none absolute inset-2 bg-surface opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               {/* hover-изображение справа (только «История») */}
               {card.image && (

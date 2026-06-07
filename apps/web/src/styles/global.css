@@ -11,8 +11,14 @@
   --color-surface: #f7f5f4;
   --color-surface-sunken: #f2f1ef;
 
-  /* Бордеры / разделители (utility: border-border, bg-border) */
-  --color-border: #d9d9d9;
+  /* Бежевые pill-поля (Contacts) */
+  --color-field: #eeece9;
+  /* Фон полноэкранного меню / оверлеев */
+  --color-surface-overlay: #e8e6e1;
+
+  /* Бордеры / разделители (utility: border-border, bg-border).
+     = чёрный 15% — единственный потребитель border-border (AboutInfo); сдвиг незаметен. */
+  --color-border: color-mix(in srgb, #0d1014 15%, transparent);
 
   /* Акцент */
   --color-accent: #023c97; /* основной синий акцент */

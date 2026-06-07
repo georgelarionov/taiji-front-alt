@@ -120,10 +120,10 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
                 delay: reduce ? 0 : 0.45 + i * 0.16,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="group relative flex h-[480px] w-[520px] shrink-0 cursor-pointer flex-col bg-white max-lg:h-[420px] max-lg:w-[320px] max-lg:border max-lg:border-black/15"
+              className="group relative flex h-[480px] w-[520px] shrink-0 cursor-pointer flex-col bg-white max-lg:h-[420px] max-lg:w-[320px] max-lg:border max-lg:border-border"
             >
               {/* hover-подложка как в «Новостях»: #f7f5f4, inset 8px, fade на group-hover */}
-              <div className="pointer-events-none absolute inset-2 bg-[#f7f5f4] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="pointer-events-none absolute inset-2 bg-surface opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <div className="relative z-10 flex h-full flex-col max-lg:justify-between max-lg:p-6">
                 {/* Top: title + description */}
