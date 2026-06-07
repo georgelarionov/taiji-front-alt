@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+{/* 404 — минимальная брендовая страница: noindex, без шапки/футера,
+    только центрированный контент и рабочая ссылка на главную. */}
+<BaseLayout title="Страница не найдена" noindex={true}>
+  <section class="flex min-h-[80svh] items-center">
+    <div class="container-block flex flex-col items-center text-center">
+      <p class="font-serif text-[120px] leading-none text-accent max-lg:text-[80px]">
+        404
+      </p>
+      <h1 class="mt-4 font-serif text-4xl leading-tight text-ink max-lg:text-3xl">
+        Страница не найдена
+      </h1>
+      <p class="mt-4 max-w-[480px] font-sans text-base text-ink/70">
+        Возможно, страница была перемещена или удалена. Вернитесь на главную —
+        и продолжите изучение традиции.
+      </p>
+      <a
+        href="/"
+        class="mt-8 inline-block bg-accent px-8 py-4 font-display text-base font-semibold text-white transition-opacity hover:opacity-90"
+      >
+        На главную
+      </a>
+    </div>
+  </section>
+</BaseLayout>
