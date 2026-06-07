@@ -142,5 +142,30 @@ function destroy() {
   ScrollTrigger.getAll().forEach((t) => t.kill());
 }
 
-document.addEventListener("astro:page-load", init);
-document.addEventListener("astro:before-swap", destroy);
+// Во время лоудера (html.loading) скролл залочен, а hero перекрыт — поднимать
+// Lenis/ScrollTrigger в этот момент незачем. А их init конкурирует с анимацией
+// лоудера за main-thread (rAF Lenis на все ~5с + синхронный ScrollTrigger.refresh
+// = layout-pass ровно на старте лоудера → джанк/фриз). Поэтому при активном лоудере
+// откладываем init до его ухода (событие taiji:loader-done, шлётся из lib/loader.ts) —
+// симметрично reveal-контракту hero. Без лоудера (SPA-навигация / повтор за сессию /
+// reduced-motion / no-JS) html.loading не стоит → init сразу, как раньше.
+function onPageLoad() {
+  const root = document.documentElement;
+  if (root.classList.contains("loading") && !prefersReducedMotion()) {
+    // «Липкий» флаг закрывает гонку: если лоудер уже сигналил до этого момента.
+    if (root.dataset.loaderDone === "1") {
+      init();
+      return;
+    }
+    document.addEventListener("taiji:loader-done", init, { once: true });
+    return;
+  }
+  init();
+}
+
+document.addEventListener("astro:page-load", onPageLoad);
+document.addEventListener("astro:before-swap", () => {
+  // Снять отложенный init, если навигация прервала лоудер до его ухода.
+  document.removeEventListener("taiji:loader-done", init);
+  destroy();
+});

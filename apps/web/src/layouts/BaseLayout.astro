@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import { Font } from "astro:assets";
-// import Loader from "../components/Loader.astro"; // ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН — раскомментировать для возврата
+import Loader from "../components/Loader.astro";
 import Menu from "../components/Menu.astro";
 
 interface Props {
@@ -28,7 +28,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Фавиконы (набор из assets-dev/favicon → public): svg для совр. браузеров,
+        png-фолбэк, .ico для легаси, apple-touch для iOS, manifest для PWA. */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -56,26 +62,26 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         при первом заходе за сессию без reduced-motion → нет флэша и повторов. */}
     <script is:inline>
       document.documentElement.classList.add("js");
-      // ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок). Вернуть: раскомментировать блок ниже
-      // + <Loader /> и import "../lib/loader" в <body>. Без html.loading hero раскрывается сразу.
-      // try {
-      //   if (
-      //     // TEST: гейт «один раз за сессию» временно отключён — лоудер на каждой загрузке.
-      //     // Вернуть: раскомментировать строку ниже.
-      //     // !sessionStorage.getItem("taiji:loaded") &&
-      //     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      //   ) {
-      //     document.documentElement.classList.add("loading");
-      //   }
-      // } catch {}
+      // Показ лоудера: класс loading ставится ДО пейнта (FOUC-safe), затем
+      // CSS [data-loader] становится видимым и блокирует скролл.
+      // TEST (отладка): гейт «один раз за сессию» ОТКЛЮЧЁН — лоудер на КАЖДОЙ загрузке.
+      // Вернуть «раз за сессию»: раскомментировать строку с sessionStorage ниже.
+      try {
+        if (
+          // !sessionStorage.getItem("taiji:loaded") &&
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          document.documentElement.classList.add("loading");
+        }
+      } catch {}
     </script>
     {/* Пер-страничные мета/preload (на будущее): <Fragment slot="head">…</Fragment>. */}
     <slot name="head" />
     <ClientRouter />
   </head>
   <body class="min-h-dvh bg-white font-sans text-ink antialiased">
-    {/* ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок) — раскомментировать для возврата */}
-    {/* <Loader /> */}
+    {/* Брендовый сплэш: виден только при html.loading; анимацию ведёт lib/loader.ts. */}
+    <Loader />
     {/* Skip-link: первый фокусируемый элемент — прыжок на <main> для клавиатуры/скринридеров.
         sr-only до фокуса, видимый при focus. */}
     <a
@@ -99,10 +105,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
 
     {/* Рантайм лоудера: init/teardown на astro:page-load / astro:before-swap (как smooth) */}
-    {/* ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок) — раскомментировать для возврата */}
-    {/* <script>
+    <script>
       import "../lib/loader";
-    </script> */}
+    </script>
 
     {/* Анимационный рантайм: Lenis + GSAP, пере-инициализация на навигации */}
     <script>

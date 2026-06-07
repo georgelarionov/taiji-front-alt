@@ -14,7 +14,10 @@ import circleRaw from "../assets/loader/loader-circle.svg?raw";
 const circleD = circleRaw.match(/\sd="([^"]+)"/)?.[1] ?? "";
 ---
 
-<div data-loader aria-hidden="true" class="fixed inset-0 z-[100]">
+{/* bg-[#dddbda] — сплошная подложка = базовый тон фростед-текстуры. Делает оверлей
+   НЕПРОЗРАЧНЫМ с первого кадра (html.loading ставится инлайн-скриптом ДО пейнта),
+   пока фон-<Image> ещё не задекодился → hero не просвечивает, мерцания нет. */}
+<div data-loader aria-hidden="true" class="fixed inset-0 z-[100] bg-[#dddbda]">
   {/* Статичный фон — запечённая «фростед» текстура (вместо дорогого backdrop-blur).
       Отдельный слой: на уходе уезжает медленнее контента → параллакс. */}
   <Image
@@ -22,6 +25,9 @@ const circleD = circleRaw.match(/\sd="([^"]+)"/)?.[1] ?? "";
     alt=""
     widths={[1280, 1920, 2880]}
     sizes="100vw"
+    loading="eager"
+    decoding="async"
+    fetchpriority="high"
     class="absolute inset-0 h-full w-full object-cover"
   />
 
