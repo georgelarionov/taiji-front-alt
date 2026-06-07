@@ -4,6 +4,7 @@
 // Хедер (заголовок + плашка-кнопка с каллиграфией) и сетка 2×2 карточек-разделов.
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
+import { INFO_PATH } from "../lib/icons";
 import headerLogo from "../assets/block2/calif-symbols.png";
 import historyImg from "../assets/block2/history-card.png";
 import AboutInfo from "./AboutInfo.tsx";
@@ -14,9 +15,8 @@ import AboutInfo from "./AboutInfo.tsx";
 const moreClass =
   "relative z-10 w-fit font-display text-base font-semibold leading-[1.1] text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 group-hover:after:scale-x-100";
 
-// Иконка info (ⓘ) кнопки «ПОДРОБНЕЕ» — точная геометрия из ноды (viewBox 0 0 20 20).
-const infoIcon =
-  "M10 20c-5.52285 0-10-4.4772-10-10 0-5.52285 4.47715-10 10-10 5.5228 0 10 4.47715 10 10 0 5.5228-4.4772 10-10 10z m0-2c4.4183 0 8-3.5817 8-8 0-4.41828-3.5817-8-8-8-4.41828 0-8 3.58172-8 8 0 4.4183 3.58172 8 8 8z m-1-13l2 0 0 2-2 0 0-2z m0 4l2 0 0 6-2 0 0-6z";
+// Иконка info (ⓘ) кнопки «ПОДРОБНЕЕ» — общая геометрия INFO_PATH (lib/icons, viewBox 0 0 20 20).
+const infoIcon = INFO_PATH;
 
 // Текст контекстного окна-справки (Inter 15px). Ударения/тоны сохранены как есть.
 const infoText =

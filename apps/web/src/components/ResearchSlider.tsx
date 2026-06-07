@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { useSwipe } from "../lib/useSwipe";
+import { ARROW_PATH } from "../lib/icons";
 
 // Слайдер «Исследования» (3-block). Карточки тянутся вправо за вьюпорт; клипает
 // секция (overflow-x-clip) → горизонтального скролла страницы нет. Сдвиг — через
@@ -13,9 +14,8 @@ export type ResearchCard = {
   desc: string;
 };
 
-// Стрелка — та же геометрия, что в hero (viewBox 0 0 16 15.5563), здесь чёрная.
-const ARROW =
-  "M12.1716 6.77822l-5.364-5.36401 1.4142-1.41421 7.7782 7.77822-7.7782 7.7781-1.4142-1.4142 5.364-5.3639-12.1716 0 0-2 12.1716 0z";
+// Стрелка — общая геометрия ARROW_PATH (lib/icons), здесь чёрная.
+const ARROW = ARROW_PATH;
 
 // Геометрия слайдера зависит от вьюпорта (десктоп / <1024px).
 // Десктоп: карточки 520px, gap 24, последний слайд в 44px от правого края (симметрично px-11 контейнера).

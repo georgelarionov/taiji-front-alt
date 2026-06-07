@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useSwipe } from "../lib/useSwipe";
+import { ARROW_PATH } from "../lib/icons";
 
 // Слайдер hero-блока (1-block). Остров client:load (не client:visible — см. гайдлайн):
 // владеет индексом активного слайда и меняет фон (cross-fade видео/изображения)
@@ -28,9 +29,8 @@ export type HeroSlide = {
     | { type: "image"; url: string };
 };
 
-// Стрелка карусели — та же геометрия пути, что в остальных слайдерах сайта.
-const ARROW =
-  "M12.1716 6.77822l-5.364-5.36401 1.4142-1.41421 7.7782 7.77822-7.7782 7.7781-1.4142-1.4142 5.364-5.3639-12.1716 0 0-2 12.1716 0z";
+// Стрелка карусели — общая геометрия пути ARROW_PATH (lib/icons).
+const ARROW = ARROW_PATH;
 
 export default function HeroSlider({
   slides,

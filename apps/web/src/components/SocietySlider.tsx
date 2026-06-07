@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useSwipe } from "../lib/useSwipe";
+import { ARROW_PATH } from "../lib/icons";
 
 // Правый слайдер 5-блока «Об Обществе»: меняет весь контент белой области
 // (фото + текст персоны + цитата). Стрелки/точки переключают слайды.
@@ -17,8 +18,7 @@ export type SocietySlide = {
   photo: string; // оптимизированный src (getImage в Society.astro)
 };
 
-const ARROW =
-  "M12.1716 6.77822l-5.364-5.36401 1.4142-1.41421 7.7782 7.77822-7.7782 7.7781-1.4142-1.4142 5.364-5.3639-12.1716 0 0-2 12.1716 0z";
+const ARROW = ARROW_PATH;
 
 export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
   const [index, setIndex] = useState(0);
