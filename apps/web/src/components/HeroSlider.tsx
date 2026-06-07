@@ -65,7 +65,12 @@ export default function HeroSlider({
   // Так нет рассинхрона «фиксированная задержка ≠ реальная длительность лоудера».
   const [revealed, setRevealed] = useState(false);
   useEffect(() => {
-    if (!document.documentElement.classList.contains("loading")) {
+    const html = document.documentElement;
+    // «Липкий» флаг loaderDone закрывает гонку: если лоудер ушёл (и кинул раннее
+    // событие) ДО гидрации острова, one-shot listener бы уже не сработал → читаем
+    // dataset-флаг, чтобы не зависнуть скрытым. Reveal сразу, если лоудера нет
+    // (нет html.loading: повтор за сессию / SPA / reduced-motion) ИЛИ он уже ушёл.
+    if (!html.classList.contains("loading") || html.dataset.loaderDone === "1") {
       setRevealed(true);
       return;
     }

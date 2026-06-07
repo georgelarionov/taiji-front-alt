@@ -35,6 +35,10 @@ let revealSignaled = false;
 function signalReveal() {
   if (revealSignaled) return;
   revealSignaled = true;
+  // «Липкий» флаг + событие: если остров hero смонтируется ПОСЛЕ раннего
+  // dispatch, one-shot listener уже не сработает → читая dataset на маунте, остров
+  // всё равно узнает, что лоудер ушёл (иначе hero завис бы скрытым навсегда).
+  document.documentElement.dataset.loaderDone = "1";
   document.dispatchEvent(new CustomEvent("taiji:loader-done"));
 }
 
@@ -54,6 +58,7 @@ function run() {
   if (!root.classList.contains("loading")) return;
 
   revealSignaled = false; // новый прогон (в т.ч. SPA-навигация) → разрешаем сигнал заново
+  delete document.documentElement.dataset.loaderDone; // сбрасываем «липкий» флаг прошлого прогона
 
   const wrap = document.querySelector<HTMLElement>("[data-loader]");
   if (!wrap) {
