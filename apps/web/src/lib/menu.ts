@@ -34,6 +34,10 @@ function init() {
     lastFocused = document.activeElement as HTMLElement | null;
     overlay.classList.add("is-open");
     root.classList.add("menu-open");
+    // Изоляция фона для скринридеров: меню (#site-menu) — сосед <main> в body,
+    // поэтому inert на #main скрывает весь фон из дерева доступности и фокуса
+    // (соответствует aria-modal=true оверлея). Снимается в close()/teardown.
+    document.getElementById("main")?.setAttribute("inert", "");
     setExpanded(true);
     // Фокус на крестик (он есть в оверлее всегда), чтобы Esc/таб работали сразу.
     overlay.querySelector<HTMLElement>("[data-menu-close]")?.focus();
@@ -43,6 +47,7 @@ function init() {
     if (!isOpen()) return;
     overlay.classList.remove("is-open");
     root.classList.remove("menu-open");
+    document.getElementById("main")?.removeAttribute("inert");
     setExpanded(false);
     lastFocused?.focus();
   };
@@ -101,6 +106,9 @@ function init() {
     document.removeEventListener("keydown", onKeydown);
     // Снять возможный блок скролла, чтобы он не утёк на следующую страницу.
     root.classList.remove("menu-open");
+    // На SPA-навигации (astro:before-swap → destroy → teardown) снять inert,
+    // чтобы фон не остался изолированным на новой странице.
+    document.getElementById("main")?.removeAttribute("inert");
     teardown = null;
   };
 }
