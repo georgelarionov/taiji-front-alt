@@ -37,7 +37,7 @@ export function useSwipe<T extends HTMLElement>(
     let horizontal = false;
 
     const onStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1) return; // мульти-тач (pinch/zoom) — не наш кейс
+      if (e.touches.length !== 1) { tracking = false; return; } // мульти-тач (pinch) отменяет текущий жест
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
       tracking = true;
