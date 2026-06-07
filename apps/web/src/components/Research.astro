@@ -2,12 +2,16 @@
 // 3-block — «Исследования». Из design/design.pen, фрейм «3-block».
 // Фон full-width (surface-sunken). Хедер + слайдер карточек: левый край в контейнере,
 // карточки уходят вправо за вьюпорт; секция overflow-x-clip → нет лишнего гориз. скролла.
+import { getImage } from "astro:assets";
 import ResearchSlider, {
   type ResearchCard,
 } from "./ResearchSlider.tsx";
 // Декоративный фон-мазок: прижат к правому краю секции, выходит за вьюпорт
-// (клипает overflow-x-clip секции). Плоский раст → plain <img>, не <Image>.
+// (клипает overflow-x-clip секции). Крупная полупрозрачная текстура → webp
+// через getImage() (PNG 1310×1448 → ~−300КБ, без артефактов на градиенте).
 import bg from "../assets/research/bg.png";
+
+const bgImg = await getImage({ src: bg, width: 1310, format: "webp" });
 
 const base: ResearchCard[] = [
   {
@@ -36,9 +40,11 @@ const cards: ResearchCard[] = [...base, base[0], base[1]];
 
 <section class="relative overflow-x-clip bg-surface-sunken py-[72px] max-lg:py-16">
   <img
-    src={bg.src}
+    src={bgImg.src}
     alt=""
     aria-hidden="true"
+    loading="lazy"
+    decoding="async"
     class="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-auto max-w-none translate-x-[8%] select-none"
   />
   <div class="container-block relative z-10">

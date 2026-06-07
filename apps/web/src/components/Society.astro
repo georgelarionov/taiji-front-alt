@@ -13,13 +13,15 @@ import person2Src from "../assets/society/person-2.webp";
 // Каллиграфия «传统太极拳学会» — плоский брендовый раст (с уже встроенной кривой):
 // plain <img src={import.src}>, не <Image> (см. конвенции).
 import caliSrc from "../assets/society/cali-symbol-5block.png";
-// Декоративный мазок над nav-кнопками (с альфой) — плоский раст → plain <img>,
-// не <Image> (как фон в Research).
+// Декоративный мазок над nav-кнопками (с альфой) — крупная полупрозрачная
+// текстура → webp через getImage() (как фон в Research). Рендерится максимум
+// на 534px → 1068w (2×) покрывает ретину.
 import brushSrc from "../assets/society/bg-item-society.png";
 
 // бокс фото 190×254 (как в PEN); 480w webp покрывает ретину и w-full на мобиле
 const person = await getImage({ src: personSrc, width: 480, format: "webp" });
 const person2 = await getImage({ src: person2Src, width: 480, format: "webp" });
+const brushImg = await getImage({ src: brushSrc, width: 1068, format: "webp" });
 
 const chair: SocietySlide = {
   role: "Председатель Общества",
@@ -101,9 +103,11 @@ const tabs = [
         <nav class="mt-auto flex flex-col gap-6 pt-8 max-lg:mt-7 max-lg:gap-6 max-lg:pt-0">
           <div class="flex flex-col">
             <img
-              src={brushSrc.src}
+              src={brushImg.src}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
               class="pointer-events-none h-[138px] w-[534px] max-w-full object-contain object-left select-none max-lg:h-[96px]"
             />
             <span class="h-px w-full bg-black/15"></span>
