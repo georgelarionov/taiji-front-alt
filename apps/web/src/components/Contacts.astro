@@ -1,0 +1,137 @@
+---
+import { Image } from "astro:assets";
+import contactBg from "../assets/block6/contact-block-bg.png";
+
+// 6-block — «Контакты». Из design/design.pen, фрейм «6-block». Обычный контейнер.
+// Хедер + три карточки (E-mail / Телефон / Адрес): заголовок + «поле» (бежевый pill
+// со значением и иконкой-действием). Поля — mailto/tel/карты.
+
+// Иконки полей — точная геометрия из нод (accent).
+const ENVELOPE =
+  "M1 0l18 0c0.5523 0 1 0.44772 1 1l0 16c0 0.5523-0.4477 1-1 1l-18 0c-0.55228 0-1-0.4477-1-1l0-16c0-0.55228 0.44772-1 1-1z m9.0606 8.6829l-6.41338-5.4452-1.29444 1.5246 7.72032 6.5548 7.5813-6.56094-1.3088-1.51232-6.285 5.43906z";
+const PHONE =
+  "M18 13.42l0 3.5361c0 0.525-0.4059 0.9606-0.9295 0.9976-0.4374 0.0309-0.7942 0.0463-1.0705 0.0463-8.8366 0-16-7.1634-16-16 0-0.27629 0.01545-0.63313 0.04635-1.0705 0.03702-0.52362 0.47259-0.9295 0.99751-0.9295l3.53624 0c0.25668 0 0.47166 0.19442 0.49743 0.4498 0.02314 0.22927 0.04465 0.41334 0.06454 0.55222 0.20228 1.4127 0.61546 2.75734 1.20663 4.00101 0.09489 0.19962 0.03301 0.43856-0.14685 0.56703l-2.1583 1.54174c1.31397 3.0693 3.77535 5.5307 6.84465 6.8447l1.5389-2.1546c0.1301-0.182 0.3719-0.2446 0.5739-0.1487 1.2436 0.5907 2.5881 1.0034 4.0006 1.2052 0.138 0.0198 0.3209 0.0411 0.5486 0.0641 0.2554 0.0258 0.4498 0.2408 0.4498 0.4975z";
+
+const mapUrl =
+  "https://yandex.ru/maps/?text=" +
+  encodeURIComponent("Москва, Нахимовский проспект, д.32");
+---
+
+{/* Моб: отступ от «Об Обществе» = 72px (8px этот pt + 64px нижний pb «Об Обществе»). */}
+<section class="relative overflow-hidden bg-white py-24 max-lg:pt-2 max-lg:pb-16">
+  {/* Фон блока — стипл-горы, на всю ширину, прижат к низу и центрирован */}
+  <Image
+    src={contactBg}
+    alt=""
+    aria-hidden="true"
+    data-reveal-bg
+    widths={[768, 1280, 1920, 2880]}
+    sizes="100vw"
+    class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-top select-none"
+  />
+  <div class="relative z-10 mx-auto w-full max-w-[1440px] px-11 max-lg:px-4">
+    <div class="flex flex-col gap-14 max-lg:gap-[32px]">
+      <div class="flex flex-col gap-16 max-lg:gap-[32px]">
+        {/* ───────── Хедер ───────── */}
+        <header class="flex items-center justify-between gap-8 max-lg:flex-col max-lg:items-start max-lg:gap-3" data-reveal>
+          <h2 class="font-display text-[40px] font-semibold leading-[1.1] text-ink max-lg:text-[30px] max-lg:leading-[1.1]">
+            Контакты
+          </h2>
+          <div class="flex items-center gap-4 max-lg:hidden">
+            <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-accent"></span>
+            <span class="font-display text-base font-semibold text-ink max-lg:text-sm">
+              Связь с Обществом
+            </span>
+          </div>
+        </header>
+
+        {/* ───────── Карточки ───────── */}
+        <div class="grid grid-cols-1 gap-[46px] lg:grid-cols-3 max-lg:gap-[24px]">
+          {/* E-mail */}
+          <div
+            class="flex min-h-[250px] flex-col justify-between border border-black/15 bg-white p-8 max-lg:min-h-0 max-lg:gap-[32px] max-lg:p-[24px]"
+            data-reveal
+          >
+            <h3 class="font-display text-2xl font-semibold text-ink max-lg:text-[22px] max-lg:leading-none">E-mail</h3>
+            <a
+              href="mailto:info@taiji-society.ru"
+              class="group flex items-center justify-between gap-3 bg-[#eeece9] px-4 py-3 max-lg:rounded-[2px]"
+            >
+              <span class="relative font-display text-[17px] max-lg:text-[15px] font-semibold text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 after:content-[''] group-hover:after:scale-x-100">
+                info@taiji-society.ru
+              </span>
+              <svg
+                viewBox="0 0 20 18"
+                class="h-[18px] w-5 shrink-0 text-accent"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d={ENVELOPE} />
+              </svg>
+            </a>
+          </div>
+
+          {/* Телефон */}
+          <div
+            class="flex min-h-[250px] flex-col justify-between border border-black/15 bg-white p-8 max-lg:min-h-0 max-lg:gap-[32px] max-lg:p-[24px]"
+            data-reveal
+          >
+            <h3 class="font-display text-2xl font-semibold text-ink max-lg:text-[22px] max-lg:leading-none">Телефон</h3>
+            <a
+              href="tel:+79037479367"
+              class="group flex items-center justify-between gap-3 bg-[#eeece9] px-4 py-3 max-lg:rounded-[2px]"
+            >
+              <span class="relative font-display text-[17px] max-lg:text-[15px] font-semibold text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 after:content-[''] group-hover:after:scale-x-100">
+                +7 903 747 9367
+              </span>
+              <svg
+                viewBox="0 0 18 18"
+                class="h-[18px] w-[18px] shrink-0 text-accent"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d={PHONE} />
+              </svg>
+            </a>
+          </div>
+
+          {/* Адрес */}
+          <div
+            class="flex min-h-[250px] flex-col justify-between border border-black/15 bg-white p-8 max-lg:min-h-0 max-lg:gap-[32px] max-lg:p-[24px]"
+            data-reveal
+          >
+            <h3 class="font-display text-2xl font-semibold text-ink max-lg:text-[22px] max-lg:leading-none">Адрес</h3>
+            <div class="flex flex-col gap-2.5 max-lg:gap-[16px]">
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener"
+                class="relative w-fit font-display text-[17px] max-lg:text-[15px] font-semibold text-ink/50 transition-colors hover:text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 after:content-[''] hover:after:scale-x-100"
+              >
+                Открыть на Яндекс.Картах
+              </a>
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener"
+                class="group block bg-[#eeece9] px-4 py-3 max-lg:rounded-[2px]"
+              >
+                <span class="relative font-display text-[17px] max-lg:text-[15px] font-semibold text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 after:content-[''] group-hover:after:scale-x-100">
+                  Москва, Нахимовский проспект, д.32
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ───────── Кнопка «Контакты» ───────── */}
+      <a
+        href="#"
+        class="inline-flex w-fit items-center border border-black/15 bg-white px-6 py-4 font-display text-base font-semibold text-ink transition hover:bg-surface active:scale-[0.98] max-lg:w-full max-lg:justify-center"
+      >
+        Контакты
+      </a>
+    </div>
+  </div>
+</section>

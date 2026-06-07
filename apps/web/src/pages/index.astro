@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import About from "../components/About.astro";
+import Research from "../components/Research.astro";
+import News from "../components/News.astro";
+import Society from "../components/Society.astro";
+import Contacts from "../components/Contacts.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout>
+  {/* Главная — собирается поблочно из design/design.pen */}
+  {/* Hero — неподвижный sticky-фон (z-0, см. HeroSlider). Всё, что ниже, лежит
+      в слое z-10 → наезжает поверх hero при скролле (параллакс-перекрытие).
+      bg-white на обёртке — подстраховка от просвета hero в возможную щель. */}
+  <Hero />
+  <div class="relative z-10 bg-white">
+    <About />
+    <Research />
+    <News />
+    <Society />
+    <Contacts />
+    <Footer />
+  </div>
+</BaseLayout>

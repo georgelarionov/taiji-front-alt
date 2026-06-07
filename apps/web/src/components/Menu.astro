@@ -1,0 +1,191 @@
+---
+// Полноэкранное меню (design.pen, фрейм «menu»). Оверлей на всю ширину/высоту
+// (100svh), светлый фон #e8e6e1. Открывается по бургеру в шапке Hero, ведётся
+// рантаймом src/lib/menu.ts (открытие/закрытие, Esc, блок скролла, фокус) —
+// контракт astro:page-load/astro:before-swap, как у loader/smooth. Монтируется
+// в BaseLayout. Анимация (шторка сверху + стаггер) — чистый CSS в global.css.
+//
+// Логотип — тот же полный локап, что в шапке Hero, но синяя версия (меню на
+// светлом фоне): blue-logo.webp, отдаём обычным <img> (плоский бренд-растр, см.
+// гайдлайн по ассетам — не <Image>). Размер совпадает с лого в шапке (h-10 моб).
+// Нав-структура 1:1 с Footer; иконки соцсетей — готовые SVG-кнопки (56×56 с
+// рамкой и чёрным глифом), отдаём обычным <img> (см. гайдлайн по SVG-ассетам).
+import menuLogo from "../assets/menu/blue-logo.webp";
+import socialMessenger from "../assets/menu/social-messenger.svg?url";
+import socialTelegram from "../assets/menu/social-telegram.svg?url";
+import socialWhatsapp from "../assets/menu/social-whatsapp.svg?url";
+import socialVk from "../assets/menu/social-vk.svg?url";
+
+// Колонки с подпунктами (как в футере, но состав по фрейму menu).
+const navCols = [
+  { title: "Тайцзицюань", links: ["История", "Теория", "Практика", "Персоналии"] },
+  { title: "Общество", links: ["Миссии и ценности", "Команда", "Партнеры"] },
+  { title: "Исследования", links: ["Источники", "Публикации"] },
+];
+// Четвёртая колонка — крупные ссылки без подпунктов.
+const bigLinks = ["Новости", "Мероприятия", "Медиа-архив", "Контакты"];
+
+// Мобильная навигация: единый плоский список топ-уровня с разделителями.
+// Порядок по дизайну uZNPI: колонки navCols по заголовкам, затем bigLinks.
+const mobileNavLinks = [
+  ...navCols.map((col) => col.title),
+  ...bigLinks,
+];
+
+const socials = [
+  { src: socialMessenger, alt: "Мессенджер" },
+  { src: socialTelegram, alt: "Telegram" },
+  { src: socialWhatsapp, alt: "WhatsApp" },
+  { src: socialVk, alt: "ВКонтакте" },
+];
+---
+
+{/* role=dialog + aria-modal: оверлей-навигация. data-lenis-prevent — чтобы Lenis
+    не перехватывал внутренний скролл на низких экранах. Закрыт по умолчанию
+    (CSS: translateY(-100%) + visibility:hidden), открытие добавляет .is-open. */}
+<div
+  id="site-menu"
+  data-menu
+  role="dialog"
+  aria-modal="true"
+  aria-label="Главное меню"
+  data-lenis-prevent
+  class="fixed inset-0 z-[90] h-svh w-full overflow-y-auto overscroll-contain bg-[#e8e6e1] text-ink"
+>
+  <div class="flex min-h-svh w-full flex-col px-11 py-6 max-lg:px-4 max-lg:pt-3 max-lg:pb-[28px]">
+    {/* ───────── Верхняя строка: логотип + крестик ───────── */}
+    <div class="flex items-center justify-between gap-10 max-lg:gap-4">
+      <a href="/" class="flex items-center" aria-label="На главную">
+        <img
+          src={menuLogo.src}
+          width={menuLogo.width}
+          height={menuLogo.height}
+          alt="Логотип Общества изучения традиционного тайцзицюань"
+          class="h-[54px] w-auto shrink-0 object-contain max-lg:h-10"
+        />
+      </a>
+
+      <button
+        type="button"
+        data-menu-close
+        aria-label="Закрыть меню"
+        class="-m-3 grid h-12 w-12 cursor-pointer place-items-center rounded-[2px] text-accent transition-colors hover:bg-accent/10 max-lg:m-0 max-lg:-mr-1.5 max-lg:h-11 max-lg:w-11"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M5 5l14 14M19 5L5 19"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mt-6 h-px w-full bg-accent/10 max-lg:mt-4"></div>
+
+    {/* ───────── Навигация + соцсети (между ними распирающий просвет) ───────── */}
+    <div class="flex flex-1 flex-col justify-between gap-16 pt-12 pb-2 max-lg:gap-0 max-lg:pt-5 max-lg:pb-0">
+
+      {/* ── Десктоп: колонки с подпунктами ── */}
+      <nav class="flex flex-wrap gap-x-[88px] gap-y-10 max-lg:hidden">
+        {
+          navCols.map((col, i) => (
+            <div data-menu-item style={`--i:${i}`} class="flex flex-col gap-4">
+              <h2 class="font-display text-2xl font-semibold">
+                <a href="#" class="link-underline">
+                  {col.title}
+                </a>
+              </h2>
+              <ul class="flex flex-col gap-4 opacity-[0.86]">
+                {col.links.map((l) => (
+                  <li>
+                    <a
+                      href="#"
+                      class="link-underline font-display text-base font-semibold"
+                    >
+                      {l}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+        <div data-menu-item style="--i:3" class="flex flex-col gap-4">
+          {
+            bigLinks.map((l) => (
+              <a
+                href="#"
+                class="link-underline self-start font-display text-2xl font-semibold"
+              >
+                {l}
+              </a>
+            ))
+          }
+        </div>
+      </nav>
+
+      {/* ── Мобиль: плоский список с разделителями (uZNPI) ── */}
+      <nav class="hidden max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-between">
+        <ul class="flex flex-col">
+          {
+            mobileNavLinks.map((label, i) => (
+              <li data-menu-item style={`--i:${i}`}>
+                <a
+                  href="#"
+                  class="block font-display text-[26px] font-semibold leading-none text-ink py-5 transition-colors hover:text-accent active:text-accent aria-[current=page]:text-accent"
+                >
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        {/* ── Соцсети (мобиль, внизу) ── */}
+        <div data-menu-item style={`--i:${mobileNavLinks.length}`} class="flex flex-col gap-4 pt-8">
+          <p class="font-display text-[16px] font-semibold opacity-50">
+            Мессенджеры и соц. сети
+          </p>
+          <div class="flex items-center gap-[12px]">
+            {
+              socials.map((s) => (
+                <a
+                  href="#"
+                  aria-label={s.alt}
+                  class="grid h-14 w-14 place-items-center border border-black/10 transition-colors hover:bg-ink/5"
+                >
+                  <img src={s.src} width={56} height={56} alt={s.alt} />
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Соцсети (десктоп, внизу) ── */}
+      <div data-menu-item style="--i:4" class="flex flex-col gap-4 max-lg:hidden">
+        <p class="font-display text-base font-semibold opacity-50">
+          Мессенджеры и соц. сети
+        </p>
+        <div class="flex items-center gap-6">
+          {
+            socials.map((s) => (
+              <a
+                href="#"
+                aria-label={s.alt}
+                class="grid h-14 w-14 place-items-center transition-colors hover:bg-ink/5"
+              >
+                <img src={s.src} width={56} height={56} alt={s.alt} />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

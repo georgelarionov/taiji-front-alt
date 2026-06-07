@@ -1,0 +1,186 @@
+---
+// Футер — из design/design.pen, фрейм «footer». Фон accent (#023c97) на всю ширину.
+// Сверху нав-колонки + соцсети, по центру баннер (лого + название + каллиграфия),
+// снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
+import logo from "../assets/footer/logo.png";
+import chineseText from "../assets/footer/chinese-text.svg?url";
+import ornament from "../assets/footer/ornament.png";
+import social1 from "../assets/footer/social-1.png";
+import socialTg from "../assets/footer/social-telegram.png";
+import socialWa from "../assets/footer/social-whatsapp.png";
+import socialVk from "../assets/footer/social-vk.png";
+
+const navCols = [
+  { title: "Тайцзицюань", links: ["История", "Теория", "Практика", "Персоналии"] },
+  { title: "Общество", links: ["Миссии и ценности", "Команда", "Партнеры", "Документы"] },
+  { title: "Исследования", links: ["Источники", "Публикации"] },
+];
+// четвёртая колонка — крупные ссылки без подпунктов
+const bigLinks = ["Новости", "Мероприятия", "Медиа-архив", "Контакты"];
+
+const socials = [
+  { src: social1.src, alt: "Мессенджер", w: 20, h: 19 },
+  { src: socialTg.src, alt: "Telegram", w: 20, h: 15 },
+  { src: socialWa.src, alt: "WhatsApp", w: 20, h: 20 },
+  { src: socialVk.src, alt: "ВКонтакте", w: 28, h: 17 },
+];
+---
+
+<footer class="overflow-x-clip bg-accent text-white">
+  <div class="mx-auto w-full max-w-[1440px] px-11 pt-16 pb-12 max-lg:px-4 max-lg:pt-16 max-lg:pb-[48px]">
+    {/* ───────── Навигация + соцсети ───────── */}
+    {/* Desktop: строка (колонки слева, соцсети справа). Mobile: колонка (сначала сетка нав-колонок, потом соцсети на всю ширину). */}
+    <div class="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between max-lg:gap-[40px]">
+      {/* Сетка нав-колонок: на мобиле 2 колонки flex-row с точным gap из референса */}
+      <div class="flex flex-wrap gap-x-[88px] gap-y-10 max-lg:flex-nowrap max-lg:flex-row max-lg:gap-x-[24px] max-lg:gap-y-0">
+        {/* Mobile: левая колонка — Тайцзицюань + Исследования, правая — Общество + bigLinks.
+            Desktop: все колонки в ряд через flex-wrap. */}
+        {/* Left mobile column wrapper */}
+        <div class="hidden max-lg:flex max-lg:flex-col max-lg:gap-[28px] max-lg:flex-1">
+          {
+            [navCols[0], navCols[2]].map((col) => (
+              <div class="flex flex-col gap-[14px]">
+                <h3 class="font-display text-[18px] font-semibold leading-tight">{col.title}</h3>
+                <ul class="flex flex-col gap-[12px] opacity-[0.86]">
+                  {col.links.map((l) => (
+                    <li>
+                      <a href="#" class="link-underline font-display text-[15px] font-medium leading-tight">
+                        {l}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+        {/* Right mobile column wrapper */}
+        <div class="hidden max-lg:flex max-lg:flex-col max-lg:gap-[28px] max-lg:flex-1">
+          <div class="flex flex-col gap-[14px]">
+            <h3 class="font-display text-[18px] font-semibold leading-tight">{navCols[1].title}</h3>
+            <ul class="flex flex-col gap-[12px] opacity-[0.86]">
+              {navCols[1].links.map((l) => (
+                <li>
+                  <a href="#" class="link-underline font-display text-[15px] font-medium leading-tight">
+                    {l}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="flex flex-col gap-[14px]">
+            {
+              bigLinks.map((l) => (
+                <a href="#" class="link-underline font-display text-[18px] font-semibold leading-tight">
+                  {l}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+        {/* Desktop: all nav cols rendered normally */}
+        {
+          navCols.map((col) => (
+            <div class="flex flex-col gap-4 max-lg:hidden">
+              <h3 class="font-display text-2xl font-semibold">{col.title}</h3>
+              <ul class="flex flex-col gap-4 opacity-[0.86]">
+                {col.links.map((l) => (
+                  <li>
+                    <a href="#" class="link-underline font-display text-base font-semibold">
+                      {l}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+        {/* Крупные ссылки без подпунктов — desktop only (mobile handled above) */}
+        <div class="flex flex-col gap-4 max-lg:hidden">
+          {
+            bigLinks.map((l) => (
+              <a href="#" class="link-underline self-start font-display text-2xl font-semibold">
+                {l}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {/* Соцсети: на мобиле растягиваются на всю ширину */}
+      <div class="flex flex-col gap-4 lg:w-[296px] max-lg:w-full max-lg:gap-[16px]">
+        <p class="font-display text-base font-semibold opacity-50 max-lg:text-[14px]">
+          Мессенджеры и соц. сети
+        </p>
+        <div class="flex items-center gap-6 max-lg:gap-[24px]">
+          {
+            socials.map((s) => (
+              <a
+                href="#"
+                aria-label={s.alt}
+                class="grid h-14 w-14 place-items-center border border-white/40 transition-colors hover:bg-white/10 max-lg:h-[56px] max-lg:w-[56px] max-lg:border-white/30"
+              >
+                <img src={s.src} width={s.w} height={s.h} alt={s.alt} />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    {/* ───────── Центральный баннер ───────── */}
+    {/* Орнамент остаётся fixed 1352px — overflow-x-clip секции обрезает его на мобиле (корректно). */}
+    <div class="relative mt-20 py-12 text-center max-lg:mt-[40px] max-lg:py-[40px]">
+      {/* Орнамент-фон под логотипом: ширина 1352px десктоп / 1082px моб (−20%), по центру.
+          overflow-x-clip футера обрезает выступ на узких экранах. */}
+      <img
+        src={ornament.src}
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-1/2 top-1/2 w-[1352px] max-w-none -translate-x-1/2 -translate-y-1/2 max-lg:w-[1082px]"
+      />
+      {/* Лого + надпись + иероглифы плавно проявляются каскадом (см. smooth.ts) */}
+      <div data-reveal-stagger class="relative flex flex-col items-center gap-4 max-lg:gap-[16px]">
+        <img
+          data-reveal-item
+          src={logo.src}
+          width={61}
+          height={81}
+          alt="Логотип Общества"
+          class="h-[81px] w-[61px] object-contain max-lg:h-[81px] max-lg:w-[61px]"
+        />
+        <p
+          data-reveal-item
+          class="font-display text-[40px] font-extrabold leading-[1.1] max-lg:text-[22px] max-lg:leading-[1.1]"
+        >
+          ОБЩЕСТВО ИЗУЧЕНИЯ<br />ТРАДИЦИОННОГО ТАЙЦЗИЦЮАНЬ
+        </p>
+        {/* Обёртка: autoAlpha анимирует контейнер 0→1, иероглиф внутри сохраняет opacity-50 */}
+        <span data-reveal-item>
+          <img
+            src={chineseText}
+            width={153}
+            height={21}
+            alt=""
+            class="h-[21px] w-[153px] object-contain opacity-50"
+          />
+        </span>
+      </div>
+    </div>
+
+    {/* ───────── Нижний бар ───────── */}
+    {/* На мобиле — колонка (copyright сверху, ссылки + год снизу). */}
+    <div class="mt-16 flex flex-col gap-4 opacity-50 max-lg:mt-[40px] max-lg:items-center max-lg:text-center max-lg:gap-[14px] lg:flex-row lg:items-center lg:justify-between">
+      <p class="font-display text-base font-semibold max-lg:text-[14px]">
+        © Общество Изучения Традиционного Тайцзицюань
+      </p>
+      <div class="flex items-center gap-4 max-lg:gap-[10px]">
+        <a href="#" class="link-underline font-display text-base font-semibold max-lg:text-[14px]">
+          Политика обработки данных
+        </a>
+        <span class="h-[5px] w-[5px] shrink-0 rounded-full bg-white"></span>
+        <span class="font-display text-base font-semibold max-lg:text-[14px]">2017 – 2026</span>
+      </div>
+    </div>
+  </div>
+</footer>

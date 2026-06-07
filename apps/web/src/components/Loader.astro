@@ -1,0 +1,104 @@
+---
+// Лоудер сайта — декоративный брендовый сплэш (design.pen, фрейм «loader»).
+// Виден только при html.loading (ставит инлайн-скрипт в BaseLayout до пейнта);
+// анимацию и уход ведёт src/lib/loader.ts. Без JS / reduced-motion / SPA-переход
+// / повторная загрузка в сессии — класс не ставится, лоудер display:none.
+import { Image } from "astro:assets";
+import loaderIcon from "../assets/loader/loader-icon.png";
+import loaderTop from "../assets/loader/loader-top.png";
+import loaderBg from "../assets/loader/loader-bg.png";
+import circleRaw from "../assets/loader/loader-circle.svg?raw";
+
+// Единственный источник пути круга — сам ассет: вынимаем атрибут d, чтобы
+// построить свой <svg> с маской (залитую линию нельзя чертить dashoffset напрямую).
+const circleD = circleRaw.match(/\sd="([^"]+)"/)?.[1] ?? "";
+---
+
+<div data-loader aria-hidden="true" class="fixed inset-0 z-[100]">
+  {/* Статичный фон — запечённая «фростед» текстура (вместо дорогого backdrop-blur).
+      Отдельный слой: на уходе уезжает медленнее контента → параллакс. */}
+  <Image
+    src={loaderBg}
+    alt=""
+    widths={[1280, 1920, 2880]}
+    sizes="100vw"
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+
+  {/* Слой контента — на уходе уезжает выше фона + фейд (параллакс). */}
+  <div data-loader-content class="absolute inset-0">
+    <img
+      data-loader-fade
+      src={loaderTop.src}
+      width={loaderTop.width}
+      height={loaderTop.height}
+      alt=""
+      class="absolute left-1/2 top-6 h-[24px] w-[120px] -translate-x-1/2 opacity-50 max-lg:top-6 max-lg:h-[17px] max-lg:w-[85px]"
+    />
+
+    <span
+      data-loader-fade
+      class="absolute left-6 top-1/2 -translate-y-1/2 font-sans text-[12px] font-semibold leading-[1.2] tracking-[-0.12px] text-[#797978] max-lg:left-4"
+      >2017</span
+    >
+    <span
+      data-loader-fade
+      class="absolute right-6 top-1/2 -translate-y-1/2 font-sans text-[12px] font-semibold leading-[1.2] tracking-[-0.12px] text-[#797978] max-lg:right-4"
+      >2026</span
+    >
+
+    <div
+      class="absolute left-1/2 top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center"
+    >
+      <svg
+        viewBox="0 0 304 304"
+        fill="none"
+        aria-hidden="true"
+        class="col-start-1 row-start-1 h-[302px] w-[302px] text-accent max-lg:h-[221px] max-lg:w-[221px]"
+      >
+        {/* Каллиграфический круг ассета: «отрисовка» через маску (stroke-dashoffset).
+            rotate(-90) — старт сверху; направление задаёт знак offset в loader.ts. */}
+        <defs>
+          <mask
+            id="loader-ring-mask"
+            maskUnits="userSpaceOnUse"
+            x="0"
+            y="0"
+            width="304"
+            height="304"
+          >
+            <circle
+              data-loader-ring
+              cx="152"
+              cy="152"
+              r="150"
+              pathLength="100"
+              fill="none"
+              stroke="#fff"
+              stroke-width="12"
+              stroke-dasharray="100"
+              stroke-dashoffset="-100"
+              transform="rotate(-90 152 152)"></circle>
+          </mask>
+        </defs>
+        <path d={circleD} fill="currentColor" mask="url(#loader-ring-mask)"></path>
+      </svg>
+
+      <img
+        data-loader-fade
+        src={loaderIcon.src}
+        width={loaderIcon.width}
+        height={loaderIcon.height}
+        alt=""
+        class="col-start-1 row-start-1 w-[90px] max-lg:w-[72px]"
+      />
+    </div>
+
+    <p
+      data-loader-fade
+      class="absolute bottom-6 left-1/2 -translate-x-1/2 text-center font-display text-[18px] font-bold leading-[1.2] tracking-[-0.18px] text-[#797978] max-lg:bottom-[24px] max-lg:text-[14px] max-lg:tracking-[-0.14px]"
+    >
+      ОБЩЕСТВО ИЗУЧЕНИЯ<br />ТРАДИЦИОННОГО ТАЙЦЗИЦЮАНЬ
+    </p>
+  </div>
+</div>

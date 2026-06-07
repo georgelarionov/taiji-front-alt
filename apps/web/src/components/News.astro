@@ -1,0 +1,136 @@
+---
+// 4-block — «Новости». Из design/design.pen, фрейм «4-block». Обычный контейнер.
+// Сетка 2 колонки: слева большая карточка (дата + заголовок + фото + описание),
+// справа две карточки (дата + заголовок). Снизу — кнопка «Все новости».
+// Карточка целиком — ссылка (<a>): на hover проявляется подложка #f7f5f4 (inset-2),
+// «Подробнее» анимированно подчёркивается, курсор — pointer.
+import { Image } from "astro:assets";
+import imageNews1 from "../assets/block4/image-news-1.png";
+
+// Класс «Подробнее»: анимированное подчёркивание, проявляющееся на hover карточки
+// (group-hover). w-fit — чтобы линия была по ширине текста, а не растягивалась
+// flex-колонкой; relative z-10 — над hover-подложкой.
+const moreClass =
+  "relative z-10 w-fit font-display text-base font-semibold text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent/50 after:transition-transform after:duration-300 group-hover:after:scale-x-100";
+
+const featured = {
+  date: "18 апреля 2026 г.",
+  title:
+    "Представители Общества приняли участие в дне открытых дверей ИКСА РАН",
+  desc: "18 апреля 2026 года Институт Китая и современной Азии РАН распахнул двери для студентов, молодых учёных и всех, кто интересуется Азией. Повод особенный — 60-летие ИКСА РАН...",
+};
+
+const side = [
+  {
+    date: "17 апреля 2026 г.",
+    title:
+      "Председатель попечительского совета Общества награждён за развитие китайских боевых искусств в России",
+  },
+  {
+    date: "10 апреля 2026 г.",
+    title: "Интервью ответственного секретаря Общества телеканалу ТВ-БРИКС",
+  },
+];
+---
+
+<section class="bg-white pt-20 pb-24 max-lg:py-16">
+  <div class="mx-auto w-full max-w-[1440px] px-11 max-lg:px-4">
+    <div class="flex flex-col gap-12 max-lg:gap-8">
+      {/* ───────── Хедер ───────── */}
+      {/* Desktop: row with dot+label. Mobile: heading only (no dot/label row). */}
+      <header class="flex items-center justify-between gap-8" data-reveal>
+        <h2 class="font-display text-[40px] font-semibold leading-[1.1] text-ink max-lg:text-[30px]">
+          Новости
+        </h2>
+        <div class="flex items-center gap-4 max-lg:hidden">
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-accent"></span>
+          <span class="font-display text-base font-semibold text-ink">
+            События Общества
+          </span>
+        </div>
+      </header>
+
+      <div class="flex flex-col gap-12 max-lg:gap-10">
+        {/* ───────── Сетка карточек ─────────
+            Desktop: 2-column grid.
+            Mobile: single column, all 3 cards identical structure (date + title + Подробнее),
+            featured card hides image + desc on mobile. */}
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2" data-reveal-stagger>
+          {/* Большая карточка */}
+          <a
+            href="#"
+            class="group relative block cursor-pointer border border-black/15 p-8 max-lg:p-6 max-lg:pt-8"
+            data-reveal-item
+          >
+            <div
+              class="pointer-events-none absolute inset-2 bg-[#f7f5f4] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            >
+            </div>
+            <div class="relative z-10 flex flex-col gap-12 max-lg:gap-10">
+              <div class="flex flex-col gap-6 max-lg:gap-3">
+                <div class="flex flex-col gap-4 max-lg:gap-3">
+                  <p class="font-display text-base font-medium text-ink max-lg:text-[14px] max-lg:leading-[1.1] max-lg:text-ink/70">
+                    {featured.date}
+                  </p>
+                  <h3 class="font-display text-[26px] font-semibold leading-[1.3] text-ink max-lg:text-[20px] max-lg:leading-[1.25]">
+                    {featured.title}
+                  </h3>
+                </div>
+                {/* Image + desc: desktop only */}
+                <div class="flex flex-col gap-6 max-lg:hidden">
+                  {/* Фото новости: натуральная ширина, по центру, паддинг 10px сверху/снизу */}
+                  <div class="flex h-[296px] w-full items-center justify-center bg-surface py-[10px]">
+                    <Image
+                      src={imageNews1}
+                      alt={featured.title}
+                      class="h-full w-auto object-contain"
+                    />
+                  </div>
+                  <p class="font-sans text-base font-medium leading-[1.375] text-ink/70">
+                    {featured.desc}
+                  </p>
+                </div>
+              </div>
+              <span class={moreClass + " max-lg:text-[15px] max-lg:leading-[1.1]"}>Подробнее</span>
+            </div>
+          </a>
+
+          {/* Две карточки справа */}
+          <div class="flex flex-col gap-8">
+            {
+              side.map((item) => (
+                <a
+                  href="#"
+                  class="group relative flex flex-1 cursor-pointer flex-col justify-between border border-black/15 py-8 pl-8 pr-[79px] max-lg:p-6 max-lg:pt-8"
+                  data-reveal-item
+                >
+                  <div class="pointer-events-none absolute inset-2 bg-[#f7f5f4] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div class="relative z-10 flex flex-col gap-4 max-lg:gap-3">
+                    <p class="font-display text-base font-medium text-ink max-lg:text-[14px] max-lg:leading-[1.1] max-lg:text-ink/70">
+                      {item.date}
+                    </p>
+                    <h3 class="font-display text-[26px] font-semibold leading-[1.3] text-ink max-lg:text-[20px] max-lg:leading-[1.25]">
+                      {item.title}
+                    </h3>
+                  </div>
+                  <span class={`mt-12 max-lg:mt-10 max-lg:text-[15px] max-lg:leading-[1.1] ${moreClass}`}>Подробнее</span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        {/* ───────── Кнопка «Все новости» ─────────
+            Без data-reveal: пока это самый нижний элемент страницы, ScrollTrigger
+            «top 85%» для него недостижим → остался бы скрытым. CTA и так виден сразу.
+            На hover — синий фон, белый текст. */}
+        <a
+          href="#"
+          class="block w-full bg-accent-soft py-4 text-center font-display text-base font-semibold text-accent transition duration-300 ease-out hover:bg-accent hover:text-white active:scale-[0.98] max-lg:py-4 max-lg:text-[16px] max-lg:leading-[1.1]"
+        >
+          Все новости
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

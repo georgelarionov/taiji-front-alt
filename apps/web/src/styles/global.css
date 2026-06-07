@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/* --- Design tokens (Tailwind v4 @theme) --- */
+@theme {
+  /* Тёмная база вместо чистого чёрного — основной текст, тёмные секции.
+     Холодный подтон (~214°) специально в тон синему акценту (~217°). */
+  --color-ink: #0d1014;
+
+  /* Поверхности (светлая тема), от светлого к тёмному:
+       white → surface (карточки / ховеры) → surface-sunken (блоки / секции) */
+  --color-surface: #f7f5f4;
+  --color-surface-sunken: #f2f1ef;
+
+  /* Бордеры / разделители (utility: border-border, bg-border) */
+  --color-border: #d9d9d9;
+
+  /* Акцент */
+  --color-accent: #023c97; /* основной синий акцент */
+  --color-accent-soft: #e6ebf5; /* ~10% акцента — мягкие кнопки / подложки */
+}
+
+/* --- Шрифты ---
+   Подключены через Astro Fonts API (<Font/> в BaseLayout → astro.config.mjs).
+   `inline`, чтобы утилиты резолвились в сгенерированное Astro семейство + fallback'и.
+     font-sans    → Inter              (основной текст, UI)
+     font-serif   → Cormorant Garamond (заголовки, hero, цитаты)
+     font-display → Manrope            (подзаголовки, кнопки, eyebrow) */
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-cormorant);
+  --font-display: var(--font-manrope);
+}
+
+/* --- Lenis smooth scroll (recommended base styles) --- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* --- Reveal-on-scroll initial state ---
+   Hidden only when JS is available (html.js), so no-JS users still see content.
+   Disabled entirely when the user prefers reduced motion. */
+html.js [data-reveal],
+html.js [data-reveal-item],
+html.js [data-reveal-bg] {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal],
+  html.js [data-reveal-item],
+  html.js [data-reveal-bg] {
+    opacity: 1;
+  }
+}
+
+/* --- Мягкий фейд при смене слайда (используется в React-слайдерах через inline animation) --- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- Подчёркивание ссылок при наведении ---
+   Линия снизу (currentColor @ opacity 50 — в тон тексту в любом контексте),
+   растёт слева направо. На pseudo-element, чтобы не сдвигать поток текста.
+   Под prefers-reduced-motion появляется сразу, без роста. */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+  opacity: 0.5;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .link-underline::after {
+    transition: none;
+  }
+}
+
+/* --- Скроллбар (весь сайт) ---
+   Тонкий синий ползунок (accent) на прозрачной подложке.
+   Firefox — scrollbar-color/width; WebKit/Blink — ::-webkit-scrollbar. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-accent-soft);
+}
+
+/* --- Лоудер (брендовый сплэш) ---
+   Виден ТОЛЬКО при html.loading — класс ставит инлайн-скрипт в BaseLayout ДО
+   пейнта и лишь при первом заходе за сессию без reduced-motion. Так нет флэша
+   контента на первой загрузке и нет повторов на SPA-переходах ClientRouter. */
+[data-loader] {
+  display: none;
+}
+html.loading [data-loader] {
+  display: block;
+}
+/* Блок нативного скролла (и Lenis) на время лоудера. */
+html.loading {
+  overflow: hidden;
+}
+/* Анимируемые элементы лоудера скрыты до старта GSAP (как html.js [data-reveal]). */
+html.loading [data-loader-fade] {
+  opacity: 0;
+}
+
+/* --- Меню (полноэкранный оверлей) ---
+   Поведение ведёт src/lib/menu.ts (классы .is-open на оверлее и .menu-open на
+   <html>). Анимация — здесь: подложка проявляется через фейд (opacity) + стаггер
+   пунктов поверх. Закрыт по умолчанию: прозрачен, невидим и вне tab-порядка
+   (visibility + pointer-events). visibility гасится с задержкой = длительность
+   ухода, чтобы панель успела «погаснуть» перед скрытием. */
+[data-menu] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s linear 0.4s;
+}
+[data-menu].is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s;
+}
+
+/* Блок нативного скролла (и Lenis) пока меню открыто — как html.loading. */
+html.menu-open {
+  overflow: hidden;
+}
+
+/* Пункты меню всплывают волной ПОСЛЕ прихода панели. Скрыты только при JS
+   (html.js) и без reduced-motion, иначе видны сразу. var(--i) — индекс волны. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-menu-item] {
+    opacity: 0;
+  }
+  [data-menu].is-open [data-menu-item] {
+    animation: menu-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(0.35s + var(--i, 0) * 0.09s);
+  }
+}
+
+@keyframes menu-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced-motion: меню появляется/исчезает мгновенно, без фейда и стаггера. */
+@media (prefers-reduced-motion: reduce) {
+  [data-menu] {
+    transition: visibility 0s;
+  }
+}

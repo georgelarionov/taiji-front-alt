@@ -1,0 +1,80 @@
+---
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import { Font } from "astro:assets";
+// import Loader from "../components/Loader.astro"; // ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН — раскомментировать для возврата
+import Menu from "../components/Menu.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "Taiji", description = "Информационный портал." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {/* Шрифты (Astro Fonts API): @font-face + метрически подогнанные fallback'и.
+        Без preload — иначе тянулись бы все веса/курсивы; FOUT гасится оптимизированными fallback'ами. */}
+    <Font cssVariable="--font-inter" />
+    <Font cssVariable="--font-cormorant" />
+    <Font cssVariable="--font-manrope" />
+    {/* JS доступен — помечаем до первой отрисовки (для reveal без мигания).
+        Здесь же решаем показ лоудера: класс loading ставится ДО пейнта и только
+        при первом заходе за сессию без reduced-motion → нет флэша и повторов. */}
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      // ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок). Вернуть: раскомментировать блок ниже
+      // + <Loader /> и import "../lib/loader" в <body>. Без html.loading hero раскрывается сразу.
+      // try {
+      //   if (
+      //     // TEST: гейт «один раз за сессию» временно отключён — лоудер на каждой загрузке.
+      //     // Вернуть: раскомментировать строку ниже.
+      //     // !sessionStorage.getItem("taiji:loaded") &&
+      //     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      //   ) {
+      //     document.documentElement.classList.add("loading");
+      //   }
+      // } catch {}
+    </script>
+    <ClientRouter />
+  </head>
+  <body class="min-h-dvh bg-white font-sans text-ink antialiased">
+    {/* ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок) — раскомментировать для возврата */}
+    {/* <Loader /> */}
+    <Menu />
+    <slot />
+
+    {/* Agentation — визуальные аннотации для AI-агента, ТОЛЬКО в dev.
+        Динамический импорт под import.meta.env.DEV → Vite вырезает ветку и сам пакет
+        из прод-сборки целиком (никаких orphan-чанков в dist). */}
+    <script>
+      // Тулбар включён в dev. Закомментируй, чтобы скрыть аннотации.
+      if (import.meta.env.DEV) import("../lib/agentation-dev");
+    </script>
+
+    {/* Рантайм лоудера: init/teardown на astro:page-load / astro:before-swap (как smooth) */}
+    {/* ЛОУДЕР ВРЕМЕННО ОТКЛЮЧЁН (на время правок) — раскомментировать для возврата */}
+    {/* <script>
+      import "../lib/loader";
+    </script> */}
+
+    {/* Анимационный рантайм: Lenis + GSAP, пере-инициализация на навигации */}
+    <script>
+      import "../lib/smooth";
+    </script>
+
+    {/* Рантайм меню: открытие/закрытие, Esc, блок скролла, фокус (как loader/smooth) */}
+    <script>
+      import "../lib/menu";
+    </script>
+  </body>
+</html>

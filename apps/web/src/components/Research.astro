@@ -1,0 +1,65 @@
+---
+// 3-block — «Исследования». Из design/design.pen, фрейм «3-block».
+// Фон full-width (surface-sunken). Хедер + слайдер карточек: левый край в контейнере,
+// карточки уходят вправо за вьюпорт; секция overflow-x-clip → нет лишнего гориз. скролла.
+import ResearchSlider, {
+  type ResearchCard,
+} from "./ResearchSlider.tsx";
+// Декоративный фон-мазок: прижат к правому краю секции, выходит за вьюпорт
+// (клипает overflow-x-clip секции). Плоский раст → plain <img>, не <Image>.
+import bg from "../assets/research/bg.png";
+
+const base: ResearchCard[] = [
+  {
+    year: "2026",
+    category: "Статья",
+    title: "Тайцзицюань в советской физической культуре 1960–70-х годов",
+    desc: "Архивное исследование о первых попытках интеграции китайских внутренних практик в советские оздоровительные программы.",
+  },
+  {
+    year: "2025",
+    category: "Перевод",
+    title: "«Трактат о тайцзицюань» Ван Цзунъюэ: новый комментированный перевод",
+    desc: "Первый академический перевод ключевого классического текста школы Ян на русский язык с подробным комментарием.",
+  },
+  {
+    year: "2025",
+    category: "Полевое исследование",
+    title: "Передача формы 13 в школ семьи Чэнь",
+    desc: "Серия интервью и видеозаписей с мастерами 19-го поколения в деревне Чэньцзягоу. Документирование особенностей передачи базовой формы и работы с энергией.",
+  },
+];
+
+// для примера дублируем до 5 карточек
+const cards: ResearchCard[] = [...base, base[0], base[1]];
+---
+
+<section class="relative overflow-x-clip bg-surface-sunken py-[72px] max-lg:py-16">
+  <img
+    src={bg.src}
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-auto max-w-none translate-x-[8%] select-none"
+  />
+  <div class="relative z-10 mx-auto w-full max-w-[1440px] px-11 max-lg:px-4">
+    <header class="flex items-center justify-between gap-8" data-reveal>
+      <h2
+        class="font-display text-[40px] font-semibold leading-[1.1] text-ink max-lg:text-[30px]"
+      >
+        Исследования
+      </h2>
+      {/* На мобиле (max-lg) кнопка «Все исследования» переезжает в ряд контролов
+          внутри слайдера — здесь её прячем. */}
+      <a
+        href="#"
+        class="bg-accent px-2.5 py-3 font-display text-base font-semibold text-white transition-opacity hover:opacity-90 max-lg:hidden"
+      >
+        Все исследования
+      </a>
+    </header>
+
+    {/* client:load (не visible): гидрируем сразу, без гидрации в момент доскролла —
+        иначе остров мигает при попадании во вьюпорт (особенно с ClientRouter). */}
+    <ResearchSlider client:load cards={cards} />
+  </div>
+</section>
