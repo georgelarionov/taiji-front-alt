@@ -92,7 +92,11 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
   const atEnd = maxScroll === 0 || offset <= -maxScroll;
 
   return (
-    <div>
+    <div
+      role="group"
+      aria-roledescription="карусель"
+      aria-label="Исследования"
+    >
       {/* viewport: трек выезжает за правый край вьюпорта, клипает секция */}
       <div ref={viewportRef} className="mt-14 touch-pan-y max-lg:mt-8">
         <div
@@ -180,7 +184,7 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
         </button>
 
         {steps > 1 ? (
-          <div className="flex items-center gap-2">
+          <div aria-hidden="true" className="flex items-center gap-2">
             {Array.from({ length: steps }).map((_, i) => (
               <span
                 key={i}
@@ -190,6 +194,15 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
               />
             ))}
           </div>
+        ) : null}
+
+        {/* Точки декоративны (aria-hidden выше) — позицию для скринридера
+            объявляет эта polite-зона (карточки не пересоздаются в DOM, а едут
+            transform'ом, поэтому объявлять смену нужно отдельным статусом). */}
+        {steps > 1 ? (
+          <p aria-live="polite" aria-atomic="true" className="sr-only">
+            {`Позиция ${activeDot + 1} из ${steps}`}
+          </p>
         ) : null}
 
         <button

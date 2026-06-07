@@ -116,6 +116,9 @@ export default function HeroSlider({
   return (
     <section
       ref={rootRef}
+      role="group"
+      aria-roledescription="карусель"
+      aria-label="Главный слайдер"
       className="sticky top-0 z-0 h-svh min-h-[640px] w-full touch-pan-y overflow-hidden text-white"
     >
       {/* Слой фона: все слайды стопкой; активный непрозрачен, остальные прозрачны →
@@ -180,7 +183,11 @@ export default function HeroSlider({
         {/* ───────── Hero-текст (сменяется по слайду) ─────────
             key={index} ремонтирует поддерево → staggered-ввод hero-rise (CSS в
             Hero.astro) переигрывается на каждой смене слайда. */}
-        <div className="gutter-x flex flex-1 items-center">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="gutter-x flex flex-1 items-center"
+        >
           <div
             key={index}
             className={`flex max-w-[824px] flex-col gap-10 max-lg:max-w-none max-lg:gap-7${
@@ -247,7 +254,7 @@ export default function HeroSlider({
                 type="button"
                 onClick={() => setIndex(i)}
                 aria-label={`Перейти к слайду ${i + 1}`}
-                aria-current={i === index}
+                aria-current={i === index ? "true" : undefined}
                 className="flex h-4 cursor-pointer items-center max-lg:h-11"
               >
                 <span

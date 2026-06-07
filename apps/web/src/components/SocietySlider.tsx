@@ -38,13 +38,18 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
   return (
     <div
       ref={rootRef}
+      role="group"
+      aria-roledescription="карусель"
+      aria-label="Об Обществе"
       className="flex h-full touch-pan-y flex-col bg-white p-12 max-lg:p-6"
     >
-      {/* Сменяемый контент (фейд по смене слайда) */}
-      <div
-        key={index}
-        className="flex flex-col gap-9 max-lg:gap-7 animate-[fade-in_0.35s_ease_both] motion-reduce:animate-none"
-      >
+      {/* Сменяемый контент (фейд по смене слайда). aria-live на стабильной обёртке
+          (key={index} ниже ремонтируется со слайдом) → смена объявляется скринридером. */}
+      <div aria-live="polite" aria-atomic="true">
+        <div
+          key={index}
+          className="flex flex-col gap-9 max-lg:gap-7 animate-[fade-in_0.35s_ease_both] motion-reduce:animate-none"
+        >
         {/* Карточка персоны: на мобиле (<lg) фото и текст в столбик */}
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
           {/* Фото персоны (190×254 в PEN); object-cover — портрет точно по боксу */}
@@ -87,6 +92,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
           <blockquote className="border border-border py-6 pl-6 pr-9 font-sans text-base font-medium leading-[1.375] text-ink max-lg:p-5 max-lg:text-[14px]">
             {s.quote}
           </blockquote>
+        </div>
         </div>
       </div>
 
@@ -151,7 +157,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
                 type="button"
                 onClick={() => setIndex(i)}
                 aria-label={`Перейти к слайду ${i + 1}`}
-                aria-current={i === index}
+                aria-current={i === index ? "true" : undefined}
                 className="flex h-4 cursor-pointer items-center max-lg:h-11"
               >
                 <span
