@@ -100,6 +100,9 @@ export default function HeroSlider({
       if (v && i !== index) v.pause();
     });
     if (!revealed) return;
+    // Уважаем reduced-motion (консистентно с smooth.ts): не автозапускаем видео —
+    // постер остаётся статичным кадром.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const active = videoRefs.current[index];
     if (!active) return;
     const p = active.play();
