@@ -41,7 +41,9 @@ const baseSlide: HeroSlide = {
     },
   },
 };
-const slides: HeroSlide[] = [baseSlide, baseSlide, baseSlide];
+// Отдельные объекты (а не три ссылки на baseSlide) — чтобы будущие per-slide
+// правки одного слайда не мутировали остальные через общий алиас.
+const slides: HeroSlide[] = [{ ...baseSlide }, { ...baseSlide }, { ...baseSlide }];
 ---
 
 <HeroSlider slides={slides} client:load>

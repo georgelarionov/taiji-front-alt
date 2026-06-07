@@ -140,7 +140,7 @@ export default function HeroSlider({
                 className="h-full w-full object-cover object-right max-lg:object-[75%_50%]"
                 muted
                 playsInline
-                preload={mounted ? "auto" : "none"}
+                preload={mounted && Math.abs(i - index) <= 1 ? "auto" : "none"}
                 poster={
                   (isMobile && slide.bg.mobile?.poster) || slide.bg.poster
                 }
