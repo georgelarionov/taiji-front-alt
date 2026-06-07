@@ -40,10 +40,13 @@ const baseSlide: HeroSlide = {
     webm: heroVideoWebm,
     mp4: heroVideoMp4,
     poster: heroBg.src,
-    // Мобильные источники (<1024px). Постер пока переиспользуем десктопный.
-    webmMobile: heroVideoMobileWebm,
-    mp4Mobile: heroVideoMobileMp4,
-    posterMobile: heroBg.src,
+    // Мобильный набор (<1024px) — webm+mp4 вместе («оба или ничего», см. тип
+    // HeroSlide). Постер пока переиспользуем десктопный.
+    mobile: {
+      webm: heroVideoMobileWebm,
+      mp4: heroVideoMobileMp4,
+      poster: heroBg.src,
+    },
   },
 };
 const slides: HeroSlide[] = [baseSlide, baseSlide, baseSlide];

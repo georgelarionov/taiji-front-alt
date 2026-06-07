@@ -14,17 +14,16 @@ export type HeroSlide = {
   ctaText: string;
   ctaHref: string;
   // Фон слайда: либо видео (webm+mp4+постер), либо статичное изображение.
-  // У видео опционально свои мобильные источники (webmMobile/mp4Mobile/posterMobile):
-  // под <1024px остров грузит ИХ, а не десктопное видео (см. matchMedia ниже).
+  // У видео опционально свой мобильный набор источников `mobile` — «оба или ничего»
+  // (webm+mp4 в одном под-объекте, так не родится <source src={undefined}>): под
+  // <1024px остров грузит ИХ вместо десктопного видео (см. matchMedia ниже).
   bg:
     | {
         type: "video";
         webm: string;
         mp4: string;
         poster: string;
-        webmMobile?: string;
-        mp4Mobile?: string;
-        posterMobile?: string;
+        mobile?: { webm: string; mp4: string; poster?: string };
       }
     | { type: "image"; url: string };
 };
@@ -131,7 +130,7 @@ export default function HeroSlider({
           >
             {slide.bg.type === "video" ? (
               <video
-                key={mounted ? (isMobile && slide.bg.webmMobile ? "m" : "d") : "init"}
+                key={mounted ? (isMobile && slide.bg.mobile ? "m" : "d") : "init"}
                 ref={(el) => {
                   videoRefs.current[i] = el;
                 }}
@@ -140,16 +139,14 @@ export default function HeroSlider({
                 playsInline
                 preload={mounted ? "auto" : "none"}
                 poster={
-                  isMobile && slide.bg.posterMobile
-                    ? slide.bg.posterMobile
-                    : slide.bg.poster
+                  (isMobile && slide.bg.mobile?.poster) || slide.bg.poster
                 }
               >
                 {mounted &&
-                  (isMobile && slide.bg.webmMobile ? (
+                  (isMobile && slide.bg.mobile ? (
                     <>
-                      <source src={slide.bg.webmMobile} type="video/webm" />
-                      <source src={slide.bg.mp4Mobile} type="video/mp4" />
+                      <source src={slide.bg.mobile.webm} type="video/webm" />
+                      <source src={slide.bg.mobile.mp4} type="video/mp4" />
                     </>
                   ) : (
                     <>
