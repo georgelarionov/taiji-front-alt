@@ -23,6 +23,11 @@
   /* Акцент */
   --color-accent: #023c97; /* основной синий акцент */
   --color-accent-soft: #e6ebf5; /* ~10% акцента — мягкие кнопки / подложки */
+
+  /* Тени (utility: shadow-card / shadow-popover).
+     ink 25%/16% ≈ rgba(13,16,20,0.25)/(0.16) — визуально те же тени. */
+  --shadow-card: 0 20px 45px -15px color-mix(in srgb, var(--color-ink) 25%, transparent);
+  --shadow-popover: 0 14px 48px color-mix(in srgb, var(--color-ink) 16%, transparent);
 }
 
 /* --- Шрифты ---

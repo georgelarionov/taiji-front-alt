@@ -132,7 +132,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
                 aria-hidden="true"
                 className="pointer-events-none absolute left-0 top-full z-10 mt-4 w-max max-w-[80vw] origin-top-left -translate-y-1 scale-95 opacity-0 transition-all duration-200 ease-out peer-hover:translate-y-0 peer-hover:scale-100 peer-hover:opacity-100 peer-focus-visible:translate-y-0 peer-focus-visible:scale-100 peer-focus-visible:opacity-100"
               >
-                <div className="rounded-[1px] border border-black/5 bg-surface px-6 py-5 shadow-[0_20px_45px_-15px_rgba(13,16,20,0.25)]">
+                <div className="rounded-[1px] border border-black/5 bg-surface px-6 py-5 shadow-card">
                   <p className="font-display text-[10px] font-bold uppercase tracking-[0.08em] text-accent">
                     {prevSlide.role}
                   </p>
@@ -191,7 +191,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
                 aria-hidden="true"
                 className="pointer-events-none absolute right-0 top-full z-10 mt-4 w-max max-w-[80vw] origin-top-right -translate-y-1 scale-95 opacity-0 transition-all duration-200 ease-out peer-hover:translate-y-0 peer-hover:scale-100 peer-hover:opacity-100 peer-focus-visible:translate-y-0 peer-focus-visible:scale-100 peer-focus-visible:opacity-100"
               >
-                <div className="rounded-[1px] border border-black/5 bg-surface px-6 py-5 shadow-[0_20px_45px_-15px_rgba(13,16,20,0.25)]">
+                <div className="rounded-[1px] border border-black/5 bg-surface px-6 py-5 shadow-card">
                   <p className="font-display text-[10px] font-bold uppercase tracking-[0.08em] text-accent">
                     {nextSlide.role}
                   </p>

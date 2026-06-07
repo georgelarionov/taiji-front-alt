@@ -98,7 +98,7 @@ export default function AboutInfo({
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.54, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "top right" }}
-            className="absolute right-0 top-0 z-50 w-[440px] max-w-[calc(100vw-30px)] border border-border bg-white p-7 shadow-[0_14px_48px_rgba(13,16,20,0.16)] max-lg:left-0 max-lg:top-full max-lg:right-0 max-lg:w-full max-lg:max-w-none max-lg:mt-1"
+            className="absolute right-0 top-0 z-50 w-[440px] max-w-[calc(100vw-30px)] border border-border bg-white p-7 shadow-popover max-lg:left-0 max-lg:top-full max-lg:right-0 max-lg:w-full max-lg:max-w-none max-lg:mt-1"
           >
             <button
               type="button"
