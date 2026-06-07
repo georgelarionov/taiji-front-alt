@@ -1,5 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+
+// Текст справки — русский с вкраплениями китайских иероглифов (太極拳 / 太极拳).
+// Оборачиваем каждый CJK-прогон в <span lang=…>, чтобы скринридер переключил
+// голос/словарь на китайский. Традиционные формы (содержащие 極/體/… — здесь 極)
+// помечаем zh-Hant, остальные CJK — zh-Hans (упрощённые). Деление — по прогонам
+// иероглифов (U+3400–U+9FFF), русские/латинские фрагменты остаются как есть.
+const CJK_SPLIT = /([㐀-鿿]+)/g; // делим строку, захватывая CJK-прогоны
+const IS_CJK = /[㐀-鿿]/; // membership-тест (без /g — без stateful lastIndex)
+const TRAD_ONLY = /[極]/; // 極 — традиционный знак (упр. 极)
+function renderWithLang(text: string) {
+  return text.split(CJK_SPLIT).map((part, i) =>
+    IS_CJK.test(part) ? (
+      <span key={i} lang={TRAD_ONLY.test(part) ? "zh-Hant" : "zh-Hans"}>
+        {part}
+      </span>
+    ) : (
+      <Fragment key={i}>{part}</Fragment>
+    ),
+  );
+}
 
 // Хедер-плашка 2-блока «О тайцзицюань»: вся surface-плашка (лого + «ПОДРОБНЕЕ ⓘ») —
 // одна кнопка. По клику снизу у правого края всплывает контекстное окно-справка
@@ -121,7 +141,7 @@ export default function AboutInfo({
             </button>
 
             <p className="pr-8 font-sans text-[17px] leading-[1.5] text-ink">
-              {text}
+              {renderWithLang(text)}
             </p>
 
             <a
