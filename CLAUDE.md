@@ -109,6 +109,8 @@ The whole main page is assembled in `apps/web/src/pages/index.astro` as one comp
 
 ## Conventions (apply these when polishing/extending)
 
+> **Living-doc:** `docs/conventions.md` — детальные конвенции дизайн-системы и подхода PC/Mobile (контейнер/сетка, цветовые токены, типошкала, ассеты, доступность, SEO-шелл, верификация) для сборки **новых** страниц. Этот раздел — краткая выжимка; полный свод и «Открытые/отложенные» см. там.
+
 - **Container:** standard block = `<section …><div class="mx-auto w-full max-w-[1440px] px-11">…</div></section>` → 1352px content with 44px gutters at ≥1440. **Full-bleed** blocks (Hero, Footer, Research bg) put the bg/section at full width and keep content in that container; Hero’s content has no max-width cap.
 - **Tokens first:** map design values to tokens (`font-serif`=Cormorant, `font-display`=Manrope, `font-sans`=Inter; `--color-ink`/`accent`/`accent-soft`/`surface`/`surface-sunken`). Arbitrary values only for one-off design specifics (e.g. field pill `bg-[#eeece9]` in Contacts — a candidate to tokenize as `--color-field`).
 - **Assets — how to serve what:**
