@@ -6,6 +6,7 @@
 // так они остаются нулевым JS (React их не «владеет», только размещает).
 // Фон-видео: WebM (VP9) для Chrome/Firefox + MP4 фолбэк для Safari; постер —
 // hero-bg.webp (первый кадр до загрузки видео). Импортируются как URL'ы.
+import { getImage } from "astro:assets";
 import HeroSlider, { type HeroSlide } from "./HeroSlider";
 import Header from "./Header.astro";
 import heroVideoWebm from "../assets/hero/hero-video.webm";
@@ -19,6 +20,13 @@ import heroBg from "../assets/hero/hero-bg.webp";
 // Эмблема РАН для нижней плашки — отдаём как есть (SVG ?url).
 import ranEmblem from "../assets/hero/ran-emblem.svg?url";
 
+// Адаптивный постер: исходник hero-bg.webp — 4K (3840×2160). На десктопе хватает
+// 2560w, на мобиле (<1024px, под тёмным скримом) — 1080w. getImage пережимает
+// webp под нужную ширину (оба меньше исходных 3840 → апскейла нет). Остров
+// HeroSlider выбирает mobile.poster по matchMedia, поэтому мобиле уходит лёгкий 1080.
+const posterDesktop = await getImage({ src: heroBg, width: 2560, format: "webp" });
+const posterMobile = await getImage({ src: heroBg, width: 1080, format: "webp" });
+
 // Пока 3 одинаковых слайда — контент и фон продублированы (будут различаться,
 // когда появятся реальные материалы/ассеты под каждый слайд).
 const baseSlide: HeroSlide = {
@@ -31,13 +39,13 @@ const baseSlide: HeroSlide = {
     type: "video",
     webm: heroVideoWebm,
     mp4: heroVideoMp4,
-    poster: heroBg.src,
+    poster: posterDesktop.src,
     // Мобильный набор (<1024px) — webm+mp4 вместе («оба или ничего», см. тип
-    // HeroSlide). Постер пока переиспользуем десктопный.
+    // HeroSlide). Постер — отдельный лёгкий 1080w.
     mobile: {
       webm: heroVideoMobileWebm,
       mp4: heroVideoMobileMp4,
-      poster: heroBg.src,
+      poster: posterMobile.src,
     },
   },
 };
