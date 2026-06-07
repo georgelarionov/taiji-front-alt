@@ -180,7 +180,7 @@ export default function HeroSlider({
         {/* ───────── Hero-текст (сменяется по слайду) ─────────
             key={index} ремонтирует поддерево → staggered-ввод hero-rise (CSS в
             Hero.astro) переигрывается на каждой смене слайда. */}
-        <div className="flex flex-1 items-center px-11 max-lg:px-4">
+        <div className="gutter-x flex flex-1 items-center">
           <div
             key={index}
             className={`flex max-w-[824px] flex-col gap-10 max-lg:max-w-none max-lg:gap-7${
@@ -220,7 +220,7 @@ export default function HeroSlider({
         </div>
 
         {/* ───────── Контролы карусели ───────── */}
-        <div className="flex items-center justify-between px-11 pb-6 max-lg:px-4 max-lg:pb-4">
+        <div className="gutter-x flex items-center justify-between pb-6 max-lg:pb-4">
           <button
             type="button"
             onClick={prev}
