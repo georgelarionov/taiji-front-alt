@@ -1,0 +1,56 @@
+---
+// Раздел «Персоналии» (фрейм Taiji). Десктоп: слева текст + кнопка (кнопка прижата
+// книзу), справа портрет в surface-боксе. Мобайл: текст → портрет → кнопка
+// (левая колонка «растворяется» через max-lg:contents, порядок задаётся order-*).
+// Портрет — фото, отдаём через <Image> (адаптивный webp).
+import { Image } from "astro:assets";
+import portrait from "../../assets/taiji/personalities.webp";
+---
+
+<section class="bg-white pt-22 max-lg:pt-16">
+  <div class="container-block">
+    <div
+      data-reveal
+      class="flex items-stretch justify-between gap-16 max-lg:flex-col max-lg:gap-8"
+    >
+      {/* Левая колонка (десктоп) → растворяется на мобиле, дети идут в общий поток */}
+      <div
+        class="flex max-w-[520px] flex-col justify-between gap-10 max-lg:max-w-none max-lg:contents"
+      >
+        <div class="flex flex-col gap-6 max-lg:order-1">
+          <h2
+            class="font-display text-[28px] font-semibold leading-[1.4] text-ink max-lg:text-[24px]"
+          >
+            История тайцзицюань — это не только история стилей, школ и форм
+          </h2>
+          <p
+            class="max-w-[459px] font-sans text-base leading-normal text-ink max-lg:max-w-none max-lg:text-[14px]"
+          >
+            За развитием этой традиции стоят конкретные люди: легендарные образы,
+            семейные мастера, реформаторы, преподаватели и популяризаторы, благодаря
+            которым тайцзицюань менялось.
+          </p>
+        </div>
+        <a
+          href="#"
+          class="inline-flex w-fit items-center justify-center self-start bg-surface px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-surface-sunken max-lg:order-3 max-lg:text-[15px]"
+        >
+          Персоналии
+        </a>
+      </div>
+
+      {/* Портрет в surface-боксе */}
+      <div
+        class="flex h-[420px] w-[630px] shrink-0 items-center justify-center bg-surface max-lg:order-2 max-lg:h-[270px] max-lg:w-full"
+      >
+        <Image
+          src={portrait}
+          alt="Статуя Чэнь Вантина — основоположника стиля Чэнь тайцзицюань"
+          widths={[148, 231, 300, 462]}
+          sizes="(max-width: 1023px) 148px, 231px"
+          class="h-[372px] w-auto object-contain max-lg:h-[238px]"
+        />
+      </div>
+    </div>
+  </div>
+</section>

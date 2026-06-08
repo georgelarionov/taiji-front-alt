@@ -1,0 +1,55 @@
+---
+// Раздел «Теория» / равновесие противоположностей (фрейм Taiji). Карточка во всю
+// ширину контейнера с тушевой картиной-фоном (фигура справа, пустое поле слева):
+// текст в левой колонке. Фон: отдельные ассеты под десктоп/мобайл (pc-bg-2 /
+// mob-bg-2) через getImage + CSS-фон под медиазапросом → грузится только нужный.
+import { getImage } from "astro:assets";
+import theoryBg from "../../assets/taiji/theory-bg.webp";
+import theoryBgMobile from "../../assets/taiji/theory-bg-mobile.webp";
+
+const bgD = await getImage({ src: theoryBg, width: 1600, format: "webp" });
+const bgM = await getImage({ src: theoryBgMobile, width: 900, format: "webp" });
+---
+
+<section class="bg-white pt-22 max-lg:pt-16">
+  <div class="container-block">
+    <div
+      data-reveal
+      class="theory-card relative flex min-h-[656px] flex-col justify-between bg-cover bg-center p-12 max-lg:min-h-[675px] max-lg:p-6"
+      style={`--bg-d:url('${bgD.src}');--bg-m:url('${bgM.src}')`}
+    >
+      <h2
+        class="max-w-[620px] font-display text-[28px] font-semibold leading-[1.5] text-ink max-lg:text-[24px] max-lg:leading-[1.4]"
+      >
+        В китайской культуре тайцзицюань связано с идеей равновесия
+        противоположностей: мягкого и твёрдого, движения и покоя, расслабления и
+        силы
+      </h2>
+      <div class="flex max-w-[620px] flex-col items-start gap-8 max-lg:gap-6">
+        <p class="font-sans text-[18px] leading-relaxed text-ink max-lg:text-[14px]">
+          Эти образы относятся к традиционному языку китайской философии. На
+          современном, более простом языке можно сказать так: тайцзицюань помогает
+          человеку двигаться осознаннее.
+        </p>
+        <a
+          href="#"
+          class="inline-flex items-center justify-center bg-white px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-surface max-lg:text-[15px]"
+        >
+          Теория
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Фон карточки: мобильный ассет по умолчанию, десктопный — с ≥1024px. */
+  .theory-card {
+    background-image: var(--bg-m);
+  }
+  @media (min-width: 1024px) {
+    .theory-card {
+      background-image: var(--bg-d);
+    }
+  }
+</style>

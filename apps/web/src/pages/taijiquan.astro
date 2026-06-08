@@ -1,0 +1,31 @@
+---
+// Страница «Тайцзицюань» (/taijiquan). Собрана по фреймам MagicPath Taiji /
+// TaijiMobile на конвенциях проекта (docs/conventions.md).
+// Шапка — solid-вариант (синее лого, активный пункт подчёркнут); крошки — отдельный
+// статичный блок; футер — сквозной глобальный. Полноэкранное меню/шелл — из BaseLayout.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import TaijiHero from "../components/taiji/TaijiHero.astro";
+import TaijiHistory from "../components/taiji/TaijiHistory.astro";
+import TaijiTheory from "../components/taiji/TaijiTheory.astro";
+import TaijiPersonalities from "../components/taiji/TaijiPersonalities.astro";
+import TaijiPractice from "../components/taiji/TaijiPractice.astro";
+import TaijiExplore from "../components/taiji/TaijiExplore.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Тайцзицюань — Общество изучения традиционного тайцзицюань"
+  description="Тайцзицюань («Кулак Великого Предела») — традиционное китайское искусство движения: истоки, теория равновесия, персоналии и практика."
+>
+  <Header variant="solid" activeNav="Тайцзицюань" />
+  <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Тайцзицюань" }]} />
+  <TaijiHero />
+  <TaijiHistory />
+  <TaijiTheory />
+  <TaijiPersonalities />
+  <TaijiPractice />
+  <TaijiExplore />
+  <Footer />
+</BaseLayout>

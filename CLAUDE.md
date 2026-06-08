@@ -107,11 +107,23 @@ The whole main page is assembled in `apps/web/src/pages/index.astro` as one comp
 | `6-block` | `Contacts.astro` | «Контакты» — 3 cards with `#eeece9` field pills |
 | `footer` | `Footer.astro` | **full-width accent bg**, nav columns, socials, centered banner (ornament + logo + calligraphy) |
 
+## Interior pages (built — `/taijiquan` is the reference)
+
+The first interior page — **`apps/web/src/pages/taijiquan.astro`** (route `/taijiquan`, frames MagicPath `Taiji`/`TaijiMobile`) — is the template for the rest. Pattern:
+
+- **Compose inside `BaseLayout`** (no Hero): `<Header variant="solid" activeNav="…" />` → `<Breadcrumbs items={[…]} />` → page sections → `<Footer />`. Menu/shell come from `BaseLayout`.
+- **`Header variant="solid"`** = interior chrome (only color/state changes vs `overlay`, same geometry): blue logo (`src/assets/header/logo-blue.webp`, plain `<img>`), `bg-surface` + bottom `border-border`, dark nav text, ink burger. **Active topNav item** via `activeNav` prop (matched by label) → `text-accent` + persistent bottom border + `aria-current="page"`. (Emit exactly ONE of `text-ink`/`text-accent` per item — both = ink wins the cascade.)
+- **`Breadcrumbs.astro`** = separate static block under the header (`items: {label, href?}[]`; last item without href = current → muted `text-ink/70` + `aria-current="page"`); `bg-surface` + bottom border, continues the header band.
+- **Page-specific section components live in a subfolder:** `src/components/taiji/` (one per design section), assets in `src/assets/taiji/`. Future pages get their own `src/components/<page>/` + `src/assets/<page>/` (keeps the flat `src/components/` from sprawling).
+- **Section background images** (textures/photos, often separate desktop/mobile art): `getImage()` per breakpoint → set CSS vars on the element → scoped `<style>` swaps `background-image` under a `@media (min-width:1024px)` query, so **only the matching variant downloads** (don't render two `<Image>` and CSS-hide one). See `TaijiTheory`/`TaijiPractice`/`TaijiHistory`. For full-bleed photo bands, add a token-based scrim under the text region if ink contrast over the photo dips below AA (`TaijiPractice`).
+- **Heading hierarchy:** one `<h1>` (page intro), section headings `<h2>`, card titles `<h3>`. Mobile section-heading sizes follow the mobile frame (uniform 24px on `/taijiquan`).
+- **Menu↔header desktop alignment:** `Menu.astro` top uses `pt-5` (20px) so the open-menu logo/X land exactly on the header logo/burger (header `min-h-[94px] items-center`, logo `h-54` → top 20px). Mobile uses `pt-3` (burger↔menu contract). Don't change either side without re-checking both.
+
 ## Foundation update — globals, tokens, shell (READ before building a new page)
 
 A foundation pass (audit fixes + globalization + design-system + a11y/SEO) is **merged to `main`**. **`docs/conventions.md` is the full source of truth**; these highlights **supersede older mentions further down** where they conflict:
 
-- **Build new pages from globals.** Wrap in `BaseLayout` → it gives `<main id="main">`, a skip-link, the SEO `<head>` (title/description **props** + Open Graph + canonical + `og:locale=ru_RU`) with a **`<slot name="head">`** for per-page meta/preload, and mounts `Menu`. Header = global **`Header.astro`** (Hero consumes it via slot; `variant="overlay"`). Footer = **`Footer.astro`** (import per page).
+- **Build new pages from globals.** Wrap in `BaseLayout` → it gives `<main id="main">`, a skip-link, the SEO `<head>` (title/description **props** + Open Graph + canonical + `og:locale=ru_RU`) with a **`<slot name="head">`** for per-page meta/preload, and mounts `Menu`. Header = global **`Header.astro`** — `variant="overlay"` (home, Hero consumes via slot) or `variant="solid"` + `activeNav` (interior pages — see *Interior pages* above). Breadcrumbs = **`Breadcrumbs.astro`** (interior pages, separate static block). Footer = **`Footer.astro`** (import per page).
 - **Single-source configs — don't inline/duplicate:** navigation `src/config/nav.ts` (`navCols`/`bigLinks`/`topNav`), socials `src/config/socials.ts`, shared SVG paths `src/lib/icons.ts` (`ARROW_PATH`/`INFO_PATH`).
 - **Color tokens added** (`global.css` `@theme`): `--color-field` (#eeece9), `--color-surface-overlay` (#e8e6e1, menu/overlay bg), `--shadow-card`/`--shadow-popover`; `--color-border` is now semi-transparent ink → use **`border-border`** (not `border-black/15`).
 - **Utilities + type-scale** (`@layer components` in `global.css`): **`container-block`**/`gutter-x` (use these, don't re-type the `max-w-[1440px] px-11` literal; vars `--content-max`/`--gutter`), `.link-underline-group` (card “Подробнее” underline), a global **`:focus-visible`** ring, and the **type-scale** classes `text-h1`/`text-h2`/`text-h2-compact`/`text-banner`/`text-h3`/`text-name`/`text-body`/`text-eyebrow`/`text-caption` (desktop + `max-lg:` mobile baked in — **fixed mobile sizes**; `h2-compact` & `banner` are intentional separate levels). Headings/body → these classes, not ad-hoc `text-[Npx]`.
@@ -121,7 +133,6 @@ A foundation pass (audit fixes + globalization + design-system + a11y/SEO) is **
 
 **Open / deferred (don't forget):**
 - **Domain is a placeholder** — `astro.config.mjs` `site` and `public/robots.txt` use `https://taiji-society.example`. Replace before any deploy (canonical/OG/sitemap all depend on it).
-- **`solid` Header variant** for non-hero/interior pages is **not built** (`Header.astro` only has `overlay`). Until added, a page without a Hero has no header/burger — build it (with the real design) before/with the first interior page.
 - Non-hero sliders kept `client:load`; moving them to `client:idle` was deferred pending a visual flicker check (only `AboutInfo` is `client:idle`).
 
 ## Conventions (apply these when polishing/extending)

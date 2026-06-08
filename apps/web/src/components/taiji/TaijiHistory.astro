@@ -1,0 +1,54 @@
+---
+// Раздел «Истоки: между легендой и историей» (фрейм Taiji). Full-bleed полоса с
+// тонкими бордерами сверху/снизу, по центру — заголовок + текст + кнопка «История».
+// Фон (светлый орнамент, pc-bg-1) — только десктоп (на мобиле фрейм без фона):
+// раздаём через getImage + CSS-фон под медиазапросом (грузится только нужный).
+import { getImage } from "astro:assets";
+import historyBg from "../../assets/taiji/history-bg.webp";
+
+const bg = await getImage({ src: historyBg, width: 2000, format: "webp" });
+---
+
+<section
+  id="istoki"
+  class="history-band scroll-mt-24 border-y border-border bg-white"
+  style={`--bg:url('${bg.src}')`}
+>
+  <div class="container-block py-22 max-lg:py-16">
+    <div
+      data-reveal
+      class="mx-auto flex max-w-[792px] flex-col items-center gap-12 text-center max-lg:items-start max-lg:gap-8 max-lg:text-left"
+    >
+      <div class="flex flex-col items-center gap-6 max-lg:items-start">
+        <h2 class="text-h2-compact text-ink max-lg:text-[24px]">
+          Истоки: между легендой и историей
+        </h2>
+        <p class="font-sans text-[18px] leading-relaxed text-ink max-lg:text-[14px]">
+          История тайцзицюань соединяет в себе предание, семейную передачу и
+          документально подтверждённые сведения. В традиционной версии происхождение
+          искусства часто связывают с даосским отшельником Чжан Саньфэном, которому
+          приписывают создание мягкого боевого метода после наблюдения за природой.
+        </p>
+      </div>
+      <a
+        href="#"
+        class="inline-flex items-center justify-center bg-surface px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-surface-sunken max-lg:text-[15px]"
+      >
+        История
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Фон полосы — только на десктопе (≥1024px); на мобиле полоса без фона.
+     Орнамент зафиксирован у нижнего края, фиксированная ширина 1440px по центру. */
+  @media (min-width: 1024px) {
+    .history-band {
+      background-image: var(--bg);
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      background-size: 1440px auto;
+    }
+  }
+</style>

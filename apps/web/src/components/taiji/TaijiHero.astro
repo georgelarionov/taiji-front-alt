@@ -1,0 +1,67 @@
+---
+// Интро страницы «Тайцзицюань» (фрейм Taiji / TaijiMobile). Центрированная
+// колонка: каллиграфия 太极拳 → заголовок + подзаголовок → описание → кнопка-
+// стрелка вниз (якорь к разделу «Истоки»). Каллиграфия — плоский brush-PNG,
+// отдаём обычным <img> (не <Image>), декоративная (alt="" aria-hidden).
+import caligraph from "../../assets/taiji/caligraph.png";
+---
+
+<section class="bg-surface">
+  <div class="container-block">
+    <div
+      data-reveal
+      class="mx-auto flex max-w-[640px] flex-col items-center gap-18 py-18 text-center max-lg:gap-18 max-lg:py-16"
+    >
+      <div class="flex flex-col items-center gap-4">
+        <img
+          src={caligraph.src}
+          width={caligraph.width}
+          height={caligraph.height}
+          alt=""
+          aria-hidden="true"
+          class="h-[38px] w-auto object-contain max-lg:h-[27px]"
+        />
+        <div class="flex flex-col items-center gap-6 max-lg:gap-4">
+          <div class="flex flex-col items-center gap-4 max-lg:gap-3">
+            <h1
+              class="font-serif text-[48px] font-medium leading-[1.1] text-ink max-lg:text-[40px]"
+            >
+              Тайцзицюань
+            </h1>
+            <p
+              class="font-sans text-base font-medium leading-relaxed text-ink/70 max-lg:text-[14px]"
+            >
+              Кулак Великого Предела
+            </p>
+          </div>
+          <p
+            class="max-w-[560px] font-sans text-[18px] leading-relaxed text-ink max-lg:text-[15px]"
+          >
+            Традиционное китайское искусство движения, которое возникло как боевое
+            искусство, а сегодня широко практикуется как мягкая оздоровительная и
+            медитативная практика.
+          </p>
+        </div>
+      </div>
+
+      <a
+        href="#istoki"
+        aria-label="Перейти к разделу «Истоки»"
+        class="grid h-12 w-12 place-items-center bg-accent text-white transition-colors hover:bg-accent/90 max-lg:h-10 max-lg:w-10"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="h-6 w-6 max-lg:h-5 max-lg:w-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

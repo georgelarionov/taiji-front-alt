@@ -1,0 +1,97 @@
+---
+// Раздел «Практика» (фрейм Taiji). Full-bleed полоса с фото-фоном (фигура в тумане)
+// и тонкими бордерами сверху/снизу. Десктоп: слева заголовок + кнопка, справа текст.
+// Мобайл: заголовок → текст → кнопка (левая колонка растворяется max-lg:contents).
+// Фон: отдельные ассеты под десктоп/мобайл (pc-bg-4 / mob-bg-4) через getImage +
+// CSS-фон под медиазапросом → грузится только нужный.
+import { getImage } from "astro:assets";
+import practiceBg from "../../assets/taiji/practice-bg.webp";
+import practiceBgMobile from "../../assets/taiji/practice-bg-mobile.webp";
+
+const bgD = await getImage({ src: practiceBg, width: 2000, format: "webp" });
+const bgM = await getImage({ src: practiceBgMobile, width: 900, format: "webp" });
+---
+
+<section
+  class="practice-band relative min-h-[825px] overflow-hidden mt-22 border-y border-border bg-cover bg-center max-lg:mt-16"
+  style={`--bg-d:url('${bgD.src}');--bg-m:url('${bgM.src}')`}
+>
+  {/* Мягкий светлый скрим под текстом — поднимает контраст ink над тёмными
+      участками тумана до AA (десктоп: светлее по краям, где текст; центр с фигурой
+      чистый. Мобайл: лёгкая вертикальная вуаль). Тон — surface (тёплый, в тон фото). */}
+  <div class="practice-scrim pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="container-block relative z-10 py-22 max-lg:py-16">
+    <div
+      data-reveal
+      class="flex justify-between gap-16 max-lg:flex-col max-lg:gap-8"
+    >
+      {/* Левая колонка (десктоп) → растворяется на мобиле, порядок через order-* */}
+      <div
+        class="flex max-w-[400px] flex-col gap-12 max-lg:max-w-none max-lg:contents"
+      >
+        <h2
+          class="font-display text-[28px] font-semibold leading-[1.4] text-ink max-lg:order-1 max-lg:text-[24px]"
+        >
+          Заниматься тайцзицюань можно в разном возрасте и с разным уровнем
+          подготовки
+        </h2>
+        <a
+          href="#"
+          class="inline-flex w-fit items-center justify-center self-start border border-border bg-white px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-surface max-lg:order-3 max-lg:text-[15px]"
+        >
+          Практика
+        </a>
+      </div>
+
+      <div
+        class="flex w-full flex-col gap-6 lg:w-[630px] max-lg:order-2"
+      >
+        <p class="font-sans text-base leading-normal text-ink max-lg:text-[14px]">
+          Обычно практика не требует специального оборудования и начинается с простых
+          форм: устойчивой стойки, мягкого дыхания, медленных шагов и базовых движений
+          руками.
+        </p>
+        <p class="font-sans text-base leading-normal text-ink max-lg:text-[14px]">
+          При грамотном обучении тайцзицюань считается достаточно безопасной
+          практикой; возможны лишь лёгкие мышечные ощущения, как после любой новой
+          физической активности.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Фон полосы: мобильный ассет по умолчанию, десктопный — с ≥1024px. */
+  .practice-band {
+    background-image: var(--bg-m);
+  }
+  @media (min-width: 1024px) {
+    .practice-band {
+      background-image: var(--bg-d);
+    }
+  }
+
+  /* Скрим под текстом (тон surface). Мобайл: вертикальная вуаль (текст идёт колонкой
+     поверх фигуры). Десктоп: светлее по левому/правому краю (где колонки текста),
+     центр — прозрачный, чтобы фигура читалась. */
+  .practice-scrim {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-surface) 60%, transparent),
+      color-mix(in srgb, var(--color-surface) 35%, transparent) 45%,
+      color-mix(in srgb, var(--color-surface) 60%, transparent)
+    );
+  }
+  @media (min-width: 1024px) {
+    .practice-scrim {
+      background: linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-surface) 70%, transparent),
+        transparent 32%,
+        transparent 68%,
+        color-mix(in srgb, var(--color-surface) 70%, transparent)
+      );
+    }
+  }
+</style>

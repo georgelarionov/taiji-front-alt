@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # OS
 .DS_Store
+
+# Local agent tooling / caches (not part of the project)
+.claude/
+.agents/
+.magicpath/
+skills-lock.json

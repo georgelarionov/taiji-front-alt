@@ -1,36 +1,46 @@
 ---
 // Глобальная шапка сайта (логотип + горизонтальное меню + бургер). Единый
-// источник: Hero вызывает её через слот (<Header slot="header" />), так шапка
-// остаётся статичной — нулевой JS (React-остров её только размещает).
+// источник: на главной Hero вызывает её через слот (<Header slot="header" />),
+// внутренние страницы рендерят напрямую. Статична — нулевой JS (бургер ведёт
+// глобальный рантайм меню lib/menu.ts через data-menu-open).
 //
-// variant пока только "overlay" — текущая светлая шапка поверх hero. Solid-
-// вариант (на сплошном фоне) не реализуем — нет дизайна (YAGNI); структура с
-// variant заложена на будущее.
+// Два варианта (меняется ТОЛЬКО цвет/состояние — раскладка одна):
+//   overlay — светлая шапка поверх hero (главная): белое лого/текст/бургер, фон прозрачный.
+//   solid   — на сплошном фоне (внутренние страницы): синее лого, тёмный текст,
+//             фон surface + нижний бордер, у активного пункта (activeNav) — текст
+//             accent + постоянный нижний бордер (+ aria-current="page").
 //
 // topNav — горизонтальное меню (только десктоп) — из единого конфига навигации.
 // Логотип отдаём как есть (WebP обычным <img>, не <Image> — мелкую флэт-графику
 // webp пережимал с артефактами).
 import { topNav } from "../config/nav";
-import headLogo from "../assets/hero/logo-white.webp";
+import logoWhite from "../assets/hero/logo-white.webp";
+import logoBlue from "../assets/header/logo-blue.webp";
 
-// variant принимается в API (см. Props), но пока не влияет на разметку —
-// поддержан только overlay (YAGNI). Структура с variant заложена на будущее;
-// когда появится solid-вариант — читать через Astro.props.variant и ветвить
-// классы. Сейчас props не читаем (нечего ветвить) — отсюда нет unused-локала.
 interface Props {
-  variant?: "overlay";
+  variant?: "overlay" | "solid";
+  // Метка активного пункта topNav (подсветка + подчёркивание). Только для solid.
+  activeNav?: string;
 }
+
+const { variant = "overlay", activeNav } = Astro.props;
+const solid = variant === "solid";
+// Синий локап на светлом фоне (solid) / белый поверх hero (overlay).
+const logo = solid ? logoBlue : logoWhite;
 ---
 
 <header
   role="banner"
-  class="gutter-x flex min-h-[94px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:gap-8 max-lg:pt-3 max-lg:pb-4"
+  class:list={[
+    "gutter-x flex min-h-[94px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:gap-8 max-lg:pt-3 max-lg:pb-4",
+    solid && "bg-surface border-b border-border",
+  ]}
 >
   <a href="/" class="flex items-center gap-4" aria-label="На главную">
     <img
-      src={headLogo.src}
-      width={headLogo.width}
-      height={headLogo.height}
+      src={logo.src}
+      width={logo.width}
+      height={logo.height}
       alt="Логотип Общества изучения традиционного тайцзицюань"
       class="h-[54px] w-auto shrink-0 object-contain max-lg:h-10"
     />
@@ -39,16 +49,28 @@ interface Props {
   <nav class="flex items-center gap-14">
     <ul class="flex items-center gap-12 max-lg:hidden">
       {
-        topNav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class="relative flex h-[94px] items-center font-display text-[15px] font-semibold leading-[1.1] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-[1px] after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
-            >
-              {item.label}
-            </a>
-          </li>
-        ))
+        topNav.map((item) => {
+          const isActive = solid && item.label === activeNav;
+          return (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                class:list={[
+                  "relative flex h-[94px] items-center font-display text-[15px] font-semibold leading-[1.1] transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:rounded-[1px] after:transition-transform after:duration-300 hover:after:scale-x-100",
+                  solid
+                    ? isActive
+                      ? "text-accent after:bg-accent"
+                      : "text-ink after:bg-accent"
+                    : "text-white after:bg-white",
+                  isActive ? "after:scale-x-100" : "after:scale-x-0",
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })
       }
     </ul>
     <button
@@ -58,10 +80,13 @@ interface Props {
       aria-haspopup="dialog"
       aria-controls="site-menu"
       aria-expanded="false"
-      class="-m-3.5 flex cursor-pointer flex-col gap-2 rounded-[2px] p-3.5 transition-colors hover:bg-white/15 max-lg:m-0 max-lg:-mr-1.5 max-lg:grid max-lg:h-11 max-lg:w-11 max-lg:place-content-center max-lg:gap-1.5 max-lg:p-0"
+      class:list={[
+        "-m-3.5 flex cursor-pointer flex-col gap-2 rounded-[2px] p-3.5 transition-colors max-lg:m-0 max-lg:-mr-1.5 max-lg:grid max-lg:h-11 max-lg:w-11 max-lg:place-content-center max-lg:gap-1.5 max-lg:p-0",
+        solid ? "hover:bg-ink/5" : "hover:bg-white/15",
+      ]}
     >
-      <span class="block h-0.5 w-10 rounded-[1px] bg-white max-lg:w-7"></span>
-      <span class="block h-0.5 w-10 rounded-[1px] bg-white max-lg:w-7"></span>
+      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
+      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
     </button>
   </nav>
 </header>

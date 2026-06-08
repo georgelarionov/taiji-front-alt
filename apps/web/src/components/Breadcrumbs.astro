@@ -1,0 +1,42 @@
+---
+// Хлебные крошки внутренних страниц. Отдельный статичный компонент (рендерится
+// страницей сразу под <Header variant="solid" />). Продолжает верхнюю плашку:
+// фон surface + нижний бордер, гаттеры gutter-x.
+//
+// items — путь от корня к текущей странице. Последний элемент без href трактуется
+// как текущая страница: приглушённый, aria-current="page", без ссылки.
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+
+<nav aria-label="Хлебные крошки" class="gutter-x bg-surface border-b border-border">
+  <ol class="flex flex-wrap items-center gap-3 py-4 text-caption max-lg:py-3">
+    {
+      items.map((c, i) => (
+        <li class="flex items-center gap-3">
+          {i > 0 && (
+            <span
+              class="h-[5px] w-[5px] shrink-0 rounded-full bg-ink/40"
+              aria-hidden="true"
+            />
+          )}
+          {c.href ? (
+            <a href={c.href} class="link-underline text-ink">
+              {c.label}
+            </a>
+          ) : (
+            <span class="text-ink/70" aria-current="page">
+              {c.label}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

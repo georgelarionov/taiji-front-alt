@@ -1,0 +1,42 @@
+---
+// Раздел «Узнайте больше» (фрейм Taiji). Заголовок + 4 карточки-раздела с «Подробнее».
+// Десктоп: ряд из 4 карточек (320×400). Мобайл: сетка 2×2, квадратные карточки,
+// контент по центру. Паттерн карточки — как в About: group + hover-подложка +
+// .link-underline-group на «Подробнее».
+const cards = [
+  { title: "История", href: "#" },
+  { title: "Теория", href: "#" },
+  { title: "Персоналии", href: "#" },
+  { title: "Практика", href: "#" },
+];
+---
+
+<section class="bg-white py-22 max-lg:py-16">
+  <div class="container-block">
+    <div class="flex flex-col gap-16 max-lg:items-center max-lg:gap-10">
+      <h2 class="text-h2 text-ink max-lg:text-center max-lg:text-[24px]">Узнайте больше</h2>
+
+      <div class="grid w-full grid-cols-4 gap-6 max-lg:grid-cols-2 max-lg:gap-4">
+        {
+          cards.map((card) => (
+            <a
+              href={card.href}
+              data-reveal
+              class="group relative flex h-[400px] flex-col justify-between overflow-hidden border border-border p-7 transition-colors hover:border-accent/50 max-lg:h-[200px] max-lg:p-4"
+            >
+              {/* hover-подложка */}
+              <div class="pointer-events-none absolute inset-0 bg-surface opacity-0 transition-opacity duration-300 group-hover:opacity-50" />
+
+              <h3 class="relative z-10 font-display text-[26px] font-semibold leading-[1.1] text-ink max-lg:text-[18px]">
+                {card.title}
+              </h3>
+              <span class="link-underline-group relative z-10 w-fit font-display text-base font-semibold text-accent max-lg:text-[14px]">
+                Подробнее
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
