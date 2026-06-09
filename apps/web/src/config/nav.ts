@@ -21,45 +21,49 @@ export interface NavCol {
 export const navCols: NavCol[] = [
   {
     title: "Тайцзицюань",
-    href: "#",
+    href: "/taijiquan",
     links: [
-      { label: "История", href: "#" },
-      { label: "Теория", href: "#" },
-      { label: "Практика", href: "#" },
-      { label: "Персоналии", href: "#" },
+      { label: "История", href: "/taijiquan/history" },
+      { label: "Теория", href: "/taijiquan/theory" },
+      { label: "Практика", href: "/taijiquan/practice" },
+      { label: "Персоналии", href: "/taijiquan/person" },
     ],
   },
   {
+    // Подпункты — секции одной страницы /society (якоря scroll-mt-24 в
+    // components/society/*: #mission/#team/#partners/#documents).
     title: "Общество",
-    href: "#",
+    href: "/society",
     links: [
-      { label: "Миссия и ценности", href: "#" },
-      { label: "Команда", href: "#" },
-      { label: "Партнёры", href: "#" },
-      { label: "Документы", href: "#" },
+      { label: "Миссия и ценности", href: "/society#mission" },
+      { label: "Команда", href: "/society#team" },
+      { label: "Партнёры", href: "/society#partners" },
+      { label: "Документы", href: "/society#documents" },
     ],
   },
   {
+    // /research — заглушка («Раздел в разработке»), отдельных секций нет,
+    // поэтому оба подпункта ведут на саму страницу раздела.
     title: "Исследования",
-    href: "#",
+    href: "/research",
     links: [
-      { label: "Источники", href: "#" },
-      { label: "Публикации", href: "#" },
+      { label: "Источники", href: "/research" },
+      { label: "Публикации", href: "/research" },
     ],
   },
 ];
 
 export const bigLinks: NavLink[] = [
-  { label: "Новости", href: "#" },
-  { label: "Мероприятия", href: "#" },
-  { label: "Медиа-архив", href: "#" },
-  { label: "Контакты", href: "#" },
+  { label: "Новости", href: "/news" },
+  { label: "Мероприятия", href: "/events" },
+  { label: "Медиа-архив", href: "/media-archive" },
+  { label: "Контакты", href: "/contacts" },
 ];
 
 export const topNav: NavLink[] = [
-  { label: "Тайцзицюань", href: "#" },
-  { label: "Исследования", href: "#" },
-  { label: "Об Обществе", href: "#" },
-  { label: "Мероприятия", href: "#" },
-  { label: "Новости", href: "#" },
+  { label: "Тайцзицюань", href: "/taijiquan" },
+  { label: "Исследования", href: "/research" },
+  { label: "Об Обществе", href: "/society" },
+  { label: "Мероприятия", href: "/events" },
+  { label: "Новости", href: "/news" },
 ];

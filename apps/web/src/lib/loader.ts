@@ -1,6 +1,6 @@
 // Рантайм лоудера: GSAP-таймлайн (fade-in элементов + «отрисовка» круга через
 // маску, затем уход вверх). Лоудер виден только при html.loading (ставит
-// инлайн-скрипт в BaseLayout до пейнта: первый заход за сессию, без reduced-motion).
+// инлайн-скрипт в BaseLayout до пейнта: первый визит на сайт, без reduced-motion).
 //
 // Lifecycle как у smooth.ts: при <ClientRouter /> скрипты не перезапускаются на
 // навигации, поэтому init на astro:page-load, teardown на astro:before-swap.
@@ -24,7 +24,10 @@ const CONTENT_LIFT = -18; // доп. сдвиг контента вверх на
 // оживает из-под ещё уезжающей панели → бесшовная стыковка. Должно быть ≤ EXIT.
 const REVEAL_LEAD = 0.8;
 
-const SESSION_KEY = "taiji:loaded";
+// Флаг «лоудер уже показан» в localStorage (НЕ sessionStorage) → один раз при
+// самом первом визите на сайт, без повторов в новых сессиях/вкладках. Тот же
+// ключ читает инлайн-скрипт BaseLayout (решает, ставить ли html.loading).
+const STORAGE_KEY = "taiji:loaded";
 
 let tl: gsap.core.Timeline | null = null;
 let idleHandle = 0; // хэндл отложенного старта анимации (rIC/таймаут)
@@ -44,7 +47,7 @@ function signalReveal() {
 
 function finish(wrap: HTMLElement) {
   try {
-    sessionStorage.setItem(SESSION_KEY, "1");
+    localStorage.setItem(STORAGE_KEY, "1");
   } catch {}
   document.documentElement.classList.remove("loading"); // разблок скролла
   wrap.style.display = "none";
@@ -53,7 +56,7 @@ function finish(wrap: HTMLElement) {
 
 function run() {
   const root = document.documentElement;
-  // Гейт. Класс ставит инлайн-скрипт только на первом заходе за сессию без
+  // Гейт. Класс ставит инлайн-скрипт только при первом визите на сайт без
   // reduced-motion → отсутствие класса = SPA-переход / повтор / reduced-motion / no-JS.
   if (!root.classList.contains("loading")) return;
 

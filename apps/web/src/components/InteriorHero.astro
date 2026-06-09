@@ -1,0 +1,86 @@
+---
+// Интро внутренних страниц-разделов (фреймы Template-1 / Mobile-Template-1).
+// Full-bleed полоса на тоне surface с декоративным орнаментом-кольцом 太极.
+// Десктоп: контент слева (заголовок + подзаголовок сверху, кнопка-стрелка снизу),
+// орнамент прижат к правому краю фрейма 1440. Мобайл: контент по центру, орнамент
+// по нижнему центру. Фоны раздаём отдельными ассетами (pc / mob) через getImage +
+// CSS-фон под медиазапросом → грузится только нужный вариант.
+//
+// title / subtitle — заголовок и подзаголовок раздела (История / Теория / …).
+import { getImage } from "astro:assets";
+import heroBg from "../assets/interior/hero-bg.webp";
+import heroBgMobile from "../assets/interior/hero-bg-mobile.webp";
+
+interface Props {
+  title: string;
+  subtitle: string;
+}
+const { title, subtitle } = Astro.props;
+
+const bgD = await getImage({ src: heroBg, width: 2880, format: "webp" });
+const bgM = await getImage({ src: heroBgMobile, width: 780, format: "webp" });
+---
+
+<section
+  class="interior-hero bg-surface min-h-[480px] lg:min-h-[360px]"
+  style={`--bg-d:url('${bgD.src}');--bg-m:url('${bgM.src}')`}
+>
+  <div
+    class="container-block flex min-h-[480px] items-center lg:min-h-[360px]"
+  >
+    <div
+      data-reveal
+      class="flex w-full max-w-[367px] flex-col justify-between gap-10 lg:min-h-[296px] max-lg:mx-auto max-lg:max-w-[320px] max-lg:items-center max-lg:justify-center max-lg:gap-18 max-lg:py-16 max-lg:text-center"
+    >
+      <div class="flex flex-col gap-6 max-lg:items-center">
+        <h1
+          class="font-serif text-[48px] font-medium leading-[1.1] text-ink max-lg:text-[40px]"
+        >
+          {title}
+        </h1>
+        <p
+          class="font-sans text-[18px] font-medium leading-[1.4] text-ink max-lg:text-[15px]"
+        >
+          {subtitle}
+        </p>
+      </div>
+
+      <a
+        href="#content"
+        aria-label="Перейти к содержанию"
+        class="grid h-10 w-10 shrink-0 place-items-center bg-accent text-white transition-colors hover:bg-accent/90"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Фон полосы: мобильный ассет по умолчанию (орнамент по нижнему центру),
+     десктопный — с ≥1024px (орнамент у правого края фрейма 1440, по центру). */
+  .interior-hero {
+    background-image: var(--bg-m);
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 100% auto;
+  }
+  @media (min-width: 1024px) {
+    .interior-hero {
+      background-image: var(--bg-d);
+      background-position: center;
+      background-size: 1440px auto;
+    }
+  }
+</style>

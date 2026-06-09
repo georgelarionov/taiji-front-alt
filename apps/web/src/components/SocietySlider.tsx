@@ -100,7 +100,7 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
           На мобиле: CTA на всю ширину, контролы под ней. */}
       <div className="mt-auto flex flex-wrap items-center justify-between gap-6 pt-9 max-lg:mt-6 max-lg:pt-6">
         <a
-          href="#"
+          href="/society"
           className="inline-flex w-[200px] items-center justify-center bg-accent px-8 py-4 font-display text-base font-semibold text-white transition hover:opacity-90 active:scale-[0.98] max-lg:w-full"
         >
           Подробнее

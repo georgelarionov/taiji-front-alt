@@ -1,0 +1,37 @@
+---
+// Страница «Медиа-архив» (/media-archive). Шелл как у /taijiquan: solid-шапка,
+// крошки отдельным блоком, сквозной глобальный футер. Контент — остров
+// MediaArchive (табы Видео/Фото + фильтр + сетки карточек + дровер по клику).
+// «Медиа-архив» нет в верхнем меню (живёт в меню/футере) → активного пункта topNav
+// нет. Данные — из data/media (заглушки; CMS позже).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Footer from "../components/Footer.astro";
+import MediaArchive from "../components/media/MediaArchive";
+import { videos, photos, videoFilters } from "../data/media";
+---
+
+<BaseLayout
+  title="Медиа-архив — Общество изучения традиционного тайцзицюань"
+  description="Медиа-архив Общества изучения традиционного тайцзицюань: видео, фотогалереи и материалы для погружения в традицию."
+>
+  <Header variant="solid" />
+  <Breadcrumbs
+    items={[{ label: "Главная", href: "/" }, { label: "Медиа-архив" }]}
+  />
+
+  {/* Интро-баннер: заголовок + подзаголовок (слева, на тоне surface). */}
+  <section class="border-b border-border bg-surface">
+    <div class="container-block py-16 max-lg:py-12">
+      <h1 class="text-h1 text-ink">Медиа-архив</h1>
+      <p class="mt-4 font-sans text-[18px] leading-[1.4] text-ink/70 max-lg:mt-3 max-lg:text-[15px]">
+        Видео, фотографии и материалы для погружения в традицию тайцзицюань
+      </p>
+    </div>
+  </section>
+
+  <MediaArchive client:load videos={videos} photos={photos} filters={videoFilters} />
+
+  <Footer />
+</BaseLayout>

@@ -141,10 +141,39 @@ html.js [data-reveal-bg] {
   }
 }
 
+/* --- Дровер медиа-архива (/media-archive) ---
+   Блокировка скролла фона под открытым дровером — как html.menu-open
+   (overflow:hidden останавливает и нативный скролл, и Lenis). Панель въезжает
+   справа (drawer-in). Класс drawer-open ставит/снимает остров MediaArchive. */
+html.drawer-open {
+  overflow: hidden;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+/* iframe внутри дровера (data-lenis-prevent) должен оставаться кликабельным —
+   перебиваем общее правило .lenis-smooth iframe{pointer-events:none} (выше). */
+.lenis.lenis-smooth [data-lenis-prevent] iframe {
+  pointer-events: auto;
+}
+/* Reduced-motion: дровер появляется без слайда/фейда (как и остальной проект). */
+@media (prefers-reduced-motion: reduce) {
+  [data-drawer-panel],
+  [data-drawer-backdrop] {
+    animation: none !important;
+  }
+}
+
 /* --- Подчёркивание ссылок при наведении ---
-   Линия снизу (currentColor @ opacity 50 — в тон тексту в любом контексте),
-   растёт слева направо. На pseudo-element, чтобы не сдвигать поток текста.
-   Под prefers-reduced-motion появляется сразу, без роста. */
+   Линия снизу (currentColor @ opacity 50 — в тон тексту в любом контексте).
+   При наведении растёт слева направо, при уходе — уезжает вправо (origin
+   right→left), а не схлопывается обратно влево. На pseudo-element, чтобы не
+   сдвигать поток текста. Под prefers-reduced-motion появляется сразу, без роста. */
 .link-underline {
   position: relative;
 }
@@ -158,11 +187,12 @@ html.js [data-reveal-bg] {
   background-color: currentColor;
   opacity: 0.5;
   transform: scaleX(0);
-  transform-origin: left;
+  transform-origin: right;
   transition: transform 0.3s ease;
 }
 .link-underline:hover::after {
   transform: scaleX(1);
+  transform-origin: left;
 }
 @media (prefers-reduced-motion: reduce) {
   .link-underline::after {
@@ -171,11 +201,9 @@ html.js [data-reveal-bg] {
 }
 
 /* --- Подчёркивание «Подробнее» (group-hover) ---
-   Линия снизу (accent @ 50%, 2px), растёт слева направо при наведении на
-   РОДИТЕЛЬСКИЙ .group (а не на саму ссылку). Воспроизводит дословно бывшую
-   after:-цепочку (after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-accent/50
-   after:origin-left after:scale-x-0 after:transition-transform after:duration-300
-   group-hover:after:scale-x-100). Единый источник вместо дублей в
+   Линия снизу (accent @ 50%, 2px) при наведении на РОДИТЕЛЬСКИЙ .group (а не на
+   саму ссылку): растёт слева направо, при уходе уезжает вправо (origin right→left),
+   а не схлопывается влево. Единый источник вместо дублей в
    About/News/ResearchSlider/Contacts. */
 .link-underline-group {
   position: relative;
@@ -189,11 +217,12 @@ html.js [data-reveal-bg] {
   height: 2px; /* h-0.5 */
   background-color: color-mix(in srgb, var(--color-accent) 50%, transparent); /* bg-accent/50 */
   transform: scaleX(0);
-  transform-origin: left;
+  transform-origin: right;
   transition: transform 0.3s ease;
 }
 .group:hover .link-underline-group::after {
   transform: scaleX(1);
+  transform-origin: left;
 }
 @media (prefers-reduced-motion: reduce) {
   .link-underline-group::after {
@@ -238,8 +267,8 @@ html {
 
 /* --- Лоудер (брендовый сплэш) ---
    Виден ТОЛЬКО при html.loading — класс ставит инлайн-скрипт в BaseLayout ДО
-   пейнта и лишь при первом заходе за сессию без reduced-motion. Так нет флэша
-   контента на первой загрузке и нет повторов на SPA-переходах ClientRouter. */
+   пейнта и лишь при первом визите на сайт (localStorage) без reduced-motion. Так
+   нет флэша контента на первой загрузке и нет повторов на SPA-переходах/перезаходах. */
 [data-loader] {
   display: none;
 }
@@ -249,6 +278,12 @@ html.loading [data-loader] {
 /* Блок нативного скролла (и Lenis) на время лоудера. */
 html.loading {
   overflow: hidden;
+  /* Фон корневого холста = базовый тон лоудера (#dddbda). Без него на самом первом
+     кадре (особенно iOS Safari) холст белый и мелькает ДО отрисовки [data-loader] →
+     мерцание/«лоудер появляется не сразу». Явный фон на <html> отменяет
+     распространение белого фона <body> на холст, поэтому первый же кадр — в тоне
+     лоудера. Снимается вместе с классом, когда лоудер уходит. */
+  background-color: #dddbda;
 }
 /* Анимируемые элементы лоудера скрыты до старта GSAP (как html.js [data-reveal]). */
 html.loading [data-loader-fade] {

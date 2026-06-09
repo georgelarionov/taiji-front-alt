@@ -11,11 +11,14 @@ interface Crumb {
 }
 interface Props {
   items: Crumb[];
+  // Фон плашки: surface (по умолчанию, как /taijiquan) или white (см. /society).
+  bg?: "surface" | "white";
 }
-const { items } = Astro.props;
+const { items, bg = "surface" } = Astro.props;
+const bgClass = bg === "white" ? "bg-white" : "bg-surface";
 ---
 
-<nav aria-label="Хлебные крошки" class="gutter-x bg-surface border-b border-border">
+<nav aria-label="Хлебные крошки" class:list={[bgClass, "gutter-x border-b border-border"]}>
   <ol class="flex flex-wrap items-center gap-3 py-4 text-caption max-lg:py-3">
     {
       items.map((c, i) => (

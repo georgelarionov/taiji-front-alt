@@ -11,8 +11,10 @@ const fontsDir = './src/assets/fonts';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: заменить на реальный домен проекта (плейсхолдер .example) — нужно для canonical/OG/sitemap
-  site: 'https://taiji-society.example',
+  // Текущий прод-домен Railway (временный — заменим на постоянный/кастомный позже).
+  // Питает canonical / og:url / og:image / sitemap (через Astro.site). При смене
+  // домена обновить здесь И в public/robots.txt (Sitemap-директива).
+  site: 'https://taiji-front-production.up.railway.app',
 
   integrations: [react(), sitemap()],
 

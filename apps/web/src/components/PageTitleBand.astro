@@ -1,0 +1,18 @@
+---
+// Тайтл-баннер внутренних страниц-лент (Новости / Мероприятия / Исследования):
+// центрированный заголовок на тоне surface, только нижний бордер (верхняя кромка —
+// это нижний бордер крошек, иначе линии стекаются в двойную). Десктоп ≈241px /
+// мобайл ≈200px. Орнамент-фон из дизайна пока опущен (добавится ассетом позже).
+// Раньше существовал тремя байт-идентичными копиями (NewsHero/EventsHero/
+// ResearchHero) — сведены сюда; различается только заголовок (prop title).
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<section
+  class="flex min-h-[241px] items-center justify-center border-b border-border bg-surface max-lg:min-h-[200px]"
+>
+  <h1 class="text-h1 text-center text-ink">{title}</h1>
+</section>

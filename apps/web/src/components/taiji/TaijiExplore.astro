@@ -3,11 +3,19 @@
 // Десктоп: ряд из 4 карточек (320×400). Мобайл: сетка 2×2, квадратные карточки,
 // контент по центру. Паттерн карточки — как в About: group + hover-подложка +
 // .link-underline-group на «Подробнее».
+//
+// current — заголовок раздела текущей страницы (напр. «История» на /taijiquan/history):
+// эта карточка приглушается, становится неинтерактивной и помечается aria-current.
+interface Props {
+  current?: string;
+}
+const { current } = Astro.props;
+
 const cards = [
-  { title: "История", href: "#" },
-  { title: "Теория", href: "#" },
-  { title: "Персоналии", href: "#" },
-  { title: "Практика", href: "#" },
+  { title: "История", href: "/taijiquan/history" },
+  { title: "Теория", href: "/taijiquan/theory" },
+  { title: "Персоналии", href: "/taijiquan/person" },
+  { title: "Практика", href: "/taijiquan/practice" },
 ];
 ---
 
@@ -18,23 +26,37 @@ const cards = [
 
       <div class="grid w-full grid-cols-4 gap-6 max-lg:grid-cols-2 max-lg:gap-4">
         {
-          cards.map((card) => (
-            <a
-              href={card.href}
-              data-reveal
-              class="group relative flex h-[400px] flex-col justify-between overflow-hidden border border-border p-7 transition-colors hover:border-accent/50 max-lg:h-[200px] max-lg:p-4"
-            >
-              {/* hover-подложка */}
-              <div class="pointer-events-none absolute inset-0 bg-surface opacity-0 transition-opacity duration-300 group-hover:opacity-50" />
+          cards.map((card) =>
+            card.title === current ? (
+              <div
+                aria-current="page"
+                class="relative flex h-[400px] flex-col justify-between border border-border p-7 opacity-25 max-lg:h-[200px] max-lg:p-4 max-lg:opacity-[0.15]"
+              >
+                <h3 class="font-display text-[26px] font-semibold leading-[1.1] text-ink max-lg:text-[18px]">
+                  {card.title}
+                </h3>
+                <span class="w-fit font-display text-base font-semibold text-accent max-lg:text-[14px]">
+                  Подробнее
+                </span>
+              </div>
+            ) : (
+              <a
+                href={card.href}
+                data-reveal
+                class="group relative flex h-[400px] flex-col justify-between overflow-hidden border border-border p-7 transition-colors hover:border-accent/50 max-lg:h-[200px] max-lg:p-4"
+              >
+                {/* hover-подложка */}
+                <div class="pointer-events-none absolute inset-0 bg-surface opacity-0 transition-opacity duration-300 group-hover:opacity-50" />
 
-              <h3 class="relative z-10 font-display text-[26px] font-semibold leading-[1.1] text-ink max-lg:text-[18px]">
-                {card.title}
-              </h3>
-              <span class="link-underline-group relative z-10 w-fit font-display text-base font-semibold text-accent max-lg:text-[14px]">
-                Подробнее
-              </span>
-            </a>
-          ))
+                <h3 class="relative z-10 font-display text-[26px] font-semibold leading-[1.1] text-ink max-lg:text-[18px]">
+                  {card.title}
+                </h3>
+                <span class="link-underline-group relative z-10 w-fit font-display text-base font-semibold text-accent max-lg:text-[14px]">
+                  Подробнее
+                </span>
+              </a>
+            )
+          )
         }
       </div>
     </div>

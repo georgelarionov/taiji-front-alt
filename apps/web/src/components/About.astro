@@ -22,23 +22,28 @@ const infoIcon = INFO_PATH;
 const infoText =
   "Тайцзицюа́нь (тай-чи) (кит. трад. 太極拳, упр. 太极拳, пиньинь tàijíquán, палл. Тайцзицюань, буквально: «кулак Великого (Изначального) Предела») — китайское внутреннее боевое искусство, один из видов ушу (происхождение тайцзицюань — исторически спорный вопрос, разные источники имеют разные версии).";
 
-const cards: { title: string; desc: string; image?: ImageMetadata }[] = [
+// href — на соответствующую подстраницу раздела /taijiquan/*.
+const cards: { title: string; desc: string; href: string; image?: ImageMetadata }[] = [
   {
     title: "История",
     desc: "Происхождения и развития тайцзицюань как традиции, школы мысли и практики.",
+    href: "/taijiquan/history",
     image: historyImg,
   },
   {
     title: "Теория",
     desc: "Основные понятия, принципы движения и идеи, на которых строится тайцзицюань.",
+    href: "/taijiquan/theory",
   },
   {
     title: "Практика",
     desc: "Формы, упражнения и методы, через которые традиция передаётся и сохраняется.",
+    href: "/taijiquan/practice",
   },
   {
     title: "Персоналии",
     desc: "Мастера, исследователи и носители традиции, повлиявшие на тайцзицюань.",
+    href: "/taijiquan/person",
   },
 ];
 ---
@@ -81,7 +86,7 @@ const cards: { title: string; desc: string; image?: ImageMetadata }[] = [
         {
           cards.map((card) => (
             <a
-              href="#"
+              href={card.href}
               data-reveal
               class="group relative flex min-h-[263px] cursor-pointer flex-col justify-between overflow-hidden border border-border p-7 max-lg:min-h-0 max-lg:justify-start max-lg:gap-12 max-lg:p-6"
             >

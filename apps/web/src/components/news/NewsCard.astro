@@ -1,0 +1,60 @@
+---
+// Карточка новости в ленте /news (фреймы News / NewMobile).
+// Десктоп-first, значения по нодам MagicPath; мобайл — max-lg: оверрайды.
+// Структура: дата → заголовок → плейсхолдер-фото в боксе bg-field → лид-абзац →
+// кнопка «Читать далее». Фото-заглушка — портретный бокс на тоне surface-sunken
+// внутри поля field (реальные фото подключатся из CMS позже). Ссылки (заголовок +
+// «Читать далее») ведут на страницу статьи — href приходит пропсом (/news/<slug>).
+//
+// Заголовок карточки — <h2> (статьи ленты = секции под единственным <h1> героя).
+// Размер 28/24px взят точно по дизайну (промежуточный уровень, в type-scale нет).
+interface Props {
+  date: string;
+  title: string;
+  excerpt: string;
+  // Ссылка на страницу статьи (/news/<slug>).
+  href: string;
+}
+const { date, title, excerpt, href } = Astro.props;
+---
+
+<article class="flex flex-col gap-6 max-lg:gap-8">
+  <div class="flex flex-col gap-6 max-lg:gap-4">
+    <div class="flex flex-col gap-8 max-lg:gap-6">
+      <div class="flex flex-col gap-3">
+        <p class="font-display text-base font-medium leading-[1.4] text-ink">
+          {date}
+        </p>
+        <h2
+          class="font-display text-[28px] font-semibold leading-[1.2] text-ink max-lg:text-[24px]"
+        >
+          <a href={href} class="link-underline">{title}</a>
+        </h2>
+      </div>
+
+      {/* Фото-заглушка: портретный бокс на surface-sunken внутри поля field */}
+      <div
+        class="flex h-[455px] items-center justify-center overflow-hidden bg-field py-4 max-lg:h-[200px] max-lg:py-2"
+      >
+        <div
+          class="h-[423px] w-[317px] shrink-0 bg-surface-sunken max-lg:h-[184px] max-lg:w-[138px]"
+          aria-hidden="true"
+        >
+        </div>
+      </div>
+    </div>
+
+    <p
+      class="font-sans text-[18px] font-medium leading-[1.4] text-ink/70 max-lg:text-base max-lg:leading-[1.6]"
+    >
+      {excerpt}
+    </p>
+  </div>
+
+  <a
+    href={href}
+    class="inline-flex w-fit items-center justify-center bg-accent px-6 py-4 font-display text-base font-semibold leading-none text-white transition-colors hover:bg-accent/90"
+  >
+    Читать далее
+  </a>
+</article>

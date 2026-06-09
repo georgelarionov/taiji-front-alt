@@ -1,0 +1,34 @@
+---
+// Страница «Практика» (/taijiquan/practice). Дубль внутреннего раздела на эталоне
+// /taijiquan/history: solid-Header (активный «Тайцзицюань»), крошки до текущего
+// раздела, общий InteriorHero + контент-заглушка, сквозной Footer. В «Узнайте
+// больше» карточка «Практика» приглушена как текущая (current). Контент — заглушка.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import ContentPlaceholder from "../../components/ContentPlaceholder.astro";
+import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Практика — Общество изучения традиционного тайцзицюань"
+  description="Практика тайцзицюань: формы, дыхание и принципы регулярных занятий для любого уровня."
+>
+  <Header variant="solid" activeNav="Тайцзицюань" />
+  <Breadcrumbs
+    items={[
+      { label: "Главная", href: "/" },
+      { label: "Тайцзицюань", href: "/taijiquan" },
+      { label: "Практика" },
+    ]}
+  />
+  <InteriorHero
+    title="Практика"
+    subtitle="От первых форм и дыхания до устойчивой регулярной практики"
+  />
+  <ContentPlaceholder />
+  <TaijiExplore current="Практика" />
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,28 @@
+---
+// Раздел «Партнёры» (фрейм Society). Заголовок + сетка плейсхолдеров логотипов.
+// Десктоп: 4 в ряд (высота 204). Мобайл: сетка 2×2 (высота 120). Реальные логотипы
+// появятся позже (CMS).
+---
+
+<section id="partners" class="scroll-mt-24 bg-white">
+  <div class="container-block flex flex-col gap-12 py-22 max-lg:gap-8 max-lg:py-12">
+    <h2 class="text-h2 text-ink" data-reveal>Партнёры</h2>
+    <div
+      class="grid grid-cols-4 gap-6 max-lg:grid-cols-2 max-lg:gap-4"
+      data-reveal-stagger
+    >
+      {
+        Array.from({ length: 4 }).map(() => (
+          <div
+            data-reveal-item
+            class="flex h-[204px] items-center justify-center border border-border max-lg:h-[120px]"
+          >
+            <span class="px-4 text-center font-display text-[15px] font-semibold text-ink/35">
+              Скоро здесь будет логотип
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

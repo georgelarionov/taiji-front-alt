@@ -1,0 +1,95 @@
+---
+// Раздел «Команда» (фрейм Society). Полоса на тоне surface-sunken. Заголовок +
+// карточки персон. Десктоп: сетка 4-кол (6 карточек + ячейка «Свяжитесь с нами» на
+// 2 колонки). Мобайл: слайдер (React-остров). Кнопка «Подробнее» — accent-soft →
+// accent на ховере.
+// Портреты — это <Image> нельзя рендерить внутри React-острова, поэтому оптимизируем
+// здесь через getImage() и передаём готовый src и в сетку, и в слайдер. Источник
+// 942×1272 (ratio совпадает с боксом 111×150) → 222w webp (2×, ретина).
+import { getImage } from "astro:assets";
+import SocietyTeamSlider from "./SocietyTeamSlider";
+import p1 from "../../assets/society/team-1.webp";
+import p2 from "../../assets/society/team-2.webp";
+import p3 from "../../assets/society/team-3.webp";
+import p4 from "../../assets/society/team-4.webp";
+import p5 from "../../assets/society/team-5.webp";
+import p6 from "../../assets/society/team-6.webp";
+
+const people = [
+  { role: "Председатель Общества", name: "Воскресенский Станислав Сергеевич", img: p1 },
+  { role: "Председатель попечительского совета", name: "Бабаев Кирилл Владимирович", img: p2 },
+  { role: "Член правления", name: "Марченко Артём Васильевич", img: p3 },
+  { role: "Член правления", name: "Палецкий Денис Яковлевич", img: p4 },
+  { role: "Член правления", name: "Пиковер Александр Владимирович", img: p5 },
+  { role: "Ответственный секретарь", name: "Петровский Дмитрий Иванович", img: p6 },
+];
+
+const members = await Promise.all(
+  people.map(async (p) => ({
+    role: p.role,
+    name: p.name,
+    photo: (await getImage({ src: p.img, width: 222, format: "webp" })).src,
+  })),
+);
+---
+
+<section id="team" class="scroll-mt-24 bg-surface-sunken">
+  <div class="container-block flex flex-col gap-12 py-18 max-lg:gap-10 max-lg:py-12">
+    <h2 class="text-h2 text-ink" data-reveal>Команда</h2>
+
+    {/* Десктоп: сетка карточек + ячейка контактов */}
+    <div class="grid grid-cols-4 gap-6 max-lg:hidden" data-reveal-stagger>
+      {
+        members.map((m) => (
+          <article data-reveal-item class="flex h-[416px] flex-col bg-white p-7">
+            <div class="flex flex-1 flex-col justify-between">
+              <div class="flex flex-col gap-[18px]">
+                <img
+                  src={m.photo}
+                  alt=""
+                  width="111"
+                  height="150"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-[150px] w-[111px] object-cover"
+                />
+                <div class="flex flex-col gap-3">
+                  <span class="font-display text-sm font-bold uppercase tracking-[-0.14px] text-accent">
+                    {m.role}
+                  </span>
+                  <span class="font-display text-2xl font-semibold leading-[1.3] text-ink">
+                    {m.name}
+                  </span>
+                </div>
+              </div>
+              <a
+                href="#"
+                class="flex items-center justify-center bg-accent-soft py-3 font-display text-sm font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
+              >
+                Подробнее
+              </a>
+            </div>
+          </article>
+        ))
+      }
+
+      <div
+        data-reveal-item
+        class="col-span-2 flex flex-col items-center justify-center gap-10 border border-border"
+      >
+        <span class="font-display text-2xl font-semibold text-ink">Свяжитесь с нами</span>
+        <a
+          href="/contacts"
+          class="border border-border px-8 py-4 font-display text-base font-semibold text-ink opacity-50 transition-opacity hover:opacity-100"
+        >
+          Контакты
+        </a>
+      </div>
+    </div>
+
+    {/* Мобайл: слайдер персон */}
+    <div class="hidden max-lg:block" data-reveal>
+      <SocietyTeamSlider client:load members={members} />
+    </div>
+  </div>
+</section>

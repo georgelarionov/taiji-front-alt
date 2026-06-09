@@ -1,0 +1,30 @@
+---
+// Страница «Об Обществе» (/society). Собрана по фреймам MagicPath Society /
+// SocietyMobile на конвенциях проекта. Шапка — solid-вариант с белым фоном
+// (bg="white") и активным пунктом «Об Обществе»; крошки Главная → Общество (тоже на
+// белом); футер — сквозной глобальный. Разделы: hero → миссии и ценности → команда →
+// партнёры → документы.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import SocietyHero from "../components/society/SocietyHero.astro";
+import SocietyMission from "../components/society/SocietyMission.astro";
+import SocietyTeam from "../components/society/SocietyTeam.astro";
+import SocietyPartners from "../components/society/SocietyPartners.astro";
+import SocietyDocuments from "../components/society/SocietyDocuments.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Об Обществе — Общество изучения традиционного тайцзицюань"
+  description="Общество изучения традиционного тайцзицюань: миссия и ценности, команда, партнёры и учредительные документы."
+>
+  <Header variant="solid" activeNav="Об Обществе" bg="white" />
+  <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Общество" }]} bg="white" />
+  <SocietyHero />
+  <SocietyMission />
+  <SocietyTeam />
+  <SocietyPartners />
+  <SocietyDocuments />
+  <Footer />
+</BaseLayout>

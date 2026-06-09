@@ -1,0 +1,55 @@
+---
+// Hero страницы «Об Обществе» (фрейм Society / SocietyMobile). Слева — крупный
+// заголовок + список-навигация по разделам страницы; справа — тушевая живопись.
+// Десктоп: две колонки (текст / картина 720×519), полоса с нижним бордером.
+// Мобайл: заголовок → ссылки (приглушённые) → картина на всю ширину.
+import { Image } from "astro:assets";
+import heroImg from "../../assets/society/hero.webp";
+
+const links = [
+  { label: "Миссии и ценности", href: "#mission" },
+  { label: "Команда", href: "#team" },
+  { label: "Партнёры", href: "#partners" },
+  { label: "Документы", href: "#documents" },
+];
+---
+
+<section class="overflow-x-clip border-b border-border bg-white">
+  <div class="container-block">
+    <div
+      class="flex items-center justify-between gap-12 max-lg:flex-col max-lg:items-stretch max-lg:gap-8 max-lg:pt-8"
+    >
+      <div
+        data-reveal
+        class="flex max-w-[560px] flex-col gap-[148px] max-lg:max-w-none max-lg:gap-[76px]"
+      >
+        <h1
+          class="font-serif text-[48px] font-semibold leading-[1.1] text-ink max-lg:text-[32px]"
+        >
+          Исследование, сохранение и развитие традиционного тайцзицюань в России
+        </h1>
+        <nav class="flex flex-col gap-4" aria-label="Разделы страницы">
+          {
+            links.map((l) => (
+              <a
+                href={l.href}
+                class="link-underline w-fit font-display text-base font-semibold text-ink max-lg:opacity-50"
+              >
+                {l.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+
+      <Image
+        src={heroImg}
+        data-reveal
+        alt="Тушевая живопись: фигура, практикующая тайцзицюань у воды"
+        widths={[390, 720, 1440]}
+        sizes="(max-width: 1023px) 100vw, 720px"
+        class="h-auto w-[720px] shrink-0 object-contain max-lg:-mx-4 max-lg:w-[calc(100%+2rem)] max-lg:max-w-none"
+      />
+    </div>
+  </div>
+</section>

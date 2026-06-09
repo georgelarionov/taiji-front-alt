@@ -29,9 +29,11 @@ const socialIcons: Record<string, string> = {
 
 // Мобильная навигация: единый плоский список топ-уровня с разделителями.
 // Порядок по дизайну uZNPI: колонки navCols по заголовкам, затем bigLinks.
+// Несём href вместе с label — у заголовка колонки это col.href (раздел верхнего
+// уровня), у крупных ссылок — их собственный href.
 const mobileNavLinks = [
-  ...navCols.map((col) => col.title),
-  ...bigLinks.map((b) => b.label),
+  ...navCols.map((col) => ({ label: col.title, href: col.href })),
+  ...bigLinks,
 ];
 ---
 
@@ -131,13 +133,13 @@ const mobileNavLinks = [
       <nav class="hidden max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-between">
         <ul class="flex flex-col">
           {
-            mobileNavLinks.map((label, i) => (
+            mobileNavLinks.map((item, i) => (
               <li data-menu-item style={`--i:${i}`}>
                 <a
-                  href="#"
+                  href={item.href}
                   class="block font-display text-[26px] font-semibold leading-none text-ink py-5 transition-colors hover:text-accent active:text-accent aria-[current=page]:text-accent"
                 >
-                  {label}
+                  {item.label}
                 </a>
               </li>
             ))

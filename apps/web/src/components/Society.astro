@@ -47,11 +47,13 @@ const board: SocietySlide = {
 
 const slides: SocietySlide[] = [chair, board];
 
+// Ведут на секции страницы /society (якоря scroll-mt-24 в components/society/*) —
+// та же раскладка, что в config/nav.ts navCols[1].links.
 const tabs = [
-  { label: "Миссия и ценности", href: "#" },
-  { label: "Команда", href: "#" },
-  { label: "Документы", href: "#" },
-  { label: "Партнёры", href: "#" },
+  { label: "Миссия и ценности", href: "/society#mission" },
+  { label: "Команда", href: "/society#team" },
+  { label: "Документы", href: "/society#documents" },
+  { label: "Партнёры", href: "/society#partners" },
 ];
 ---
 

@@ -1,0 +1,34 @@
+---
+// Блок «Автор» в конце статьи — по дизайну только имя + роль. Отделён верхним
+// бордером (border-border). Лейбл — eyebrow по тип-шкале.
+import type { NewsAuthor } from "../../data/news";
+
+interface Props {
+  author: NewsAuthor;
+}
+const { author } = Astro.props;
+---
+
+<div
+  class="mt-14 flex items-center gap-4 border-t border-border pt-7 max-lg:mt-10 max-lg:pt-6"
+>
+  {/* Аватар-плейсхолдер (реальное фото автора — из CMS) */}
+  <div
+    class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-surface-sunken"
+    aria-hidden="true"
+  >
+    <svg viewBox="0 0 24 24" class="h-7 w-7 text-ink/30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.2"></circle>
+      <path d="M5.5 19a6.5 6.5 0 0 1 13 0"></path>
+    </svg>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <span class="text-eyebrow text-ink/45">Автор</span>
+    <p class="flex flex-wrap items-center gap-2">
+      <span class="font-display text-lg font-semibold text-ink">{author.name}</span>
+      <span class="text-ink/40" aria-hidden="true">·</span>
+      <span class="font-sans text-base text-ink/60">{author.role}</span>
+    </p>
+  </div>
+</div>

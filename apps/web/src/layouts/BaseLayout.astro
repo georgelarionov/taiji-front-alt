@@ -21,6 +21,11 @@ const {
 
 // Канонический URL текущей страницы на домене из astro.config (site).
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// OG/Twitter-картинка: пер-страничный проп ogImage или брендовый дефолт
+// (public/og-default.png, 1200×630). Всегда абсолютный URL на домене из site —
+// иначе превью при шеринге (VK/Telegram + своя ShareControls) уходят без картинки.
+const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
 ---
 
 <!doctype html>
@@ -47,9 +52,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    <meta property="og:image" content={ogImageURL} />
     {/* Twitter card. */}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageURL} />
     {/* Запрет индексации (для служебных страниц вроде 404). */}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {/* Шрифты (Astro Fonts API): @font-face + метрически подогнанные fallback'и.
@@ -63,12 +69,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <script is:inline>
       document.documentElement.classList.add("js");
       // Показ лоудера: класс loading ставится ДО пейнта (FOUC-safe), затем
-      // CSS [data-loader] становится видимым и блокирует скролл.
-      // TEST (отладка): гейт «один раз за сессию» ОТКЛЮЧЁН — лоудер на КАЖДОЙ загрузке.
-      // Вернуть «раз за сессию»: раскомментировать строку с sessionStorage ниже.
+      // CSS [data-loader] становится видимым и блокирует скролл. Гейт — localStorage
+      // (НЕ sessionStorage): лоудер показывается ОДИН РАЗ при самом первом визите на
+      // сайт и больше не повторяется — ни в новых сессиях/вкладках, ни при перезаходе.
+      // Флаг taiji:loaded выставляет loader.ts в finish(). reduced-motion → без лоудера.
       try {
         if (
-          // !sessionStorage.getItem("taiji:loaded") &&
+          !localStorage.getItem("taiji:loaded") &&
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ) {
           document.documentElement.classList.add("loading");
@@ -100,8 +107,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         Динамический импорт под import.meta.env.DEV → Vite вырезает ветку и сам пакет
         из прод-сборки целиком (никаких orphan-чанков в dist). */}
     <script>
-      // Тулбар включён в dev. Закомментируй, чтобы скрыть аннотации.
-      if (import.meta.env.DEV) import("../lib/agentation-dev");
+      // Тулбар отключён. Раскомментируй строку ниже, чтобы вернуть аннотации в dev.
+      // if (import.meta.env.DEV) import("../lib/agentation-dev");
     </script>
 
     {/* Рантайм лоудера: init/teardown на astro:page-load / astro:before-swap (как smooth) */}

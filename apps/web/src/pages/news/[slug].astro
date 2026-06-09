@@ -1,0 +1,77 @@
+---
+// Страница отдельной новости (/news/<slug>). Статически генерируется по датасету
+// data/news (getStaticPaths). Шелл как у остальных внутренних страниц: solid-шапка
+// (активный пункт «Новости»), крошки отдельным блоком, сквозной глобальный футер —
+// чтобы страница не выглядела инородной. Контент в центральной колонке чтения 809px:
+// дата → заголовок → мета+шеринг → главное изображение → rich-text → автор. Ниже —
+// full-bleed слайдер «Другие новости». Тело статьи пока общий плейсхолдер (CMS позже).
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Footer from "../../components/Footer.astro";
+import ArticleIntro from "../../components/news/ArticleIntro.astro";
+import ArticleBody from "../../components/news/ArticleBody.astro";
+import ArticleAuthor from "../../components/news/ArticleAuthor.astro";
+import RelatedNews from "../../components/news/RelatedNews.astro";
+import { articles, relatedArticles, type NewsArticle } from "../../data/news";
+
+export function getStaticPaths() {
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+interface Props {
+  article: NewsArticle;
+}
+const { article } = Astro.props;
+const related = relatedArticles(article.slug, 6);
+---
+
+<BaseLayout
+  title={`${article.title} — Общество изучения традиционного тайцзицюань`}
+  description={article.excerpt}
+>
+  <Header variant="solid" activeNav="Новости" />
+  <Breadcrumbs
+    items={[
+      { label: "Главная", href: "/" },
+      { label: "Новости", href: "/news" },
+      { label: article.shortTitle },
+    ]}
+  />
+
+  <article class="bg-white pt-14 pb-20 max-lg:pt-8 max-lg:pb-12">
+    <div class="container-block">
+      <div class="mx-auto w-full max-w-[809px]">
+        <ArticleIntro
+          date={article.date}
+          title={article.title}
+          readingTime={article.readingTime}
+        />
+
+        {/* Главное изображение (плейсхолдер bg-field; реальное фото — из CMS) */}
+        <div
+          class="mt-10 flex aspect-video w-full items-center justify-center bg-field max-lg:mt-6"
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 24 24" class="h-16 w-16 text-ink/25 max-lg:h-12 max-lg:w-12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="1"></rect>
+            <circle cx="9" cy="9" r="1.8"></circle>
+            <path d="m21 15-4.5-4.5L6 21"></path>
+          </svg>
+        </div>
+
+        <div class="mt-12 max-lg:mt-8">
+          <ArticleBody />
+        </div>
+
+        <ArticleAuthor author={article.author} />
+      </div>
+    </div>
+  </article>
+
+  <RelatedNews cards={related} />
+  <Footer />
+</BaseLayout>

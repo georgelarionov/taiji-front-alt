@@ -1,0 +1,150 @@
+---
+// Раздел «Миссии и ценности» (фрейм Society). Заголовок → текстовый ряд (левый
+// tall-бокс с фоном-текстурой и каллиграфией 太极拳 + правая колонка из 4 абзацев и
+// строки о научной поддержке РАН) → карточки-ценности. Десктоп: ряд из двух колонок
+// в бордерной рамке + сетка ценностей 3×2. Мобайл: текст на всю ширину (бокс скрыт)
+// + слайдер ценностей (React-остров). Левый бокс — desktop-only (грузим фон через
+// getImage). Каллиграфия и логотип РАН — декоративные плейсхолдеры.
+import { getImage } from "astro:assets";
+import { INFO_PATH } from "../../lib/icons";
+import missionBg from "../../assets/society/mission-bg.webp";
+// Каллиграфия «传统太极拳学会» — та же брендовая (с встроенной кривой), что в
+// домашнем блоке «Об Обществе» (Society.astro).
+import caliSrc from "../../assets/society/cali-symbol-5block.png";
+// Эмблема РАН — тот же SVG, что на главной (Hero). Там белый (на тёмном фоне);
+// тут на светлом фоне инвертируем в чёрный (invert).
+import ranEmblem from "../../assets/hero/ran-emblem.svg?url";
+import SocietyValuesSlider from "./SocietyValuesSlider";
+
+const bg = await getImage({ src: missionBg, width: 904, format: "webp" });
+
+const values = [
+  {
+    title: "Исследовательская добросовестность",
+    description:
+      "Внимательное изучение источников, терминов, исторических свидетельств и практических методов без упрощений и недостоверных утверждений.",
+  },
+  {
+    title: "Уважение к традиции",
+    description:
+      "Бережное отношение к культурным, философским и практическим основаниям тайцзицюань, а также к различным школам и линиям передачи.",
+  },
+  {
+    title: "Единство теории и практики",
+    description:
+      "Понимание тайцзицюань через непосредственный телесный опыт, регулярную практику и осмысленное изучение принципов.",
+  },
+  {
+    title: "Преемственность",
+    description:
+      "Сохранение и передача знаний от учителя к ученику с уважением к контексту, методике и ответственности традиционного обучения.",
+  },
+  {
+    title: "Междисциплинарность",
+    description:
+      "Соединение знаний из истории, философии, культурологии, медицины, биомеханики, педагогики и исследований движения.",
+  },
+  {
+    title: "Открытость",
+    description:
+      "Готовность к диалогу между разными школами, стилями, исследовательскими подходами и практическими сообществами.",
+  },
+];
+---
+
+<section id="mission" class="scroll-mt-24 bg-white">
+  <div class="container-block flex flex-col gap-14 py-18 max-lg:gap-12 max-lg:py-12">
+    <h2 class="text-h2 text-ink" data-reveal>Миссии и ценности</h2>
+
+    {/* Текстовый ряд. Десктоп: левый tall-бокс + правый текст, в рамке border-y.
+        Мобайл: рамка снята, бокс скрыт, текст на всю ширину. */}
+    <div class="flex border-y border-border max-lg:border-0 lg:min-h-[700px]" data-reveal>
+      <div
+        class="relative hidden w-[452px] shrink-0 flex-col items-center justify-center bg-cover bg-center lg:flex"
+        style={`background-image:url('${bg.src}')`}
+      >
+        <img
+          src={caliSrc.src}
+          width={caliSrc.width}
+          height={caliSrc.height}
+          alt="传统太极拳学会"
+          lang="zh-Hans"
+          class="w-[240px] max-w-[240px] object-contain"
+        />
+        <svg
+          viewBox="0 0 20 20"
+          class="absolute bottom-9 left-1/2 h-8 w-8 -translate-x-1/2 text-ink/50"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d={INFO_PATH}></path>
+        </svg>
+      </div>
+
+      <div
+        class="flex flex-1 flex-col justify-center gap-12 px-28 py-10 max-lg:gap-8 max-lg:p-0"
+      >
+        <div class="flex flex-col gap-10 max-lg:gap-8">
+          <p class="font-sans text-[18px] font-medium leading-[1.5] text-ink max-lg:text-[16px]">
+            Общество изучения традиционного тайцзицюань создано как пространство для
+            системного изучения, сохранения и осмысления тайцзицюань в его историческом,
+            культурном и практическом контексте.
+          </p>
+          <p class="font-sans text-[18px] font-medium leading-[1.5] text-ink max-lg:text-[16px]">
+            Мы объединяем исследователей, преподавателей и практикующих, заинтересованных
+            в глубоком понимании традиции, её методов, текстов, школ и линий передачи.
+          </p>
+          <p class="font-sans text-[18px] font-medium leading-[1.5] text-ink max-lg:text-[16px]">
+            Наша задача — развивать ответственное отношение к тайцзицюань: отличать
+            исторические факты от легенд, уважительно работать с классическими
+            источниками, изучать практику через живой опыт и сопоставлять традиционные
+            представления с современными знаниями о движении, здоровье и обучении.
+          </p>
+          <p class="font-sans text-[18px] font-medium leading-[1.5] text-ink max-lg:text-[16px]">
+            Мы рассматриваем тайцзицюань не только как оздоровительную гимнастику или
+            боевое искусство, а как целостную систему телесной культуры, в которой связаны
+            история, философия, методика практики, работа с вниманием и передача опыта от
+            учителя к ученику.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-[18px]">
+          <img
+            src={ranEmblem}
+            alt=""
+            aria-hidden="true"
+            width="65"
+            height="65"
+            class="h-16 w-16 shrink-0 invert max-lg:h-11 max-lg:w-11"
+          />
+          <span class="font-display text-sm font-semibold leading-[1.4] text-ink">
+            При научной поддержке<br />Института Китая и современной Азии РАН
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Карточки-ценности: десктоп — сетка 3×2, мобайл — слайдер. */}
+    <div class="grid grid-cols-3 gap-[46px] max-lg:hidden" data-reveal-stagger>
+      {
+        values.map((v, i) => (
+          <div
+            data-reveal-item
+            class:list={[
+              "flex flex-col gap-14 border border-border px-7 py-8",
+              i < 3 ? "min-h-[284px]" : "min-h-[226px]",
+            ]}
+          >
+            <h3 class="font-display text-2xl font-semibold leading-[1.4] text-ink">
+              {v.title}
+            </h3>
+            <p class="font-sans text-base leading-normal text-ink">{v.description}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="hidden max-lg:block" data-reveal>
+      <SocietyValuesSlider client:load values={values} />
+    </div>
+  </div>
+</section>

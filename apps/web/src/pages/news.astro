@@ -1,0 +1,34 @@
+---
+// Страница «Новости» (/news). Собрана по фреймам MagicPath News / NewMobile на
+// конвенциях проекта (docs/conventions.md). Шелл как у /taijiquan: solid-шапка
+// (синее лого, активный пункт «Новости»), крошки отдельным блоком, сквозной
+// глобальный футер. Контент — лента из 12 заглушек: 6 видны сразу, ещё 6 по
+// кнопке «Показать ещё» (zero-JS <details>; см. NewsList). CMS подключится позже.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import PageTitleBand from "../components/PageTitleBand.astro";
+import NewsList from "../components/news/NewsList.astro";
+import Footer from "../components/Footer.astro";
+import { articles } from "../data/news";
+
+// Лента берётся из единого датасета data/news → каждая карточка ведёт на свою
+// статью /news/<slug> (тот же источник, что и страница статьи). CMS подключится позже.
+const items = articles.map((a) => ({
+  date: a.date,
+  title: a.title,
+  excerpt: a.excerpt,
+  href: `/news/${a.slug}`,
+}));
+---
+
+<BaseLayout
+  title="Новости — Общество изучения традиционного тайцзицюань"
+  description="Новости Общества изучения традиционного тайцзицюань: события, участие в конференциях, публикации и жизнь сообщества."
+>
+  <Header variant="solid" activeNav="Новости" />
+  <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Новости" }]} />
+  <PageTitleBand title="Новости" />
+  <NewsList items={items} initial={6} />
+  <Footer />
+</BaseLayout>

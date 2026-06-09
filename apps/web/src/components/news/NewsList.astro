@@ -1,0 +1,67 @@
+---
+// Лента новостей /news. Одна колонка max-w-[809px] по центру; между карточками —
+// <hr>-разделитель border-border (по дизайну — линия по центру 64px-зазора).
+//
+// «Показать ещё» — zero-JS через <details>/<summary> (не ломается под
+// <ClientRouter />, доступно с клавиатуры): первые `initial` карточек статичны,
+// кнопка + остальные лежат в <details>. <summary> стилизован как ghost-кнопка и
+// прячется при раскрытии (details[open] > summary{display:none}). Первый <hr>
+// внутри <details> — разделитель между последней видимой и первой скрытой.
+import NewsCard from "./NewsCard.astro";
+
+interface Item {
+  date: string;
+  title: string;
+  excerpt: string;
+  href: string;
+}
+interface Props {
+  items: Item[];
+  initial?: number;
+}
+const { items, initial = 6 } = Astro.props;
+const visible = items.slice(0, initial);
+const rest = items.slice(initial);
+const rule = "my-8 border-0 border-t border-border max-lg:my-10";
+---
+
+<section class="bg-white pt-12 pb-[140px] max-lg:py-10">
+  <div class="container-block">
+    <div class="mx-auto w-full max-w-[809px]">
+      {
+        visible.map((item, i) => (
+          <Fragment>
+            {i > 0 && <hr class={rule} />}
+            <NewsCard {...item} />
+          </Fragment>
+        ))
+      }
+
+      {
+        rest.length > 0 && (
+          <details class="news-more">
+            <summary class="news-more-btn mx-auto mt-12 flex w-fit cursor-pointer list-none items-center justify-center border border-accent px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-accent hover:text-white max-lg:mt-10">
+              Показать ещё
+            </summary>
+            {rest.map((item) => (
+              <Fragment>
+                <hr class={rule} />
+                <NewsCard {...item} />
+              </Fragment>
+            ))}
+          </details>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Прячем кнопку, когда лента раскрыта; убираем дефолтный маркер <details>. */
+  details[open] > summary {
+    display: none;
+  }
+  .news-more-btn::-webkit-details-marker {
+    display: none;
+  }
+</style>

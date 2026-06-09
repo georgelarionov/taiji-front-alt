@@ -1,0 +1,166 @@
+---
+// Страница «Контакты» (/contacts). Структура по референсу (contacts-reference),
+// данные — наши (из проектного Contacts-блока/футера). Шелл как у /society: solid-
+// шапка на белом фоне (bg="white"), крошки на белом, сквозной глобальный футер.
+// «Контакты» нет в верхнем меню (живёт в меню/футере) → активного пункта topNav нет.
+// Реквизиты не делаем. Карта — встраиваемый виджет Яндекс.Конструктора (тот же
+// конструктор, что в присланном скрипте, но iframe — надёжнее со SPA-навигацией;
+// pointer-events:auto перебивает Lenis-правило, гасящее события на iframe).
+// CTA «Отправить сообщение» — статичный триггер [data-contact-open], дровер с
+// формой монтируется островом ContactFormDrawer (переиспользует общий Drawer).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Footer from "../components/Footer.astro";
+import ContactFormDrawer from "../components/contacts/ContactFormDrawer";
+
+const EMAIL = "info@taiji-society.ru";
+const mapUrl =
+  "https://yandex.ru/maps/?text=" +
+  encodeURIComponent("Москва, Нахимовский проспект, д.32");
+
+// Встраиваемый виджет той же конструкции карты, что в присланном скрипте (um-хэш).
+const mapWidgetSrc =
+  "https://yandex.ru/map-widget/v1/?um=constructor%3A17aa7c6da5bc66b337f00920483efe0bf6026e0db0b732306ff9c06ecddde557&source=constructor";
+
+const info = [
+  { label: "Адрес", value: "Москва, Нахимовский проспект, д.32", href: mapUrl, external: true },
+  { label: "Телефон", value: "+7 903 747 9367", href: "tel:+79037479367" },
+  { label: "Время работы", value: "Пн – Пт: с 10:00 до 19:00" },
+  { label: "E-mail", value: EMAIL, href: `mailto:${EMAIL}` },
+];
+
+// 3 мессенджера (как в футере/меню): WeChat, Telegram, MAX. Глифы — в стиле меню
+// (assets/menu/social-*.svg), инлайн как currentColor. Telegram/MAX — одним path
+// (viewBox обрезан по глифу); WeChat многоэлементный → рисуется в разметке.
+const TELEGRAM_PATH =
+  "M19.3749 26.9574C24.7435 24.8416 28.324 23.4449 30.1142 22.7709C35.23 20.8461 36.2934 20.5109 36.9864 20.5001C37.1397 20.4983 37.4782 20.5325 37.6993 20.6947C37.8825 20.8317 37.9343 21.0155 37.9621 21.1453C37.986 21.275 38.0159 21.5706 37.99 21.8013C37.7132 24.4361 36.5144 30.8322 35.9031 33.7842C35.6462 35.0331 35.1384 35.4512 34.6465 35.4927C33.5752 35.581 32.7647 34.8529 31.7292 34.2383C30.1102 33.276 29.1942 32.6776 27.6211 31.7405C25.8029 30.6555 26.9818 30.0608 28.0173 29.0858C28.2882 28.8317 33.0017 24.9515 33.0913 24.6001C33.1032 24.5568 33.1152 24.3928 33.0057 24.3063C32.9001 24.2198 32.7408 24.2487 32.6253 24.2721C32.462 24.3063 29.8753 25.8544 24.8551 28.9182C24.1222 29.3742 23.4571 29.5976 22.8577 29.5868C22.2026 29.5742 20.9361 29.2498 19.9942 28.9741C18.8432 28.6335 17.9252 28.455 18.0048 27.8783C18.0446 27.5792 18.5027 27.271 19.3749 26.9574Z";
+const MESSENGER_PATH =
+  "M24.6672 27.5114C23.95 27.5114 23.3821 26.9432 23.3821 26.2255C23.3821 25.5078 23.95 24.9397 24.6672 24.9397C25.3845 24.9397 25.9524 25.5078 25.9524 26.2255C25.9524 26.9432 25.3845 27.5114 24.6672 27.5114ZM31.3339 27.5114C30.6166 27.5114 30.0488 26.9432 30.0488 26.2255C30.0488 25.5078 30.6166 24.9397 31.3339 24.9397C32.0512 24.9397 32.6191 25.5078 32.6191 26.2255C32.6191 26.9432 32.0512 27.5114 31.3339 27.5114ZM22.8229 35.2153L23.5384 34.7789C24.3481 34.2851 25.307 34.095 26.2438 34.2426C26.4553 34.2759 26.6292 34.3015 26.7634 34.3192C27.1696 34.3728 27.5828 34.4 28.0006 34.4C32.4213 34.4 35.9006 31.3776 35.9006 27.8C35.9006 24.2224 32.4213 21.2 28.0006 21.2C23.5799 21.2 20.1006 24.2224 20.1006 27.8C20.1006 29.1655 20.6002 30.4728 21.5323 31.5809C21.5806 31.6383 21.6528 31.7177 21.7467 31.8155C22.542 32.6438 22.943 33.7739 22.8476 34.9182L22.8229 35.2153ZM22.1929 37.9423C22.0099 38.0566 21.7948 38.1087 21.5798 38.0908C21.0294 38.045 20.6204 37.5616 20.6663 37.0112L20.8546 34.7521C20.9022 34.1799 20.7017 33.6149 20.3041 33.2008C20.1819 33.0735 20.0811 32.9627 20.0017 32.8683C18.8062 31.447 18.1006 29.6951 18.1006 27.8C18.1006 23.0503 22.533 19.2 28.0006 19.2C33.4682 19.2 37.9006 23.0503 37.9006 27.8C37.9006 32.5496 33.4682 36.4 28.0006 36.4C27.4911 36.4 26.9906 36.3665 26.5018 36.302C26.3491 36.2819 26.1593 36.254 25.9326 36.2182C25.4641 36.1444 24.9847 36.2395 24.5799 36.4864L22.1929 37.9423Z";
+
+interface SocialCard {
+  label: string;
+  href: string;
+  key: string;
+  viewBox?: string;
+  path?: string;
+}
+const socials: SocialCard[] = [
+  { label: "WeChat", href: "#", key: "wechat" },
+  { label: "Telegram", href: "#", key: "telegram", viewBox: "17 19.5 22 17", path: TELEGRAM_PATH },
+  { label: "MAX", href: "#", key: "max", viewBox: "17 18 22 21", path: MESSENGER_PATH },
+];
+---
+
+<BaseLayout
+  title="Контакты — Общество изучения традиционного тайцзицюань"
+  description="Контакты Общества изучения традиционного тайцзицюань: адрес, телефон, e-mail и форма обратной связи."
+>
+  <Header variant="solid" bg="white" />
+  <Breadcrumbs
+    items={[{ label: "Главная", href: "/" }, { label: "Контакты" }]}
+    bg="white"
+  />
+
+  <section class="bg-white">
+    <div class="container-block py-16 max-lg:py-12">
+      <h1 class="text-h1 text-ink">Контакты</h1>
+
+      {/* ───────── Инфо-строка ───────── */}
+      <div class="mt-12 border-t border-border max-lg:mt-8 max-lg:border-y">
+        <div
+          class="grid grid-cols-4 gap-8 pt-8 max-lg:grid-cols-1 max-lg:gap-0 max-lg:divide-y max-lg:divide-border max-lg:pt-0"
+        >
+          {
+            info.map((it) => (
+              <div class="flex flex-col gap-2 max-lg:py-4">
+                <span class="font-display text-sm font-semibold text-ink/45">{it.label}</span>
+                {it.href ? (
+                  <a
+                    href={it.href}
+                    target={it.external ? "_blank" : undefined}
+                    rel={it.external ? "noopener" : undefined}
+                    class="link-underline w-fit font-display text-[17px] font-semibold text-ink transition-colors hover:text-accent"
+                  >
+                    {it.value}
+                  </a>
+                ) : (
+                  <span class="font-display text-[17px] font-semibold text-ink">{it.value}</span>
+                )}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      {/* ───────── Соцсети + CTA ───────── */}
+      <div class="mt-10 grid grid-cols-4 gap-6 max-lg:mt-8 max-lg:grid-cols-1 max-lg:gap-3">
+        {
+          socials.map((s) => (
+            <a
+              href={s.href}
+              class="group relative flex min-h-[220px] flex-col justify-between border border-border bg-white p-7 transition-colors hover:bg-surface max-lg:min-h-[150px] max-lg:p-6"
+            >
+              {/* иконка — сверху-слева (чёрная) */}
+              <span class="text-ink">
+                {s.key === "wechat" ? (
+                  <svg viewBox="0 0 24 24" class="h-7 w-7" aria-hidden="true">
+                    <path fill="currentColor" d="M9.4 3.2C5.3 3.2 2 6 2 9.5c0 2 1.1 3.8 2.8 5L4 17.2l2.9-1.5c.8.2 1.6.4 2.5.4.2 0 .5 0 .7-.03C9.7 15.3 9.5 14.4 9.5 13.5c0-3.1 3-5.6 6.8-5.6.3 0 .6 0 .9.05C16.5 5 13.3 3.2 9.4 3.2Z" />
+                    <path fill="currentColor" d="M22 13.4c0-2.7-2.7-4.9-6-4.9s-6 2.2-6 4.9 2.7 4.9 6 4.9c.7 0 1.4-.1 2-.3l2.2 1.2-.6-1.9c1.5-.9 2.4-2.3 2.4-3.9Z" />
+                    <circle cx="6.6" cy="8.4" r="0.95" fill="#fff" />
+                    <circle cx="11.4" cy="8.4" r="0.95" fill="#fff" />
+                    <circle cx="14.4" cy="12.6" r="0.8" fill="#fff" />
+                    <circle cx="18.2" cy="12.6" r="0.8" fill="#fff" />
+                  </svg>
+                ) : (
+                  <svg viewBox={s.viewBox} class="h-7 w-7" fill="currentColor" aria-hidden="true">
+                    <path d={s.path} />
+                  </svg>
+                )}
+              </span>
+
+              {/* низ: лейбл слева + диагональная стрелка справа */}
+              <div class="flex items-end justify-between gap-4">
+                <span class="font-display text-[17px] font-semibold text-ink max-lg:text-base">{s.label}</span>
+                <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-ink transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 18 18 6" /><path d="M10 6h8v8" />
+                </svg>
+              </div>
+            </a>
+          ))
+        }
+
+        {/* CTA — открывает дровер с формой (триггер ловит остров ContactFormDrawer) */}
+        <button
+          type="button"
+          data-contact-open
+          class="group relative flex min-h-[220px] cursor-pointer flex-col justify-end bg-accent p-7 text-white transition-colors hover:bg-accent/90 max-lg:min-h-[150px] max-lg:p-6"
+        >
+          <div class="flex items-end justify-between gap-4">
+            <span class="font-display text-base font-bold uppercase tracking-wide max-lg:text-[15px]">Отправить сообщение</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 18 18 6" /><path d="M10 6h8v8" />
+            </svg>
+          </div>
+        </button>
+      </div>
+
+      {/* ───────── Карта (встраиваемый виджет Яндекс.Конструктора) ───────── */}
+      <div class="mt-10 max-lg:mt-8">
+        <iframe
+          src={mapWidgetSrc}
+          title="Карта: Москва, Нахимовский проспект, д.32"
+          loading="lazy"
+          class="block h-[800px] w-full border-0 max-lg:h-[400px]"
+          style="pointer-events:auto"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+
+  {/* Дровер с формой обратной связи (моковая). Монтируется один раз; открывается
+      по клику на любой [data-contact-open]. */}
+  <ContactFormDrawer client:load email={EMAIL} />
+</BaseLayout>

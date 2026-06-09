@@ -107,7 +107,7 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
           {cards.map((c, i) => (
             <motion.a
               key={i}
-              href="#"
+              href="/research"
               // initial={false} → SSR/no-JS/до гидрации рендерит 'shown' (видимо).
               // 'hidden' (вход-анимация) применяется только после гидрации и не под
               // reduced-motion: mounted && !reduce. Иначе всегда 'shown'.
@@ -228,7 +228,7 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
       {/* Кнопка «Все исследования» только на мобиле (max-lg) — на десктопе она в
           хедере блока (Research.astro). Full-width, accent, под рядом контролов. */}
       <a
-        href="#"
+        href="/research"
         className="hidden max-lg:flex max-lg:mt-8 w-full items-center justify-center gap-[10px] bg-accent px-4 py-3 text-center font-display text-base font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
       >
         Все исследования

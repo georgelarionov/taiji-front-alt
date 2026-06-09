@@ -1,0 +1,39 @@
+---
+// Страница «Исследования» (/research). Пока заглушка по образцу /events: шелл как
+// у /taijiquan (solid-шапка с активным пунктом «Исследования», крошки отдельным
+// блоком, сквозной глобальный футер), тайтл-баннер и пустое состояние. Контент
+// (первоисточники, публикации, конференции) подключится позже.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Footer from "../components/Footer.astro";
+import PageTitleBand from "../components/PageTitleBand.astro";
+---
+
+<BaseLayout
+  title="Исследования — Общество изучения традиционного тайцзицюань"
+  description="Исследования Общества изучения традиционного тайцзицюань: первоисточники, публикации, конференции и научные материалы."
+>
+  <Header variant="solid" activeNav="Исследования" />
+  <Breadcrumbs
+    items={[{ label: "Главная", href: "/" }, { label: "Исследования" }]}
+  />
+  <PageTitleBand title="Исследования" />
+
+  <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
+    <div class="container-block">
+      <div
+        class="flex min-h-[520px] w-full flex-col items-center justify-center gap-3 text-center max-lg:min-h-[420px]"
+      >
+        <p class="font-display text-lg font-semibold text-ink max-lg:text-base">
+          Раздел в разработке
+        </p>
+        <p class="font-sans text-base text-ink/55 max-lg:text-[15px]">
+          Материалы исследований появятся здесь в ближайшее время
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

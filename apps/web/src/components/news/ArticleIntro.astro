@@ -1,0 +1,28 @@
+---
+// Шапка статьи: дата → заголовок (h1) → мета-строка (время чтения + шеринг).
+// Заголовок — единственный <h1> страницы (text-h1 по тип-шкале). Мета-строка
+// обрамлена тонкими бордерами сверху/снизу (border-border). Контролы шеринга —
+// остров client:load (ShareControls), ему передаём заголовок для share-диалогов.
+import ShareControls from "./ShareControls";
+
+interface Props {
+  date: string;
+  title: string;
+  readingTime: string;
+}
+const { date, title, readingTime } = Astro.props;
+---
+
+<header class="flex flex-col">
+  <p class="font-display text-base font-medium text-ink/60">{date}</p>
+  <h1 class="text-h1 mt-4 font-semibold text-ink max-lg:mt-3">{title}</h1>
+
+  <div
+    class="mt-8 flex items-center justify-between gap-6 border-y border-border py-5 max-lg:mt-6 max-lg:py-4"
+  >
+    <span class="font-display text-base font-medium text-ink/60">
+      {readingTime} чтения
+    </span>
+    <ShareControls client:load title={title} />
+  </div>
+</header>

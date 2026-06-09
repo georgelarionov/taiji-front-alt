@@ -1,0 +1,34 @@
+---
+// Страница «Теория» (/taijiquan/theory). Дубль внутреннего раздела на эталоне
+// /taijiquan/history: solid-Header (активный «Тайцзицюань»), крошки до текущего
+// раздела, общий InteriorHero + контент-заглушка, сквозной Footer. В «Узнайте
+// больше» карточка «Теория» приглушена как текущая (current). Контент — заглушка.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import ContentPlaceholder from "../../components/ContentPlaceholder.astro";
+import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Теория — Общество изучения традиционного тайцзицюань"
+  description="Теория тайцзицюань: принципы равновесия инь-ян, расслабления и внутренней работы тела."
+>
+  <Header variant="solid" activeNav="Тайцзицюань" />
+  <Breadcrumbs
+    items={[
+      { label: "Главная", href: "/" },
+      { label: "Тайцзицюань", href: "/taijiquan" },
+      { label: "Теория" },
+    ]}
+  />
+  <InteriorHero
+    title="Теория"
+    subtitle="Принципы равновесия, расслабления и внутренней работы тела"
+  />
+  <ContentPlaceholder />
+  <TaijiExplore current="Теория" />
+  <Footer />
+</BaseLayout>

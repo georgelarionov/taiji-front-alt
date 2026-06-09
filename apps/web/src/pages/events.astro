@@ -1,0 +1,35 @@
+---
+// Страница «Мероприятия» (/events). Собрана по фреймам MagicPath Events /
+// Eventsmobile на конвенциях проекта. Пока заглушка: списки мероприятий ещё нет,
+// поэтому под табами «Предстоящие/Прошедшие» показывается пустое состояние (CMS
+// позже). Шелл как у /taijiquan: solid-шапка (активный пункт «Мероприятия»), крошки
+// отдельным блоком, сквозной глобальный футер.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Footer from "../components/Footer.astro";
+import PageTitleBand from "../components/PageTitleBand.astro";
+import EventsTabs from "../components/events/EventsTabs";
+---
+
+<BaseLayout
+  title="Мероприятия — Общество изучения традиционного тайцзицюань"
+  description="Мероприятия Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки."
+>
+  <Header variant="solid" activeNav="Мероприятия" />
+  <Breadcrumbs
+    items={[{ label: "Главная", href: "/" }, { label: "Мероприятия" }]}
+  />
+  <PageTitleBand title="Мероприятия" />
+
+  <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
+    <div class="container-block flex flex-col items-center gap-6">
+      <span class="text-center font-display text-base font-semibold text-ink/50">
+        События Общества
+      </span>
+      <EventsTabs client:load />
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

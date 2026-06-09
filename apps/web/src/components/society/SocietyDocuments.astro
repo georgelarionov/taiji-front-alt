@@ -1,0 +1,76 @@
+---
+// Раздел «Документы» (фрейм Society). Заголовок + карточки документов на тоне surface
+// с ссылкой «Скачать PDF» (иконка PDF 20×20, синяя — наследует accent ссылки).
+// Десктоп: 2 в ряд (664×237). Мобайл: в столбик.
+// PDF лежат в public/docs/ → отдаются как статика по абсолютному пути.
+import fs from "node:fs";
+import { PDF_PATH } from "../../lib/icons";
+
+// Размер PDF читаем на сборке из public/docs (путь резолвим от файла, не от cwd) →
+// всегда актуален, обновится при замене файла. mb = десятичные мегабайты (как в ОС),
+// 1 знак после запятой, хвостовой «.0» убираем. Если файла нет — пустая строка.
+function pdfSizeMb(href: string): string {
+  try {
+    const { size } = fs.statSync(new URL(`../../../public${href}`, import.meta.url));
+    return (size / 1e6).toFixed(1).replace(/\.0$/, "");
+  } catch {
+    return "";
+  }
+}
+
+const docs = [
+  {
+    title: "Устав",
+    date: "Принят на учредительном собрании 04.03.2024 г.",
+    href: "/docs/ustav.pdf",
+  },
+  {
+    title: "Протокол учредительного собрания",
+    date: "Общества изучения традиционного тайцзицюань от 04.03.2025 г.",
+    href: "/docs/protokol.pdf",
+  },
+].map((d) => ({ ...d, sizeMb: pdfSizeMb(d.href) }));
+---
+
+<section id="documents" class="scroll-mt-24 bg-white">
+  <div class="container-block flex flex-col gap-14 pb-22 max-lg:gap-8 max-lg:pb-12">
+    <h2 class="text-h2 text-ink" data-reveal>Документы</h2>
+    <div class="grid grid-cols-2 gap-6 max-lg:grid-cols-1" data-reveal-stagger>
+      {
+        docs.map((d) => (
+          <article
+            data-reveal-item
+            class="flex min-h-[237px] flex-col justify-between gap-16 bg-surface p-8 max-lg:min-h-0 max-lg:gap-12 max-lg:p-6"
+          >
+            <div class="flex flex-col gap-4">
+              <h3 class="font-display text-[28px] font-semibold leading-[1.1] text-ink max-lg:text-2xl">
+                {d.title}
+              </h3>
+              <p class="font-display text-[18px] font-semibold text-ink/50 max-lg:text-base">
+                {d.date}
+              </p>
+            </div>
+            <a
+              href={d.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex w-fit items-center gap-2 font-display text-base font-semibold text-accent"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                class="h-5 w-5 shrink-0"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d={PDF_PATH}></path>
+              </svg>
+              <span class="link-underline">
+                Скачать PDF{d.sizeMb ? ` (${d.sizeMb} mb)` : ""}
+              </span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

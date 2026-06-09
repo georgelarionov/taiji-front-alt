@@ -1,0 +1,29 @@
+---
+// Секция «Другие новости» внизу страницы статьи. Full-bleed фон surface-sunken
+// (как блок «Исследования»), контент в container-block; горизонтальный слайдер
+// бледит за правый край и клипается секцией (overflow-x-clip). Слайдер — остров
+// client:load (RelatedNewsSlider) на тех же контролах, что и другие страницы.
+import RelatedNewsSlider from "./RelatedNewsSlider";
+import type { RelatedCard } from "./RelatedNewsSlider";
+
+interface Props {
+  cards: RelatedCard[];
+}
+const { cards } = Astro.props;
+---
+
+<section class="overflow-x-clip bg-surface-sunken py-20 max-lg:py-16">
+  <div class="container-block">
+    <header class="flex items-end justify-between gap-8">
+      <h2 class="text-h2 text-ink">Другие новости</h2>
+      <a
+        href="/news"
+        class="link-underline hidden font-display text-base font-semibold text-accent lg:inline-block"
+      >
+        Все новости
+      </a>
+    </header>
+
+    <RelatedNewsSlider client:load cards={cards} />
+  </div>
+</section>

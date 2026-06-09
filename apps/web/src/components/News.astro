@@ -13,7 +13,9 @@ import imageNews1 from "../assets/news/image-news-1.png";
 const moreClass =
   "link-underline-group z-10 w-fit font-display text-base font-semibold text-accent";
 
+// slug ссылается на статью в src/data/news.ts → карточки ведут на /news/<slug>.
 const featured = {
+  slug: "iksa-ran-open-day",
   date: "18 апреля 2026 г.",
   title:
     "Представители Общества приняли участие в дне открытых дверей ИКСА РАН",
@@ -22,11 +24,13 @@ const featured = {
 
 const side = [
   {
+    slug: "chairman-award",
     date: "17 апреля 2026 г.",
     title:
       "Председатель попечительского совета Общества награждён за развитие китайских боевых искусств в России",
   },
   {
+    slug: "tv-brics-interview",
     date: "10 апреля 2026 г.",
     title: "Интервью ответственного секретаря Общества телеканалу ТВ-БРИКС",
   },
@@ -58,7 +62,7 @@ const side = [
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2" data-reveal-stagger>
           {/* Большая карточка */}
           <a
-            href="#"
+            href={`/news/${featured.slug}`}
             class="group relative block cursor-pointer border border-border p-8 max-lg:p-6 max-lg:pt-8"
             data-reveal-item
           >
@@ -102,7 +106,7 @@ const side = [
             {
               side.map((item) => (
                 <a
-                  href="#"
+                  href={`/news/${item.slug}`}
                   class="group relative flex flex-1 cursor-pointer flex-col justify-between border border-border py-8 pl-8 pr-[79px] max-lg:p-6 max-lg:pt-8"
                   data-reveal-item
                 >
@@ -127,7 +131,7 @@ const side = [
             «top 85%» для него недостижим → остался бы скрытым. CTA и так виден сразу.
             На hover — синий фон, белый текст. */}
         <a
-          href="#"
+          href="/news"
           class="block w-full bg-accent-soft py-4 text-center font-display text-base font-semibold text-accent transition duration-300 ease-out hover:bg-accent hover:text-white active:scale-[0.98] max-lg:py-4 max-lg:text-[16px] max-lg:leading-[1.1]"
         >
           Все новости

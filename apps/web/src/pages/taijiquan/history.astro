@@ -1,0 +1,35 @@
+---
+// Страница «История» (/taijiquan/history). Собрана по фреймам MagicPath
+// Template-1 / Mobile-Template-1 на эталоне /taijiquan: solid-Header (активный пункт
+// «Тайцзицюань»), крошки Главная → Тайцзицюань → История, сквозной Footer.
+// Hero и контент-заглушка — общие компоненты внутренних разделов (InteriorHero /
+// ContentPlaceholder). В «Узнайте больше» текущий раздел приглушён (current).
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import ContentPlaceholder from "../../components/ContentPlaceholder.astro";
+import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<BaseLayout
+  title="История — Общество изучения традиционного тайцзицюань"
+  description="История тайцзицюань: от семейной боевой традиции в Китае до мировой практики движения."
+>
+  <Header variant="solid" activeNav="Тайцзицюань" />
+  <Breadcrumbs
+    items={[
+      { label: "Главная", href: "/" },
+      { label: "Тайцзицюань", href: "/taijiquan" },
+      { label: "История" },
+    ]}
+  />
+  <InteriorHero
+    title="История"
+    subtitle="От семейной боевой традиции в Китае до мировой практики движения"
+  />
+  <ContentPlaceholder />
+  <TaijiExplore current="История" />
+  <Footer />
+</BaseLayout>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://taiji-society.example/sitemap-index.xml
+Sitemap: https://taiji-front-production.up.railway.app/sitemap-index.xml

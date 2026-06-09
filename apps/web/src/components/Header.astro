@@ -21,10 +21,13 @@ interface Props {
   variant?: "overlay" | "solid";
   // Метка активного пункта topNav (подсветка + подчёркивание). Только для solid.
   activeNav?: string;
+  // Фон solid-шапки: surface (по умолчанию, как /taijiquan) или white (см. /society).
+  bg?: "surface" | "white";
 }
 
-const { variant = "overlay", activeNav } = Astro.props;
+const { variant = "overlay", activeNav, bg = "surface" } = Astro.props;
 const solid = variant === "solid";
+const solidBg = bg === "white" ? "bg-white" : "bg-surface";
 // Синий локап на светлом фоне (solid) / белый поверх hero (overlay).
 const logo = solid ? logoBlue : logoWhite;
 ---
@@ -33,7 +36,7 @@ const logo = solid ? logoBlue : logoWhite;
   role="banner"
   class:list={[
     "gutter-x flex min-h-[94px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:gap-8 max-lg:pt-3 max-lg:pb-4",
-    solid && "bg-surface border-b border-border",
+    solid && `${solidBg} border-b border-border`,
   ]}
 >
   <a href="/" class="flex items-center gap-4" aria-label="На главную">
