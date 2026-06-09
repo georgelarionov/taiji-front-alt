@@ -5,7 +5,7 @@ import SliderControls from "./SliderControls";
 // Мобильный слайдер «Команды» /society (десктоп — сетка 4-кол в SocietyTeam.astro).
 // Одна карточка персоны + контролы; свайп переключает. Портрет — оптимизированный
 // webp-src, подготовленный в SocietyTeam.astro через getImage().
-export type SocietyMember = { role: string; name: string; photo: string };
+export type SocietyMember = { id: string; role: string; name: string; photo: string };
 
 export default function SocietyTeamSlider({ members }: { members: SocietyMember[] }) {
   const [index, setIndex] = useState(0);
@@ -47,12 +47,13 @@ export default function SocietyTeamSlider({ members }: { members: SocietyMember[
             </span>
             <h3 className="font-display text-2xl font-semibold leading-[1.3] text-ink">{m.name}</h3>
           </div>
-          <a
-            href="#"
-            className="flex items-center justify-center bg-accent-soft py-3 font-display text-sm font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
+          <button
+            type="button"
+            data-team-open={m.id}
+            className="flex w-full cursor-pointer items-center justify-center bg-accent-soft py-3 font-display text-sm font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
           >
             Подробнее
-          </a>
+          </button>
         </article>
       </div>
 
