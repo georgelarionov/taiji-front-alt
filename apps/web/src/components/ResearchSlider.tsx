@@ -8,7 +8,7 @@ import { ARROW_PATH } from "../lib/icons";
 // transform на треке (не scroll). Клик по стрелкам двигает трек влево/вправо.
 
 export type ResearchCard = {
-  year: string;
+  year?: string; // год издания; у первоисточников нет — мета покажет только категорию
   category: string;
   title: string;
   desc: string;
@@ -101,7 +101,7 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
       <div ref={viewportRef} className="mt-14 touch-pan-y max-lg:mt-8">
         <div
           ref={trackRef}
-          className="flex gap-6 transition-transform duration-500 ease-out max-lg:gap-4"
+          className="flex gap-6 transition-transform duration-500 ease-smooth max-lg:gap-4"
           style={{ transform: `translateX(${offset}px)` }}
         >
           {cards.map((c, i) => (
@@ -132,20 +132,24 @@ export default function ResearchSlider({ cards }: { cards: ResearchCard[] }) {
               <div className="relative z-10 flex h-full flex-col max-lg:justify-between max-lg:p-6">
                 {/* Top: title + description */}
                 <div className="flex flex-col gap-[17px] px-6 pt-8 max-lg:gap-3 max-lg:p-0">
-                  <h3 className="font-display text-2xl font-semibold leading-[1.2] text-ink max-lg:text-[20px] max-lg:leading-[1.15]">
+                  <h3 className="line-clamp-3 font-display text-2xl font-semibold leading-[1.2] text-ink max-lg:text-[20px] max-lg:leading-[1.15]">
                     {c.title}
                   </h3>
-                  <p className="font-sans text-base font-medium leading-[1.375] text-ink/70 max-lg:text-[15px] max-lg:leading-[1.4]">
+                  <p className="line-clamp-4 font-sans text-base font-medium leading-[1.375] text-ink/70 max-lg:line-clamp-3 max-lg:text-[15px] max-lg:leading-[1.4]">
                     {c.desc}
                   </p>
                 </div>
                 {/* Bottom: meta + divider + «Подробнее» — on mobile grouped in one block */}
                 <div className="mt-auto flex flex-col max-lg:mt-0 max-lg:gap-4">
                   <div className="flex items-center gap-[18px] px-6 pb-7 max-lg:gap-2 max-lg:p-0">
-                    <span className="font-display text-base font-semibold text-ink max-lg:text-[14px]">
-                      {c.year}
-                    </span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-black/15 max-lg:h-[5px] max-lg:w-[5px] max-lg:bg-ink/20" />
+                    {c.year && (
+                      <>
+                        <span className="font-display text-base font-semibold text-ink max-lg:text-[14px]">
+                          {c.year}
+                        </span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-black/15 max-lg:h-[5px] max-lg:w-[5px] max-lg:bg-ink/20" />
+                      </>
+                    )}
                     <span className="font-display text-base font-semibold text-ink max-lg:text-[14px]">
                       {c.category}
                     </span>

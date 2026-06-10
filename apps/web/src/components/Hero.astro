@@ -17,6 +17,8 @@ import heroVideoMp4 from "../assets/hero/hero-video.mp4";
 import heroVideoMobileWebm from "../assets/hero/hero-video-mobile.webm";
 import heroVideoMobileMp4 from "../assets/hero/hero-video-mobile.mp4";
 import heroBg from "../assets/hero/hero-bg.webp";
+// Статичный фон слайда 2 — png-исходник, пережимаем в webp (desktop+mobile).
+import slide2Img from "../assets/hero/slide-2.png";
 // Эмблема РАН для нижней плашки — отдаём как есть (SVG ?url).
 import ranEmblem from "../assets/hero/ran-emblem.svg?url";
 
@@ -27,14 +29,17 @@ import ranEmblem from "../assets/hero/ran-emblem.svg?url";
 const posterDesktop = await getImage({ src: heroBg, width: 2560, format: "webp" });
 const posterMobile = await getImage({ src: heroBg, width: 1080, format: "webp" });
 
-// Пока 3 одинаковых слайда — контент и фон продублированы (будут различаться,
-// когда появятся реальные материалы/ассеты под каждый слайд).
-const baseSlide: HeroSlide = {
+// Фон слайда 2 — те же ширины, что у постера (desktop 2560 / mobile 1080), webp.
+const slide2Desktop = await getImage({ src: slide2Img, width: 2560, format: "webp" });
+const slide2Mobile = await getImage({ src: slide2Img, width: 1080, format: "webp" });
+
+// Слайд 1 — видеофон, CTA ведёт на /taijiquan.
+const slide1: HeroSlide = {
   eyebrow: "Что такое тайцзицюань?",
   title: "Китайское внутреннее боевое искусство",
   subtitle: "В котором сила рождается из спокойствия, а движение из внимания.",
   ctaText: "Узнать больше",
-  ctaHref: "#",
+  ctaHref: "/taijiquan",
   bg: {
     type: "video",
     webm: heroVideoWebm,
@@ -49,9 +54,21 @@ const baseSlide: HeroSlide = {
     },
   },
 };
-// Отдельные объекты (а не три ссылки на baseSlide) — чтобы будущие per-slide
-// правки одного слайда не мутировали остальные через общий алиас.
-const slides: HeroSlide[] = [{ ...baseSlide }, { ...baseSlide }, { ...baseSlide }];
+
+// Слайд 2 — статичный фон (без надзаголовка), CTA ведёт на /taijiquan/practice.
+const slide2: HeroSlide = {
+  title: "Практика тайцзицюань",
+  subtitle: "Форма, внимание, дыхание и работа с телом",
+  ctaText: "Узнать больше",
+  ctaHref: "/taijiquan/practice",
+  bg: {
+    type: "image",
+    url: slide2Desktop.src,
+    mobile: slide2Mobile.src,
+  },
+};
+
+const slides: HeroSlide[] = [slide1, slide2];
 ---
 
 <HeroSlider slides={slides} client:load>
@@ -118,7 +135,7 @@ const slides: HeroSlide[] = [{ ...baseSlide }, { ...baseSlide }, { ...baseSlide 
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(html.js .hero-revealed [data-rise]) {
-      animation: hero-rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: hero-rise 1.6s var(--ease-smooth) both;
     }
     :global(html.js .hero-revealed [data-rise="1"]) {
       animation-delay: 0.5s;

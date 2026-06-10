@@ -5,7 +5,7 @@
 // Карточка целиком — ссылка (<a>): на hover проявляется подложка #f7f5f4 (inset-2),
 // «Подробнее» анимированно подчёркивается, курсор — pointer.
 import { Image } from "astro:assets";
-import imageNews1 from "../assets/news/image-news-1.png";
+import { articles } from "../data/news";
 
 // Класс «Подробнее»: анимированное подчёркивание, проявляющееся на hover карточки
 // (group-hover). w-fit — чтобы линия была по ширине текста, а не растягивалась
@@ -13,28 +13,10 @@ import imageNews1 from "../assets/news/image-news-1.png";
 const moreClass =
   "link-underline-group z-10 w-fit font-display text-base font-semibold text-accent";
 
-// slug ссылается на статью в src/data/news.ts → карточки ведут на /news/<slug>.
-const featured = {
-  slug: "iksa-ran-open-day",
-  date: "18 апреля 2026 г.",
-  title:
-    "Представители Общества приняли участие в дне открытых дверей ИКСА РАН",
-  desc: "18 апреля 2026 года Институт Китая и современной Азии РАН распахнул двери для студентов, молодых учёных и всех, кто интересуется Азией. Повод особенный — 60-летие ИКСА РАН...",
-};
-
-const side = [
-  {
-    slug: "chairman-award",
-    date: "17 апреля 2026 г.",
-    title:
-      "Председатель попечительского совета Общества награждён за развитие китайских боевых искусств в России",
-  },
-  {
-    slug: "tv-brics-interview",
-    date: "10 апреля 2026 г.",
-    title: "Интервью ответственного секретаря Общества телеканалу ТВ-БРИКС",
-  },
-];
+// 3 самые свежие новости из единого датасета src/data/news.ts (свежие сверху):
+// первая — большой карточкой (фото + анонс), две следующие — справа. Карточки
+// ведут на /news/<slug>. Источник один → блок не разъезжается с лентой/статьями.
+const [featured, ...side] = articles.slice(0, 3);
 ---
 
 <section class="bg-white pt-20 pb-24 max-lg:py-16">
@@ -82,18 +64,23 @@ const side = [
                 </div>
                 {/* Image + desc: desktop only */}
                 <div class="flex flex-col gap-6 max-lg:hidden">
-                  {/* Фото новости: натуральная ширина, по центру, паддинг 10px сверху/снизу */}
-                  <div class="flex h-[296px] w-full items-center justify-center bg-surface py-[10px]">
-                    <Image
-                      src={imageNews1}
-                      alt={featured.title}
-                      widths={[221, 442]}
-                      sizes="221px"
-                      class="h-full w-auto object-contain"
-                    />
-                  </div>
+                  {/* Обложка новости: fit (object-contain) на подложке цвета шапки
+                      (bg-surface), паддинг 8px. Нет фото — область не рендерится. */}
+                  {
+                    featured.image && (
+                      <div class="flex h-[296px] w-full items-center justify-center bg-surface p-2">
+                        <Image
+                          src={featured.image}
+                          alt={featured.imageAlt ?? featured.title}
+                          widths={[320, 480, 760]}
+                          sizes="480px"
+                          class="h-full w-auto object-contain"
+                        />
+                      </div>
+                    )
+                  }
                   <p class="font-sans text-base font-medium leading-[1.375] text-ink/70">
-                    {featured.desc}
+                    {featured.excerpt}
                   </p>
                 </div>
               </div>
@@ -132,7 +119,7 @@ const side = [
             На hover — синий фон, белый текст. */}
         <a
           href="/news"
-          class="block w-full bg-accent-soft py-4 text-center font-display text-base font-semibold text-accent transition duration-300 ease-out hover:bg-accent hover:text-white active:scale-[0.98] max-lg:py-4 max-lg:text-[16px] max-lg:leading-[1.1]"
+          class="block w-full bg-accent-soft py-4 text-center font-display text-base font-semibold text-accent transition duration-300 ease-smooth hover:bg-accent hover:text-white active:scale-[0.98] max-lg:py-4 max-lg:text-[16px] max-lg:leading-[1.1]"
         >
           Все новости
         </a>

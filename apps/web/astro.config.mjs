@@ -16,7 +16,16 @@ export default defineConfig({
   // домена обновить здесь И в public/robots.txt (Sitemap-директива).
   site: 'https://taiji-front-production.up.railway.app',
 
-  integrations: [react(), sitemap()],
+  // Sitemap → dist/sitemap-index.xml (+ sitemap-0.xml). Исключаем служебную
+  // 404-страницу (она noindex и не должна быть в карте сайта). Матч строго по концу
+  // URL (/404, /404/ или /404.html) — а не подстрокой, чтобы не выкинуть будущий
+  // слаг, содержащий «404». Остальные маршруты (/news/*, /taijiquan/*) — автоматически.
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) => !/\/404(?:\.html|\/)?$/.test(page),
+    }),
+  ],
 
   // Astro 6 Fonts API: скачивает/оптимизирует, генерирует @font-face, preload-ссылки и
   // метрически подогнанные fallback-шрифты (минимум CLS). Self-hosted, без сторонних запросов в рантайме.

@@ -1,0 +1,14 @@
+---
+// Рендер одного блока structured data (JSON-LD). Используется BaseLayout (site-wide
+// граф + per-page узлы) и Breadcrumbs (BreadcrumbList отдельным скриптом).
+//
+// type="application/ld+json" + is:inline → Astro не трогает/не бандлит скрипт.
+// `<` экранируется в <, чтобы строки данных не могли закрыть тег </script>.
+interface Props {
+  schema: unknown;
+}
+const { schema } = Astro.props;
+const json = JSON.stringify(schema).replace(/</g, "\\u003c");
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

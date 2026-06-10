@@ -13,11 +13,22 @@ import SocietyTeam from "../components/society/SocietyTeam.astro";
 import SocietyPartners from "../components/society/SocietyPartners.astro";
 import SocietyDocuments from "../components/society/SocietyDocuments.astro";
 import Footer from "../components/Footer.astro";
+import { aboutPageSchema } from "../lib/seo";
+
+const description =
+  "Общество изучения традиционного тайцзицюань: миссия и ценности, команда, партнёры и учредительные документы.";
+const schema = aboutPageSchema({
+  site: Astro.site,
+  path: Astro.url.pathname,
+  name: "Об Обществе",
+  description,
+});
 ---
 
 <BaseLayout
   title="Об Обществе — Общество изучения традиционного тайцзицюань"
-  description="Общество изучения традиционного тайцзицюань: миссия и ценности, команда, партнёры и учредительные документы."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Об Обществе" bg="white" />
   <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Общество" }]} bg="white" />

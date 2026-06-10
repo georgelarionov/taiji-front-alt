@@ -1,0 +1,64 @@
+---
+// Аппарат «Источники» — общий список сносок для лонгридов /taijiquan/* (раньше
+// этот <ol> был продублирован в History/Theory/PracticeArticle). Рендерит маркеры
+// [N] (serif accent), заголовок+описание и ВНЕШНЮЮ ссылку, guarded по `url`
+// (url может быть null → ссылка не рендерится, иначе вышла бы мёртвая <a href>).
+// Стрелка «наружу» — общая EXTERNAL_ARROW_PATH (lib/icons). id у <li> — якорь для
+// инлайновых сносок <sup class="refs"><a href="#src-N">. data-reveal — появление.
+import { EXTERNAL_ARROW_PATH } from "../../lib/icons";
+
+export interface Source {
+  id: string;
+  n: number;
+  title: string;
+  desc: string;
+  url?: string | null;
+  label?: string | null;
+}
+interface Props {
+  sources: Source[];
+}
+const { sources } = Astro.props;
+---
+
+<ol
+  data-reveal
+  class="mx-auto mt-10 flex max-w-[820px] flex-col gap-7 max-lg:mt-8 max-lg:gap-6"
+>
+  {
+    sources.map((s) => (
+      <li id={s.id} class="grid scroll-mt-28 grid-cols-[auto_1fr] gap-x-4">
+        <span class="font-serif text-[20px] leading-none text-accent" aria-hidden="true">
+          [{s.n}]
+        </span>
+        <div class="flex flex-col gap-1.5">
+          <p class="font-sans text-[15px] leading-relaxed text-ink/75">
+            <span class="font-semibold text-ink">{s.title}</span> {s.desc}
+          </p>
+          {s.url && (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-underline inline-flex w-fit items-center gap-1 font-display text-sm font-semibold text-accent"
+            >
+              {s.label}
+              <svg
+                viewBox="0 0 24 24"
+                class="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={EXTERNAL_ARROW_PATH} />
+              </svg>
+            </a>
+          )}
+        </div>
+      </li>
+    ))
+  }
+</ol>

@@ -9,7 +9,9 @@ import { ARROW_PATH } from "../lib/icons";
 // на крайнем слайде гаснет до 50% (требование макета).
 
 export type HeroSlide = {
-  eyebrow: string;
+  // Надзаголовок опционален: слайд без него (например «Практика тайцзицюань»)
+  // рендерит сразу заголовок, без пустого <p>.
+  eyebrow?: string;
   title: string;
   subtitle: string;
   ctaText: string;
@@ -18,6 +20,8 @@ export type HeroSlide = {
   // У видео опционально свой мобильный набор источников `mobile` — «оба или ничего»
   // (webm+mp4 в одном под-объекте, так не родится <source src={undefined}>): под
   // <1024px остров грузит ИХ вместо десктопного видео (см. matchMedia ниже).
+  // У изображения `mobile` — отдельный лёгкий URL под <1024px (грузится вместо
+  // десктопного, как у видео).
   bg:
     | {
         type: "video";
@@ -26,7 +30,7 @@ export type HeroSlide = {
         poster: string;
         mobile?: { webm: string; mp4: string; poster?: string };
       }
-    | { type: "image"; url: string };
+    | { type: "image"; url: string; mobile?: string };
 };
 
 // Стрелка карусели — общая геометрия пути ARROW_PATH (lib/icons).
@@ -160,35 +164,62 @@ export default function HeroSlider({
             style={{ opacity: i === index ? 1 : 0 }}
           >
             {slide.bg.type === "video" ? (
-              <video
-                key={mounted ? (isMobile && slide.bg.mobile ? "m" : "d") : "init"}
-                ref={(el) => {
-                  videoRefs.current[i] = el;
-                }}
-                className="h-full w-full object-cover object-right max-lg:object-[75%_50%]"
-                muted
-                playsInline
-                preload={mounted && Math.abs(i - index) <= 1 ? "auto" : "none"}
-                poster={
-                  (isMobile && slide.bg.mobile?.poster) || slide.bg.poster
-                }
-              >
-                {mounted &&
-                  (isMobile && slide.bg.mobile ? (
-                    <>
-                      <source src={slide.bg.mobile.webm} type="video/webm" />
-                      <source src={slide.bg.mobile.mp4} type="video/mp4" />
-                    </>
-                  ) : (
-                    <>
-                      <source src={slide.bg.webm} type="video/webm" />
-                      <source src={slide.bg.mp4} type="video/mp4" />
-                    </>
-                  ))}
-              </video>
+              <>
+                {/* Постер — отдельный нижний слой, всегда виден. Видео лежит ПОВЕРХ
+                    него и прозрачно (opacity-0), проявляясь cross-fade'ом только когда
+                    реально заиграло (событие onPlaying). На iOS Safari это убирает
+                    мерцание и «подстройку» на старте: нет пустого чёрного кадра в
+                    момент перехода постер → первый кадр видео (раньше его рисовал
+                    атрибут poster самого <video>, и переход дёргался). Reduced-motion
+                    / заблокированный автоплей → видео не проигрывается → остаётся
+                    виден постер (корректная деградация). */}
+                <img
+                  aria-hidden="true"
+                  src={(isMobile && slide.bg.mobile?.poster) || slide.bg.poster}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover object-right max-lg:object-[75%_50%]"
+                />
+                <video
+                  key={mounted ? (isMobile && slide.bg.mobile ? "m" : "d") : "init"}
+                  ref={(el) => {
+                    videoRefs.current[i] = el;
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover object-right opacity-0 transition-opacity duration-500 ease-out motion-reduce:transition-none max-lg:object-[75%_50%]"
+                  muted
+                  playsInline
+                  preload={mounted && Math.abs(i - index) <= 1 ? "auto" : "none"}
+                  onPlaying={(e) => {
+                    // Проявляем видео поверх постера, когда playback реально начался.
+                    // Инлайн-стиль ставится императивно (React не владеет style видео,
+                    // поэтому не сбросит его на ре-рендере); при ремоунте (смена key)
+                    // новый элемент снова стартует с opacity-0 из класса — корректно.
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  {mounted &&
+                    (isMobile && slide.bg.mobile ? (
+                      <>
+                        <source src={slide.bg.mobile.webm} type="video/webm" />
+                        <source src={slide.bg.mobile.mp4} type="video/mp4" />
+                      </>
+                    ) : (
+                      <>
+                        <source src={slide.bg.webm} type="video/webm" />
+                        <source src={slide.bg.mp4} type="video/mp4" />
+                      </>
+                    ))}
+                </video>
+              </>
             ) : (
               <img
-                src={slide.bg.url}
+                // Как у видео: до гидрации src не ставим (mounted=false → undefined),
+                // после — выбираем mobile/desktop по вьюпорту, чтобы на мобилу не ушёл
+                // тяжёлый десктопный кадр. Слайд скрыт (opacity-0), пока не активен.
+                src={
+                  mounted
+                    ? (isMobile && slide.bg.mobile) || slide.bg.url
+                    : undefined
+                }
                 alt=""
                 className="h-full w-full object-cover object-right max-lg:object-[75%_50%]"
               />
@@ -223,12 +254,14 @@ export default function HeroSlider({
             }`}
           >
             <div className="flex flex-col gap-1.5">
-              <p
-                data-rise="1"
-                className="font-serif text-[28px] font-bold italic max-lg:text-lg"
-              >
-                {s.eyebrow}
-              </p>
+              {s.eyebrow ? (
+                <p
+                  data-rise="1"
+                  className="font-serif text-[28px] font-bold italic max-lg:text-lg"
+                >
+                  {s.eyebrow}
+                </p>
+              ) : null}
               <div className="flex flex-col gap-3 max-lg:gap-2.5">
                 <h1
                   data-rise="2"

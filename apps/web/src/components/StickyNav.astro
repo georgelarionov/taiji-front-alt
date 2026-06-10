@@ -1,0 +1,86 @@
+---
+// Фиксированная «подъезжающая» шапка — ОБЩИЙ компонент: монтируется один раз в
+// BaseLayout, поэтому присутствует на всех страницах. Скрыта (уехала вверх), пока
+// обычная шапка страницы видна; подъезжает сверху (slide-down), когда та ушла из
+// вьюпорта (на главной — после героя ≈100svh, на внутренних — сразу за solid-Header).
+//
+// Разделение, как у меню/лоудера/дровера:
+//   • поведение (IntersectionObserver по [data-page-header] → класс .is-visible) —
+//     src/lib/sticky-nav.ts (контракт astro:page-load / astro:before-swap);
+//   • анимация (transform/transition) — global.css ([data-sticky-nav]).
+//
+// Вид — как у открытого бургер-меню: полупрозрачный фон surface-overlay/80 +
+// backdrop-blur-md (фростед-стекло, блюр читается только при прозрачности), СИНИЙ
+// локап оттуда же (assets/menu/blue-logo.webp). Бургер открывает то же полноэкранное
+// меню (data-menu-open → lib/menu.ts), синхронно с шапками Hero/interior.
+//
+// z-index — z-[70]: ВЫШЕ контента (z-10) и hero (z-0), но НИЖЕ дровера (z-[80])
+// и полноэкранного меню (z-[90]) — чтобы они корректно перекрывали эту шапку.
+import { topNav } from "../config/nav";
+import logoBlue from "../assets/menu/blue-logo.webp";
+
+// Активный пункт — по текущему пути: точное совпадение или вложенный раздел
+// (/taijiquan/history → активна «Тайцзицюань»). На главной (/) — без активного.
+const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isActiveNav = (href: string) =>
+  pathname === href || pathname.startsWith(href + "/");
+---
+
+<div
+  data-sticky-nav
+  class="fixed inset-x-0 top-0 z-[70] border-b border-border bg-surface-overlay/80 backdrop-blur-md"
+>
+  <div
+    class="gutter-x flex min-h-[72px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:py-3"
+  >
+    <a href="/" class="flex items-center" aria-label="На главную">
+      {/* Размеры — как у лого основной шапки (Header.astro): десктоп h-[54px],
+          мобайл h-10. -translate-y-[2px] — оптическая коррекция (только сам
+          логотип, transform не меняет раскладку флекс-бара). */}
+      <img
+        src={logoBlue.src}
+        width={logoBlue.width}
+        height={logoBlue.height}
+        alt="Логотип Общества изучения традиционного тайцзицюань"
+        class="h-[54px] w-auto shrink-0 -translate-y-[2px] object-contain max-lg:h-10"
+      />
+    </a>
+
+    <nav aria-label="Закреплённая навигация" class="flex items-center gap-14">
+      <ul class="flex items-center gap-12 max-lg:hidden">
+        {
+          topNav.map((item) => {
+            const active = isActiveNav(item.href);
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  class:list={[
+                    "relative flex h-[72px] items-center font-display text-[15px] font-semibold leading-[1.1] transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:rounded-[1px] after:bg-accent after:transition-transform after:duration-300 hover:after:scale-x-100",
+                    active ? "text-accent after:scale-x-100" : "text-ink after:scale-x-0",
+                  ]}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <button
+        type="button"
+        data-menu-open
+        aria-label="Открыть меню"
+        aria-haspopup="dialog"
+        aria-controls="site-menu"
+        aria-expanded="false"
+        class="-m-3.5 flex cursor-pointer flex-col gap-2 rounded-[2px] p-3.5 transition-colors hover:bg-ink/5 max-lg:m-0 max-lg:-mr-1.5 max-lg:grid max-lg:h-11 max-lg:w-11 max-lg:place-content-center max-lg:gap-1.5 max-lg:p-0"
+      >
+        <span class="block h-0.5 w-10 rounded-[1px] bg-ink max-lg:w-7"></span>
+        <span class="block h-0.5 w-10 rounded-[1px] bg-ink max-lg:w-7"></span>
+      </button>
+    </nav>
+  </div>
+</div>

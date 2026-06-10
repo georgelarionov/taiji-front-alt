@@ -42,13 +42,13 @@ export const navCols: NavCol[] = [
     ],
   },
   {
-    // /research — заглушка («Раздел в разработке»), отдельных секций нет,
-    // поэтому оба подпункта ведут на саму страницу раздела.
+    // /research — два якорных блока (scroll-mt-24 в самой странице):
+    // #sources (Источники) и #publications (Публикации).
     title: "Исследования",
     href: "/research",
     links: [
-      { label: "Источники", href: "/research" },
-      { label: "Публикации", href: "/research" },
+      { label: "Источники", href: "/research#sources" },
+      { label: "Публикации", href: "/research#publications" },
     ],
   },
 ];

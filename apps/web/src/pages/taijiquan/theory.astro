@@ -1,20 +1,35 @@
 ---
-// Страница «Теория» (/taijiquan/theory). Дубль внутреннего раздела на эталоне
+// Страница «Теория» (/taijiquan/theory). Внутренний раздел на эталоне
 // /taijiquan/history: solid-Header (активный «Тайцзицюань»), крошки до текущего
-// раздела, общий InteriorHero + контент-заглушка, сквозной Footer. В «Узнайте
-// больше» карточка «Теория» приглушена как текущая (current). Контент — заглушка.
+// раздела, общий InteriorHero, сквозной Footer. Контент — editorial-лонгрид
+// TheoryArticle (заменил общую заглушку ContentPlaceholder). В «Узнайте больше»
+// карточка «Теория» приглушена как текущая (current).
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import ContentPlaceholder from "../../components/ContentPlaceholder.astro";
+import TheoryArticle from "../../components/taiji/TheoryArticle.astro";
 import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
 import Footer from "../../components/Footer.astro";
+import { articleSchema } from "../../lib/seo";
+
+const description =
+  "Теоретические основы тайцзицюань: инь-ян, пустое и полное, сун и жоу, ци и намерение, у-син и внутренняя работа — традиция и современное понимание.";
+const schema = articleSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: "Теория тайцзицюань",
+    description,
+  },
+  { section: "Тайцзицюань" },
+);
 ---
 
 <BaseLayout
   title="Теория — Общество изучения традиционного тайцзицюань"
-  description="Теория тайцзицюань: принципы равновесия инь-ян, расслабления и внутренней работы тела."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Тайцзицюань" />
   <Breadcrumbs
@@ -26,9 +41,9 @@ import Footer from "../../components/Footer.astro";
   />
   <InteriorHero
     title="Теория"
-    subtitle="Принципы равновесия, расслабления и внутренней работы тела"
+    subtitle="Философия, язык движения и практические принципы"
   />
-  <ContentPlaceholder />
+  <TheoryArticle />
   <TaijiExplore current="Теория" />
   <Footer />
 </BaseLayout>

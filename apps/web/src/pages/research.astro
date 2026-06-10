@@ -1,18 +1,43 @@
 ---
-// Страница «Исследования» (/research). Пока заглушка по образцу /events: шелл как
-// у /taijiquan (solid-шапка с активным пунктом «Исследования», крошки отдельным
-// блоком, сквозной глобальный футер), тайтл-баннер и пустое состояние. Контент
-// (первоисточники, публикации, конференции) подключится позже.
+// Страница «Исследования» (/research). Шелл как у /taijiquan (solid-шапка с активным
+// пунктом «Исследования», крошки отдельным блоком, сквозной футер) + тайтл-баннер.
+// Контент — два якорных блока друг за другом: «Источники» (#sources) и «Публикации»
+// (#publications). Якоря продублированы в бургер-меню и футере (config/nav.ts).
+// Карточки — внешние ссылки (открываются в новом окне). Материалы отобраны из
+// списков «Источники» лонгридов /taijiquan/{history,theory,practice} — самые значимые
+// первоисточники (переводы классических трактатов, запись ЮНЕСКО) и научные публикации.
+// Тайтлы карточек переведены на русский; ссылка ведёт на оригинал.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import PageTitleBand from "../components/PageTitleBand.astro";
+import ResearchLinkCard from "../components/research/ResearchLinkCard.astro";
+import { sources, publications } from "../data/research";
+import { collectionPageSchema } from "../lib/seo";
+
+// CollectionPage + ItemList материалов: внешние ресурсы как item:{@type} (классические
+// трактаты — CreativeWork, статьи исследователей — ScholarlyArticle), а не «голый» url.
+const description =
+  "Исследования Общества изучения традиционного тайцзицюань: первоисточники (классические трактаты, запись ЮНЕСКО) и научные публикации о тайцзицюань.";
+const schema = collectionPageSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: "Исследования",
+    description,
+  },
+  [
+    ...sources.map((it) => ({ href: it.url, name: it.title, type: "CreativeWork" })),
+    ...publications.map((it) => ({ href: it.url, name: it.title, type: "ScholarlyArticle" })),
+  ],
+);
 ---
 
 <BaseLayout
   title="Исследования — Общество изучения традиционного тайцзицюань"
-  description="Исследования Общества изучения традиционного тайцзицюань: первоисточники, публикации, конференции и научные материалы."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Исследования" />
   <Breadcrumbs
@@ -20,17 +45,48 @@ import PageTitleBand from "../components/PageTitleBand.astro";
   />
   <PageTitleBand title="Исследования" />
 
-  <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
+  {/* ── Источники ── */}
+  <section id="sources" class="scroll-mt-24 bg-white py-24 max-lg:py-16">
     <div class="container-block">
-      <div
-        class="flex min-h-[520px] w-full flex-col items-center justify-center gap-3 text-center max-lg:min-h-[420px]"
-      >
-        <p class="font-display text-lg font-semibold text-ink max-lg:text-base">
-          Раздел в разработке
-        </p>
-        <p class="font-sans text-base text-ink/55 max-lg:text-[15px]">
-          Материалы исследований появятся здесь в ближайшее время
-        </p>
+      <div>
+        <header data-reveal class="max-w-[760px]">
+          <h2 class="text-h2-compact text-ink">Источники</h2>
+          <p class="mt-4 text-body text-ink/55">
+            Классические трактаты тайцзицюань в переводах.
+          </p>
+        </header>
+
+        <div
+          data-reveal-stagger
+          class="mt-14 flex flex-col gap-8 max-lg:mt-10 max-lg:gap-6"
+        >
+          {sources.map((s) => <ResearchLinkCard {...s} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Публикации ── */}
+  <section
+    id="publications"
+    class="scroll-mt-24 border-t border-border bg-surface py-24 max-lg:py-16"
+  >
+    <div class="container-block">
+      <div>
+        <header data-reveal class="max-w-[760px]">
+          <h2 class="text-h2-compact text-ink">Публикации</h2>
+          <p class="mt-4 text-body text-ink/55">
+            Статьи российских исследователей об истории, теории и научном изучении
+            тайцзицюань.
+          </p>
+        </header>
+
+        <div
+          data-reveal-stagger
+          class="mt-14 flex flex-col gap-8 max-lg:mt-10 max-lg:gap-6"
+        >
+          {publications.map((p) => <ResearchLinkCard {...p} />)}
+        </div>
       </div>
     </div>
   </section>

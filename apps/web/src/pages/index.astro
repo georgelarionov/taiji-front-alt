@@ -7,11 +7,21 @@ import News from "../components/News.astro";
 import Society from "../components/Society.astro";
 import Contacts from "../components/Contacts.astro";
 import Footer from "../components/Footer.astro";
+import { webPageSchema, SITE_NAME, SITE_DESCRIPTION } from "../lib/seo";
+
+const schema = webPageSchema({
+  site: Astro.site,
+  path: Astro.url.pathname,
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  image: "/og-default.png",
+});
 ---
 
 <BaseLayout
   title="Общество изучения традиционного тайцзицюань"
-  description="Информационный портал Общества изучения традиционного тайцзицюань: исследования, сохранение и развитие традиции в России."
+  description={SITE_DESCRIPTION}
+  schema={schema}
 >
   {/* Главная — собирается поблочно из design/design.pen */}
   {/* Hero — неподвижный sticky-фон (z-0, см. HeroSlider). Всё, что ниже, лежит

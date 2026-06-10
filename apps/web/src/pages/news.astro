@@ -11,6 +11,7 @@ import PageTitleBand from "../components/PageTitleBand.astro";
 import NewsList from "../components/news/NewsList.astro";
 import Footer from "../components/Footer.astro";
 import { articles } from "../data/news";
+import { collectionPageSchema } from "../lib/seo";
 
 // Лента берётся из единого датасета data/news → каждая карточка ведёт на свою
 // статью /news/<slug> (тот же источник, что и страница статьи). CMS подключится позже.
@@ -18,13 +19,29 @@ const items = articles.map((a) => ({
   date: a.date,
   title: a.title,
   excerpt: a.excerpt,
+  image: a.image,
+  imageAlt: a.imageAlt,
   href: `/news/${a.slug}`,
 }));
+
+// CollectionPage + ItemList всех статей ленты (порядок = свежие сверху).
+const description =
+  "Новости Общества изучения традиционного тайцзицюань: события, участие в конференциях, публикации и жизнь сообщества.";
+const schema = collectionPageSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: "Новости",
+    description,
+  },
+  articles.map((a) => ({ href: `/news/${a.slug}`, name: a.title })),
+);
 ---
 
 <BaseLayout
   title="Новости — Общество изучения традиционного тайцзицюань"
-  description="Новости Общества изучения традиционного тайцзицюань: события, участие в конференциях, публикации и жизнь сообщества."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Новости" />
   <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Новости" }]} />

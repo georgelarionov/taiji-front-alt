@@ -6,7 +6,6 @@
 // + слайдер ценностей (React-остров). Левый бокс — desktop-only (грузим фон через
 // getImage). Каллиграфия и логотип РАН — декоративные плейсхолдеры.
 import { getImage } from "astro:assets";
-import { INFO_PATH } from "../../lib/icons";
 import missionBg from "../../assets/society/mission-bg.webp";
 // Каллиграфия «传统太极拳学会» — та же брендовая (с встроенной кривой), что в
 // домашнем блоке «Об Обществе» (Society.astro).
@@ -71,14 +70,6 @@ const values = [
           lang="zh-Hans"
           class="w-[240px] max-w-[240px] object-contain"
         />
-        <svg
-          viewBox="0 0 20 20"
-          class="absolute bottom-9 left-1/2 h-8 w-8 -translate-x-1/2 text-ink/50"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d={INFO_PATH}></path>
-        </svg>
       </div>
 
       <div

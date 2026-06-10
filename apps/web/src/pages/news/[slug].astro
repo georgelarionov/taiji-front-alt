@@ -9,11 +9,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import Footer from "../../components/Footer.astro";
+import { Image } from "astro:assets";
 import ArticleIntro from "../../components/news/ArticleIntro.astro";
 import ArticleBody from "../../components/news/ArticleBody.astro";
 import ArticleAuthor from "../../components/news/ArticleAuthor.astro";
 import RelatedNews from "../../components/news/RelatedNews.astro";
-import { articles, relatedArticles, type NewsArticle } from "../../data/news";
+import {
+  articles,
+  relatedArticles,
+  SOCIETY_AUTHOR,
+  type NewsArticle,
+} from "../../data/news";
+import { articleSchema, ruDateToISO } from "../../lib/seo";
 
 export function getStaticPaths() {
   return articles.map((article) => ({
@@ -27,11 +34,28 @@ interface Props {
 }
 const { article } = Astro.props;
 const related = relatedArticles(article.slug, 6);
+
+// NewsArticle: заголовок, лид, главное фото (абс. URL), дата публикации (ISO).
+// headline ограничен рекомендацией Google ≤110 симв.: у длинных заголовков
+// (>110) берём shortTitle (он же — текст хлебной крошки), иначе полный title.
+const headline =
+  article.title.length > 110 ? article.shortTitle : article.title;
+const schema = articleSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: headline,
+    description: article.excerpt,
+    image: article.image?.src,
+  },
+  { type: "NewsArticle", datePublished: ruDateToISO(article.date), section: "Новости" },
+);
 ---
 
 <BaseLayout
   title={`${article.title} — Общество изучения традиционного тайцзицюань`}
   description={article.excerpt}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Новости" />
   <Breadcrumbs
@@ -51,23 +75,28 @@ const related = relatedArticles(article.slug, 6);
           readingTime={article.readingTime}
         />
 
-        {/* Главное изображение (плейсхолдер bg-field; реальное фото — из CMS) */}
-        <div
-          class="mt-10 flex aspect-video w-full items-center justify-center bg-field max-lg:mt-6"
-          aria-hidden="true"
-        >
-          <svg viewBox="0 0 24 24" class="h-16 w-16 text-ink/25 max-lg:h-12 max-lg:w-12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="1"></rect>
-            <circle cx="9" cy="9" r="1.8"></circle>
-            <path d="m21 15-4.5-4.5L6 21"></path>
-          </svg>
-        </div>
+        {/* Главное изображение статьи: 16:9, fit (object-contain) на подложке
+            цвета шапки — как обложки в карточках ленты. Нет фото — не рендерим
+            (у видео-статьи ведущим визуалом станет ролик в теле). */}
+        {
+          article.image && (
+            <div class="mt-10 aspect-video w-full bg-surface p-2 max-lg:mt-6 max-lg:p-1">
+              <Image
+                src={article.image}
+                alt={article.imageAlt ?? article.title}
+                widths={[400, 809, 1218]}
+                sizes="(max-width: 1024px) 100vw, 809px"
+                class="h-full w-full object-contain"
+              />
+            </div>
+          )
+        }
 
         <div class="mt-12 max-lg:mt-8">
-          <ArticleBody />
+          <ArticleBody body={article.body} />
         </div>
 
-        <ArticleAuthor author={article.author} />
+        <ArticleAuthor author={article.author ?? SOCIETY_AUTHOR} />
       </div>
     </div>
   </article>

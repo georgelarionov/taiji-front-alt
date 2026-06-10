@@ -8,11 +8,14 @@
 // прячется при раскрытии (details[open] > summary{display:none}). Первый <hr>
 // внутри <details> — разделитель между последней видимой и первой скрытой.
 import NewsCard from "./NewsCard.astro";
+import type { ImageMetadata } from "astro";
 
 interface Item {
   date: string;
   title: string;
   excerpt: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
   href: string;
 }
 interface Props {

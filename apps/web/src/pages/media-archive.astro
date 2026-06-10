@@ -9,12 +9,23 @@ import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import MediaArchive from "../components/media/MediaArchive";
-import { videos, photos, videoFilters } from "../data/media";
+import { videos } from "../data/media";
+import { collectionPageSchema } from "../lib/seo";
+
+const description =
+  "Медиа-архив Общества изучения традиционного тайцзицюань: видео, фотогалереи и материалы для погружения в традицию.";
+const schema = collectionPageSchema({
+  site: Astro.site,
+  path: Astro.url.pathname,
+  name: "Медиа-архив",
+  description,
+});
 ---
 
 <BaseLayout
   title="Медиа-архив — Общество изучения традиционного тайцзицюань"
-  description="Медиа-архив Общества изучения традиционного тайцзицюань: видео, фотогалереи и материалы для погружения в традицию."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" />
   <Breadcrumbs
@@ -31,7 +42,7 @@ import { videos, photos, videoFilters } from "../data/media";
     </div>
   </section>
 
-  <MediaArchive client:load videos={videos} photos={photos} filters={videoFilters} />
+  <MediaArchive client:load videos={videos} />
 
   <Footer />
 </BaseLayout>

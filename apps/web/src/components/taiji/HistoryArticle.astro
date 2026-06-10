@@ -1,0 +1,425 @@
+---
+// Лонгрид «История тайцзицюань» (/taijiquan/history). Заменяет ContentPlaceholder
+// на эталоне Template-1. Editorial-вёрстка: узкая колонка чтения (~680px) с
+// выносными фигурами/цитатами (breakout до 920px), буквица, хронология-таймлайн
+// и аппарат сносок. Заголовок страницы (h1) — в InteriorHero, поэтому здесь все
+// разделы — <h2>. Полностью на токенах и тип-шкале: Manrope-заголовки
+// (text-h2-compact), Inter-текст (text-body); Cormorant (font-serif) — только для
+// editorial-акцентов (буквица, врезные цитаты, годы таймлайна, маркеры источников).
+// Reveal — штатный data-reveal/-stagger (контракт smooth.ts), zero-JS.
+//
+// Сноски: инлайновые <sup class="refs"> ссылаются на <li id="src-N"> в «Источниках».
+// Изображения — плейсхолдеры bg-field с подписью и рекомендацией (реальные фото/CMS).
+
+import LongreadFigure from "./LongreadFigure.astro";
+import SourcesList from "./SourcesList.astro";
+import historyOpener from "../../assets/taiji/longread/history-opener.jpg";
+import chenjiagou from "../../assets/taiji/longread/chenjiagou.jpg";
+import yangLuchan from "../../assets/taiji/persons/yang-luchan.jpg";
+import yangChengfu from "../../assets/taiji/persons/yang-chengfu.jpg";
+
+// Хронология (рендерится таймлайном вместо таблицы — таблица плохо живёт на мобиле).
+const milestones = [
+  {
+    period: "XVII век",
+    text: "Формирование ранней традиции тайцзицюань в районе Вэньсянь, провинция Хэнань; особая роль деревни Чэньцзягоу и школы Чэнь.",
+    refs: [1, 2],
+  },
+  {
+    period: "XIX век",
+    text: "Ян Лучань связывает традицию Чэнь с более широкой средой практиков; начинается распространение будущего стиля Ян.",
+    refs: [4],
+  },
+  {
+    period: "Конец XIX — начало XX века",
+    text: "Оформляются основные семейные направления: Чэнь, Ян, У/Хао, У и Сунь.",
+    refs: [],
+  },
+  {
+    period: "1928",
+    text: "Создание Центрального института гошу в Нанкине; боевые искусства включаются в проект национальной физической культуры.",
+    refs: [5],
+  },
+  {
+    period: "1956",
+    text: "Разработка упрощённой формы тайцзицюань из 24 движений для массовой практики.",
+    refs: [6],
+  },
+  {
+    period: "Вторая половина XX века",
+    text: "Тайцзицюань активно распространяется за пределами Китая через Тайвань, Гонконг, Юго-Восточную Азию, Европу и Северную Америку.",
+    refs: [6, 7],
+  },
+  {
+    period: "2020",
+    text: "Тайцзицюань включено в Репрезентативный список нематериального культурного наследия человечества ЮНЕСКО.",
+    refs: [1],
+  },
+];
+
+// Источники. id — якорь для инлайновых сносок; url=null — онлайн-ссылки нет.
+const sources = [
+  {
+    id: "src-1",
+    n: 1,
+    title: "UNESCO — «Taijiquan».",
+    desc: "Материалы ЮНЕСКО описывают тайцзицюань как элемент нематериального культурного наследия, происходящий из района Вэньсянь провинции Хэнань; в 2020 году тайцзицюань было включено в Репрезентативный список нематериального культурного наследия человечества.",
+    url: "https://www.unesco.org/archives/multimedia/document-5345",
+    label: "unesco.org",
+  },
+  {
+    id: "src-2",
+    n: 2,
+    title:
+      "Douglas Wile — «Fighting Words: Four New Document Finds Reignite Old Debates in Taijiquan Historiography», Martial Arts Studies, 2017.",
+    desc: "Статья разбирает споры о происхождении тайцзицюань, роль версии о Чэнь Вантине, легенды о Чжан Саньфэне и проблемы ранней историографии.",
+    url: "https://scispace.com/pdf/fighting-words-four-new-document-finds-reignite-old-debates-55pno5jy79.pdf",
+    label: "scispace.com",
+  },
+  {
+    id: "src-3",
+    n: 3,
+    title:
+      "Brown, Jennings, Molle — «Taijiquan the “Taiji World” Way», Societies, 2014.",
+    desc: "В статье кратко рассмотрены ранняя боевая функция тайцзицюань, позднейшие даосские интерпретации и современное переосмысление практики.",
+    url: "https://www.mdpi.com/2075-4698/4/3/380",
+    label: "mdpi.com",
+  },
+  {
+    id: "src-4",
+    n: 4,
+    title:
+      "Douglas Wile — «The Many Lives of Yang Luchan: Mythopoesis, Media, and the Martial Imagination», Martial Arts Studies, 2022/2023.",
+    desc: "Исследование показывает, что биография Ян Лучаня окружена поздними легендами, но его роль в распространении стиля Ян и связи Чэньцзягоу, Юнняня и Пекина остаётся ключевой для истории тайцзицюань.",
+    url: null,
+    label: null,
+  },
+  {
+    id: "src-5",
+    n: 5,
+    title:
+      "Tse, Albert Kayter — «Unfulfilled Potential: The Central Guoshu Institute in Republican China, 1928–1948», University of Hong Kong, 2019.",
+    desc: "Работа описывает Центральный институт гошу как государственную организацию, созданную в Нанкине для развития боевых искусств, физической культуры, публикаций и национальных мероприятий.",
+    url: "https://hub.hku.hk/handle/10722/279593",
+    label: "hub.hku.hk",
+  },
+  {
+    id: "src-6",
+    n: 6,
+    title:
+      "Ryan, Alexandra — «Globalisation and the “Internal Alchemy” in Chinese Martial Arts: The Transmission of Taijiquan to Britain», 2008/2009.",
+    desc: "Исследование рассматривает модернизацию тайцзицюань в XX веке, создание упрощённых форм, распространение через государственные программы и последующую глобализацию.",
+    url: "https://eprints.glos.ac.uk/7727/",
+    label: "eprints.glos.ac.uk",
+  },
+  {
+    id: "src-7",
+    n: 7,
+    title:
+      "Brown, Jennings, Molle — раздел о современном тайцзицюань в Великобритании.",
+    desc: "Авторы показывают, что за пределами Китая тайцзицюань часто практикуется как оздоровительная, медитативная и культурная дисциплина, хотя его боевые корни сохраняются в традиционных школах.",
+    url: "https://www.mdpi.com/2075-4698/4/3/380",
+    label: "mdpi.com",
+  },
+];
+---
+
+<article id="content" class="history scroll-mt-24 bg-white">
+  {/* ── Вступление + главы I–IV (белый фон, колонка чтения) ── */}
+  <section class="pt-16 pb-4 max-lg:pt-12">
+    <div class="container-block">
+      {/* Лид-абзац с буквицей */}
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <span class="block h-[3px] w-14 bg-accent" aria-hidden="true"></span>
+        <p
+          class="standfirst mt-8 font-serif text-[25px] font-medium leading-[1.5] text-ink max-lg:mt-6 max-lg:text-[20px]"
+        >
+          История тайцзицюань соединяет в себе предание, семейную передачу и
+          документально подтверждённые сведения — и читается не как биография
+          одного мастера, а как медленное вызревание целой традиции.
+        </p>
+      </div>
+
+      {/* Открывающая широкая фигура */}
+      <LongreadFigure
+        src={historyOpener}
+        alt="Группа практикует тайцзицюань на открытом воздухе"
+        caption="Тайцзицюань как живая традиция движения, дыхания и внимания"
+        credit="Фото: pfctdayelise · CC BY-SA 2.5 · Wikimedia Commons"
+        my="mt-14"
+      />
+
+      {/* ── I. Истоки ── */}
+      <div data-reveal class="mx-auto mt-20 max-w-[680px] max-lg:mt-14">
+        <p class="text-eyebrow text-accent">Предание и история</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Истоки: между легендой и историей</h2>
+        <div class="mt-7 flex flex-col gap-6 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            В традиционной версии происхождение искусства часто связывают с
+            даосским отшельником Чжан Саньфэном, которому приписывают создание
+            мягкого боевого метода после наблюдения за природой. Однако
+            современные исследователи относятся к этой версии как к легенде: она
+            важна для культурной памяти, но не подтверждается ранними
+            историческими источниками<sup class="refs"><a href="#src-1">1</a><a href="#src-2">2</a></sup>.
+          </p>
+          <p class="text-body text-ink/80">
+            Более надёжная историческая линия связывает формирование тайцзицюань
+            с районом Вэньсянь в провинции Хэнань, прежде всего с деревней
+            Чэньцзягоу. Именно там, согласно наиболее распространённой
+            академической версии, в XVII веке сложилась ранняя система семейного
+            искусства Чэнь. Её связывают с Чэнь Вантином — представителем рода
+            Чэнь и военным человеком эпохи перехода от династии Мин к династии
+            Цин<sup class="refs"><a href="#src-1">1</a><a href="#src-2">2</a></sup>.
+          </p>
+        </div>
+      </div>
+
+      {/* Врезная цитата */}
+      <blockquote data-reveal class="mx-auto my-16 max-w-[760px] max-lg:my-12">
+        <span class="block h-[3px] w-14 bg-accent" aria-hidden="true"></span>
+        <p
+          class="mt-7 font-serif text-[34px] font-medium leading-[1.25] text-ink max-lg:mt-5 max-lg:text-[26px]"
+        >
+          Тайцзицюань, вероятно, не возникло в один день как изобретение одного
+          человека.
+        </p>
+      </blockquote>
+
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <p class="text-body text-ink/80">
+          Правильнее говорить о постепенном формировании системы, в которой
+          соединились местные боевые практики, семейная школа, военный опыт,
+          представления китайской медицины и идеи о согласованной работе тела и
+          внимания<sup class="refs"><a href="#src-2">2</a><a href="#src-3">3</a></sup>.
+        </p>
+      </div>
+
+      {/* ── II. Чэньцзягоу ── */}
+      <div data-reveal class="mx-auto mt-20 max-w-[680px] max-lg:mt-14">
+        <p class="text-eyebrow text-accent">XVII век · Хэнань</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Чэньцзягоу и семейная традиция Чэнь</h2>
+        <div class="mt-7 flex flex-col gap-6 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            На раннем этапе тайцзицюань было не массовой оздоровительной
+            практикой, а локальным боевым искусством, передававшимся внутри семьи
+            и ближайшего круга учеников. Стиль Чэнь сохранил многие признаки этой
+            боевой основы: смену медленного и быстрого темпа, спиральные
+            движения, низкие стойки, работу с усилием и взрывной силой. Позднее
+            именно от этой традиции будут вести своё происхождение многие другие
+            направления тайцзицюань<sup class="refs"><a href="#src-2">2</a></sup>.
+          </p>
+          <p class="text-body text-ink/80">
+            Деревня Чэньцзягоу стала важным символическим и историческим центром
+            искусства. Но вокруг ранней истории тайцзицюань до сих пор есть
+            научные споры: исследователи обсуждают роль рода Чэнь, возможное
+            влияние соседних деревень и более ранних школ боевых искусств.
+            Поэтому в выверенном изложении лучше избегать формулы «тайцзицюань
+            точно создал один человек» и говорить осторожнее: «ранняя исторически
+            прослеживаемая традиция связана с Чэньцзягоу и школой
+            Чэнь»<sup class="refs"><a href="#src-2">2</a><a href="#src-3">3</a></sup>.
+          </p>
+        </div>
+      </div>
+
+      {/* Фигура: деревня Чэньцзягоу */}
+      <LongreadFigure
+        src={chenjiagou}
+        alt="Практика форм тайцзицюань в деревне Чэньцзягоу"
+        caption="Деревня Чэньцзягоу, провинция Хэнань — символический центр ранней традиции"
+        credit="Фото: Jasmine Bu · CC BY-SA 3.0 · Wikimedia Commons"
+      />
+
+      {/* ── III. XIX век ── */}
+      <div data-reveal class="mx-auto mt-16 max-w-[680px] max-lg:mt-12">
+        <p class="text-eyebrow text-accent">XIX век</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Выход за пределы семьи</h2>
+        <div class="mt-7 flex flex-col gap-6 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            Поворотным моментом в истории тайцзицюань стал XIX век. В это время
+            искусство постепенно выходит за пределы узкой семейной передачи.
+            Ключевой фигурой этого процесса считается Ян Лучань — мастер из уезда
+            Юннянь, который, согласно ранним источникам, учился в деревне Чэнь и
+            затем стал известен как выдающийся практик и
+            преподаватель<sup class="refs"><a href="#src-4">4</a></sup>.
+          </p>
+        </div>
+      </div>
+
+      {/* Фигура-портрет: Ян Лучань */}
+      <LongreadFigure
+        src={yangLuchan}
+        alt="Ян Лучань — исторический портрет"
+        caption="Ян Лучань (1799–1872) — фигура, связавшая семейную традицию Чэнь с широкой средой практиков"
+        aspect="3/4"
+        width="max-w-[420px]"
+        my="my-12"
+      />
+
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <div class="flex flex-col gap-6">
+          <p class="text-body text-ink/80">
+            Именно с Ян Лучанем связано формирование стиля Ян — наиболее
+            распространённого направления тайцзицюань в мире. Позднее его потомки
+            и ученики сделали движения более плавными, широкими и доступными для
+            обучения. Благодаря этому тайцзицюань стало восприниматься не только
+            как боевое искусство, но и как дисциплина телесного воспитания,
+            укрепления здоровья и внутренней
+            собранности<sup class="refs"><a href="#src-4">4</a></sup>.
+          </p>
+          <p class="text-body text-ink/80">
+            В XIX — начале XX века оформились и другие крупные направления: У/Хао,
+            У и Сунь. Они различались техникой, высотой стоек, характером шагов,
+            манерой приложения силы и методами обучения. При этом все они
+            сохраняли общий принцип: движение строится через равновесие,
+            расслабление, структурную целостность тела и внимательное управление
+            усилием.
+          </p>
+        </div>
+      </div>
+
+      {/* ── IV. XX век ── */}
+      <div data-reveal class="mx-auto mt-20 max-w-[680px] max-lg:mt-14">
+        <p class="text-eyebrow text-accent">XX век</p>
+        <h2 class="text-h2-compact mt-4 text-ink">
+          От боевого искусства к общественной практике
+        </h2>
+        <div class="mt-7 flex flex-col gap-6 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            В XX веке тайцзицюань пережило серьёзную трансформацию. В эпоху
+            Китайской Республики традиционные боевые искусства стали рассматривать
+            как часть национальной физической культуры. В 1928 году в Нанкине был
+            создан Центральный институт гошу — государственная структура,
+            занимавшаяся развитием, изучением и распространением китайских боевых
+            искусств<sup class="refs"><a href="#src-5">5</a></sup>.
+          </p>
+        </div>
+      </div>
+
+      {/* Фигура: институт гошу / массовая практика */}
+      <LongreadFigure
+        src={yangChengfu}
+        alt="Ян Чэнфу выполняет форму стиля Ян"
+        caption="Форма Ян Чэнфу — облик стиля Ян, по которому тайцзицюань массово преподавали в XX веке"
+        my="my-14"
+      />
+
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <div class="flex flex-col gap-6">
+          <p class="text-body text-ink/80">
+            В этот период тайцзицюань всё чаще преподавали публично: в школах,
+            обществах физической культуры, городских клубах и институтах боевых
+            искусств. Мастера начали записывать формы, систематизировать
+            принципы, публиковать книги и обучать не только родственников или
+            закрытый круг учеников, но и широкую аудиторию. Это изменило сам
+            характер традиции: она стала более открытой, но вместе с тем начала
+            адаптироваться под массовое
+            обучение<sup class="refs"><a href="#src-5">5</a><a href="#src-6">6</a></sup>.
+          </p>
+          <p class="text-body text-ink/80">
+            После образования КНР тайцзицюань было включено в государственные
+            программы физической культуры. В 1956 году была создана упрощённая
+            форма из 24 движений, основанная преимущественно на стиле Ян. Её
+            задача заключалась в том, чтобы сделать практику более короткой,
+            понятной и доступной для большого числа людей. Именно эта форма во
+            многом способствовала распространению тайцзицюань как массовой
+            оздоровительной практики<sup class="refs"><a href="#src-6">6</a></sup>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Хронология (выделенная полоса surface-sunken) ── */}
+  <section class="mt-10 bg-surface-sunken py-24 max-lg:mt-6 max-lg:py-16">
+    <div class="container-block">
+      <header data-reveal class="mx-auto max-w-[900px]">
+        <p class="text-eyebrow text-accent">Хронология</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Ключевые вехи</h2>
+      </header>
+
+      <ol data-reveal-stagger class="mx-auto mt-14 max-w-[900px] max-lg:mt-10">
+        {
+          milestones.map((m) => (
+            <li
+              data-reveal-item
+              class="grid grid-cols-[200px_1fr] gap-x-10 max-lg:grid-cols-1 max-lg:gap-x-0"
+            >
+              <div class="font-serif text-[26px] leading-tight text-accent max-lg:mb-2 max-lg:text-[22px]">
+                {m.period}
+              </div>
+              <div class="relative border-l border-border pb-12 pl-10 max-lg:border-l-0 max-lg:border-b max-lg:border-border max-lg:pb-8 max-lg:pl-0">
+                <span
+                  class="absolute -left-[5px] top-[7px] h-2.5 w-2.5 bg-accent max-lg:hidden"
+                  aria-hidden="true"
+                />
+                <p class="text-body text-ink/80">
+                  {m.text}
+                  {m.refs.length > 0 && (
+                    <sup class="refs">
+                      {m.refs.map((r) => (
+                        <a href={`#src-${r}`}>{r}</a>
+                      ))}
+                    </sup>
+                  )}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ── V. Современность (белый фон, колонка чтения) ── */}
+  <section class="py-24 max-lg:py-16">
+    <div class="container-block">
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <p class="text-eyebrow text-accent">Сегодня</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Современность и глобализация</h2>
+        <div class="mt-7 flex flex-col gap-6 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            Сегодня тайцзицюань существует сразу в нескольких формах. Для одних
+            людей это боевое искусство с глубокими техническими принципами и
+            линиями передачи. Для других — мягкая практика движения, равновесия и
+            внимания. Для третьих — часть китайского культурного наследия,
+            связанная с философией, телесной дисциплиной и традиционными
+            представлениями о гармонии<sup class="refs"><a href="#src-1">1</a><a href="#src-7">7</a></sup>.
+          </p>
+        </div>
+      </div>
+
+      <blockquote data-reveal class="mx-auto my-16 max-w-[760px] max-lg:my-12">
+        <span class="block h-[3px] w-14 bg-accent" aria-hidden="true"></span>
+        <p
+          class="mt-7 font-serif text-[34px] font-medium leading-[1.25] text-ink max-lg:mt-5 max-lg:text-[26px]"
+        >
+          Тайцзицюань исторически развивалось через адаптацию — и в этом его
+          устойчивость.
+        </p>
+      </blockquote>
+
+      <div data-reveal class="mx-auto max-w-[680px]">
+        <p class="text-body text-ink/80">
+          Глобальное распространение изменило тайцзицюань. В разных странах
+          появились школы, которые делают акцент на здоровье, медитации,
+          спортивных формах, традиционной технике или культурном изучении. Это не
+          обязательно противоречие. Его современная задача — сохранять связь с
+          традицией, оставаясь понятным и доступным для людей нового
+          времени<sup class="refs"><a href="#src-7">7</a></sup>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Источники (аппарат сносок) ── */}
+  <section class="border-t border-border bg-white py-20 max-lg:py-14">
+    <div class="container-block">
+      <header data-reveal class="mx-auto max-w-[820px]">
+        <p class="text-eyebrow text-accent">Опираемся на исследования</p>
+        <h2 class="text-h2-compact mt-4 text-ink">Источники</h2>
+      </header>
+
+      <SourcesList sources={sources} />
+    </div>
+  </section>
+</article>

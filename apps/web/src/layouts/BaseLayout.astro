@@ -4,19 +4,26 @@ import { ClientRouter } from "astro:transitions";
 import { Font } from "astro:assets";
 import Loader from "../components/Loader.astro";
 import Menu from "../components/Menu.astro";
+import StickyNav from "../components/StickyNav.astro";
+import JsonLd from "../components/JsonLd.astro";
+import { siteGraph, graph, SITE_NAME, SITE_DESCRIPTION } from "../lib/seo";
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
   noindex?: boolean;
+  // Per-page узел(ы) structured data (билдеры из lib/seo: article/collectionPage/…).
+  // Добавляются к site-wide графу (Organization + WebSite). Объект или массив.
+  schema?: object | object[];
 }
 
 const {
-  title = "Общество изучения традиционного тайцзицюань",
-  description = "Информационный портал Общества изучения традиционного тайцзицюань: исследования, сохранение и развитие традиции в России.",
+  title = SITE_NAME,
+  description = SITE_DESCRIPTION,
   ogImage,
   noindex,
+  schema,
 } = Astro.props;
 
 // Канонический URL текущей страницы на домене из astro.config (site).
@@ -26,6 +33,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // (public/og-default.png, 1200×630). Всегда абсолютный URL на домене из site —
 // иначе превью при шеринге (VK/Telegram + своя ShareControls) уходят без картинки.
 const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
+
+// JSON-LD граф: site-wide Organization + WebSite, плюс per-page узлы (если переданы).
+// Один <script> на @graph; BreadcrumbList идёт отдельным скриптом из Breadcrumbs.
+const pageNodes = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+const jsonLdGraph = graph([...siteGraph(Astro.site), ...pageNodes]);
 ---
 
 <!doctype html>
@@ -58,6 +70,8 @@ const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
     <meta name="twitter:image" content={ogImageURL} />
     {/* Запрет индексации (для служебных страниц вроде 404). */}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {/* Structured data (JSON-LD): Organization + WebSite + per-page узлы. */}
+    <JsonLd schema={jsonLdGraph} />
     {/* Шрифты (Astro Fonts API): @font-face + метрически подогнанные fallback'и.
         Без preload — иначе тянулись бы все веса/курсивы; FOUT гасится оптимизированными fallback'ами. */}
     <Font cssVariable="--font-inter" />
@@ -100,6 +114,10 @@ const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
     {/* <main> — обычный блок БЕЗ overflow: Hero (sticky) и контент ниже остаются
         сиблингами внутри него, поэтому hero-parallax (sticky) сохраняется. */}
     <main id="main">
+      {/* Фиксированная «подъезжающая» шапка (общая для всех страниц): position:fixed,
+          поэтому вне потока — на sticky-цепочку hero не влияет. Внутри #main, чтобы
+          inert от меню/дровера изолировал и её (как остальной фон). */}
+      <StickyNav />
       <slot />
     </main>
 
@@ -124,6 +142,11 @@ const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
     {/* Рантайм меню: открытие/закрытие, Esc, блок скролла, фокус (как loader/smooth) */}
     <script>
       import "../lib/menu";
+    </script>
+
+    {/* Рантайм подъезжающей шапки: показ/скрытие по порогу скролла (~100svh) */}
+    <script>
+      import "../lib/sticky-nav";
     </script>
   </body>
 </html>

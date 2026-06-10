@@ -28,6 +28,19 @@
      ink 25%/16% ≈ rgba(13,16,20,0.25)/(0.16) — визуально те же тени. */
   --shadow-card: 0 20px 45px -15px color-mix(in srgb, var(--color-ink) 25%, transparent);
   --shadow-popover: 0 14px 48px color-mix(in srgb, var(--color-ink) 16%, transparent);
+
+  /* --- Анимация: единая кривая + базовый тайминг ---
+     Один источник плавности на весь сайт. Tailwind читает --default-transition-*
+     как дефолт для ВСЕХ utility transition-* (hover/active/смена состояний), поэтому
+     одна правка делает микровзаимодействия консистентно «дорогими» (мягкое expo-out
+     ускорение, 240мс вместо резких 150мс) — без правок по каждому компоненту.
+     Точечные утилиты duration и ease по-прежнему переопределяют локально.
+     --ease-smooth — та же кривая как именованная утилита (ease-smooth) для мест
+     со своей длительностью; та же кривая дублируется в GSAP-reveal (lib/smooth.ts),
+     чтобы JS- и CSS-движение шли «одной рукой». */
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 240ms;
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* --- Контейнер / гаттеры (документирующие переменные) ---
@@ -188,7 +201,7 @@ html.drawer-open {
   opacity: 0.5;
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s var(--ease-smooth);
 }
 .link-underline:hover::after {
   transform: scaleX(1);
@@ -218,7 +231,7 @@ html.drawer-open {
   background-color: color-mix(in srgb, var(--color-accent) 50%, transparent); /* bg-accent/50 */
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s var(--ease-smooth);
 }
 .group:hover .link-underline-group::after {
   transform: scaleX(1);
@@ -290,6 +303,71 @@ html.loading [data-loader-fade] {
   opacity: 0;
 }
 
+/* --- Editorial-примитивы лонгридов /taijiquan/* (общие; раньше дублировались
+   в <style> каждого компонента — буквица и аппарат сносок) --- */
+/* Буквица лид-абзаца (.standfirst): Cormorant, акцент, прижата влево. */
+.standfirst::first-letter {
+  float: left;
+  margin-top: 0.06em;
+  margin-right: 0.1em;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 4.4em;
+  line-height: 0.74;
+  color: var(--color-accent);
+}
+@media (max-width: 1023px) {
+  .standfirst::first-letter {
+    font-size: 3.6em;
+  }
+}
+/* Маркеры сносок (.refs): акцент, Manrope; запятая между смежными ссылками. */
+.refs {
+  padding-left: 1px;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.refs a {
+  color: var(--color-accent);
+}
+.refs a + a::before {
+  content: ", ";
+  color: var(--color-ink);
+  opacity: 0.4;
+}
+.refs a:hover {
+  text-decoration: underline;
+}
+
+/* --- Фиксированная «подъезжающая» шапка (StickyNav.astro) ---
+   Поведение ведёт src/lib/sticky-nav.ts (класс .is-visible по порогу скролла
+   ≈100svh). Здесь — только анимация: по умолчанию уехала вверх (translateY(-100%)),
+   при .is-visible подъезжает на место.
+   visibility:hidden в скрытом состоянии (как у меню) убирает шапку из tab-порядка
+   и дерева доступности, пока она за экраном — иначе клавиатура/скринридер ловят её
+   невидимые ссылки. Гасится с задержкой = длительность ухода, чтобы slide-up успел
+   доиграть. Reduced-motion → переключение мгновенное. */
+[data-sticky-nav] {
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition:
+    transform 0.45s var(--ease-smooth),
+    visibility 0s linear 0.45s;
+}
+[data-sticky-nav].is-visible {
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    transform 0.45s var(--ease-smooth),
+    visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-sticky-nav],
+  [data-sticky-nav].is-visible {
+    transition: visibility 0s;
+  }
+}
+
 /* --- Меню (полноэкранный оверлей) ---
    Поведение ведёт src/lib/menu.ts (классы .is-open на оверлее и .menu-open на
    <html>). Анимация — здесь: подложка проявляется через фейд (opacity) + стаггер
@@ -301,7 +379,7 @@ html.loading [data-loader-fade] {
   visibility: hidden;
   pointer-events: none;
   transition:
-    opacity 0.4s ease,
+    opacity 0.4s var(--ease-smooth),
     visibility 0s linear 0.4s;
 }
 [data-menu].is-open {
@@ -309,7 +387,7 @@ html.loading [data-loader-fade] {
   visibility: visible;
   pointer-events: auto;
   transition:
-    opacity 0.4s ease,
+    opacity 0.4s var(--ease-smooth),
     visibility 0s;
 }
 
@@ -325,7 +403,7 @@ html.menu-open {
     opacity: 0;
   }
   [data-menu].is-open [data-menu-item] {
-    animation: menu-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: menu-rise 0.9s var(--ease-smooth) both;
     animation-delay: calc(0.35s + var(--i, 0) * 0.09s);
   }
 }

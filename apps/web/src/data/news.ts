@@ -1,23 +1,39 @@
-// Единый источник новостей сайта (заглушки; CMS позже). Потребители: лента /news
-// (NewsList/NewsCard) и страница статьи /news/[slug] (включая слайдер «Другие
-// новости»). Один датасет → ссылки между лентой и статьёй реальны, не href="#".
+// Единый источник новостей сайта. Потребители: лента /news (NewsList/NewsCard) и
+// страница статьи /news/[slug] (ArticleIntro/ArticleBody/ArticleAuthor + слайдер
+// «Другие новости»). Один датасет → ссылки между лентой и статьёй реальны.
+//
+// Контент перенесён с действующего сайта Общества (taiji-society.ru, раздел
+// «Новости»). Каждая статья — отдельный модуль в ./news/<slug>.ts (метаданные +
+// главное фото + тело из типизированных блоков). Здесь — только общие типы и
+// сборка индекса (порядок — от свежих к старым). Эта же форма позже заполнится из
+// CMS: фронтенд её не заметит.
 //
 // Поля статьи:
-//   slug       — сегмент маршрута /news/<slug> (латиница, kebab-case);
-//   date       — дата публикации (как показывается);
-//   title      — полный заголовок (h1 статьи, заголовок карточки);
-//   shortTitle — короткий вариант для хлебных крошек (длинный h1 в крошку не лезет);
-//   excerpt    — лид/анонс (карточка ленты, og:description) — у каждой статьи свой;
-//   readingTime— оценка времени чтения (пока статична; позже из объёма rich-text);
-//   author     — имя + роль (по дизайну блока «Автор» — только имя и роль).
-//
-// Тело статьи (rich-text) намеренно НЕ в датасете: оно придёт из CMS. Пока его
-// рисует общий плейсхолдер ArticleBody.astro (одинаковый для всех статей).
+//   slug        — сегмент маршрута /news/<slug> (латиница, kebab-case);
+//   date        — дата публикации (как показывается, напр. «18 апреля 2026 г.»);
+//   title       — полный заголовок (h1 статьи, заголовок карточки);
+//   shortTitle  — короткий вариант для хлебных крошек;
+//   excerpt     — лид/анонс (карточка ленты, og:description) — свой у каждой статьи;
+//   readingTime — оценка времени чтения (по объёму текста);
+//   image       — главное фото (карточка ленты + шапка статьи), импорт-ассет;
+//   imageAlt    — alt главного фото;
+//   body        — тело статьи: массив блоков (см. Block);
+//   author      — источник; по умолчанию — Общество (SOCIETY_AUTHOR).
+
+import type { ImageMetadata } from "astro";
 
 export interface NewsAuthor {
   name: string;
-  role: string;
+  role?: string;
 }
+
+// Блоки тела статьи (rich-text). Рендерятся в ArticleBody на тип-шкале проекта.
+export type Block =
+  | { type: "p"; text: string; lead?: boolean } // абзац (lead — первый, акцентный)
+  | { type: "h2"; text: string } // подзаголовок внутри статьи
+  | { type: "image"; src: ImageMetadata; alt: string; caption?: string } // врезанное фото
+  | { type: "quote"; text: string } // цитата
+  | { type: "video"; embed: string; title?: string }; // встроенное видео (src iframe)
 
 export interface NewsArticle {
   slug: string;
@@ -26,135 +42,60 @@ export interface NewsArticle {
   shortTitle: string;
   excerpt: string;
   readingTime: string;
-  author: NewsAuthor;
+  image?: ImageMetadata; // главное фото; нет — фолбэк-плейсхолдер в карточке/шапке
+  imageAlt?: string;
+  body: Block[];
+  author?: NewsAuthor;
 }
 
+// На сайте у статей нет персональных авторов — источником указывается Общество.
+export const SOCIETY_AUTHOR: NewsAuthor = {
+  name: "Общество изучения традиционного тайцзицюань",
+};
+
+// Каждая статья — свой модуль. Порядок в массиве = порядок в ленте (свежие сверху).
+import chairmanVisitsBeijing from "./news/chairman-visits-beijing";
+import presidentialCommendation from "./news/presidential-commendation";
+import iksaRanOpenDay from "./news/iksa-ran-open-day";
+import wushuFederationAward from "./news/wushu-federation-award";
+import tvBricsInterview from "./news/tv-brics-interview";
+import samaraActivityConference from "./news/samara-activity-conference";
+import minskTaijiquanDay from "./news/minsk-taijiquan-day";
+import taijiquanDayMarch21 from "./news/taijiquan-day-march-21";
+import taijiquanGoesGlobal from "./news/taijiquan-goes-global";
+import taijiquanDayMoscow from "./news/taijiquan-day-moscow";
+import taijiquanDayUnescoHq from "./news/taijiquan-day-unesco-hq";
+import conferenceVideo from "./news/conference-video";
+import greetingDeputyForeignMinister from "./news/greeting-deputy-foreign-minister";
+import greetingChineseAmbassador from "./news/greeting-chinese-ambassador";
+import greetingSocietyChairman from "./news/greeting-society-chairman";
+import firstTaijiquanConference from "./news/first-taijiquan-conference";
+import conferenceProgram from "./news/conference-program";
+import meetingOrthodoxChurch from "./news/meeting-orthodox-church";
+import samaraSportsForum from "./news/samara-sports-forum";
+import unescoDeclaresTaijiquanDay from "./news/unesco-declares-taijiquan-day";
+
 export const articles: NewsArticle[] = [
-  {
-    slug: "iksa-ran-open-day",
-    date: "18 апреля 2026 г.",
-    title:
-      "Представители Общества приняли участие в дне открытых дверей ИКСА РАН",
-    shortTitle: "День открытых дверей ИКСА РАН",
-    excerpt:
-      "18 апреля 2026 года Институт Китая и современной Азии РАН распахнул двери для студентов, молодых учёных и всех, кто интересуется Азией. Повод особенный — 60-летие ИКСА РАН...",
-    readingTime: "5 мин",
-    author: { name: "Анна Иванова", role: "Инструктор" },
-  },
-  {
-    slug: "chairman-award",
-    date: "17 апреля 2026 г.",
-    title:
-      "Председатель попечительского совета награждён за развитие китайских боевых искусств в России",
-    shortTitle: "Награда председателю совета",
-    excerpt:
-      "Председатель попечительского совета Общества отмечен наградой за многолетний вклад в популяризацию китайских боевых искусств и развитие культурных связей между Россией и Китаем.",
-    readingTime: "4 мин",
-    author: { name: "Дмитрий Соколов", role: "Ответственный секретарь" },
-  },
-  {
-    slug: "tv-brics-interview",
-    date: "10 апреля 2026 г.",
-    title: "Интервью ответственного секретаря Общества телеканалу ТВ-БРИКС",
-    shortTitle: "Интервью телеканалу ТВ-БРИКС",
-    excerpt:
-      "Ответственный секретарь Общества рассказал телеканалу ТВ-БРИКС о принципах тайцзицюань и о том, как внутренние искусства помогают вести переговоры и принимать решения.",
-    readingTime: "6 мин",
-    author: { name: "Дмитрий Соколов", role: "Ответственный секретарь" },
-  },
-  {
-    slug: "open-training-moscow",
-    date: "5 апреля 2026 г.",
-    title:
-      "Открытая тренировка по тайцзицюань в центре Москвы собрала более ста участников",
-    shortTitle: "Открытая тренировка в Москве",
-    excerpt:
-      "Открытая тренировка в центре Москвы собрала более ста человек: базовые формы, парная работа и знакомство с традицией под руководством инструкторов Общества.",
-    readingTime: "3 мин",
-    author: { name: "Анна Иванова", role: "Инструктор" },
-  },
-  {
-    slug: "classic-treatise-translation",
-    date: "29 марта 2026 г.",
-    title:
-      "Общество представило перевод классического трактата о внутренних стилях",
-    shortTitle: "Перевод классического трактата",
-    excerpt:
-      "Общество представило новый перевод классического трактата о внутренних стилях — с подробным комментарием и сверкой терминологии по первоисточникам.",
-    readingTime: "7 мин",
-    author: { name: "Михаил Петров", role: "Научный сотрудник" },
-  },
-  {
-    slug: "shanghai-forum",
-    date: "21 марта 2026 г.",
-    title:
-      "Делегация Общества посетила международный форум боевых искусств в Шанхае",
-    shortTitle: "Форум боевых искусств в Шанхае",
-    excerpt:
-      "Делегация Общества приняла участие в международном форуме боевых искусств в Шанхае: доклады, мастер-классы и встречи с носителями традиции.",
-    readingTime: "5 мин",
-    author: { name: "Дмитрий Соколов", role: "Ответственный секретарь" },
-  },
-  {
-    slug: "spring-seminar",
-    date: "14 марта 2026 г.",
-    title: "Весенний семинар по основам внутренней работы прошёл в Подмосковье",
-    shortTitle: "Весенний семинар",
-    excerpt:
-      "Весенний семинар в Подмосковье был посвящён основам внутренней работы: расслаблению, центру тяжести, дыханию и принципу рождения движения из покоя.",
-    readingTime: "4 мин",
-    author: { name: "Анна Иванова", role: "Инструктор" },
-  },
-  {
-    slug: "lecture-tea-and-tao",
-    date: "7 марта 2026 г.",
-    title: "Лекция «Чай и Дао»: культура движения и созерцания",
-    shortTitle: "Лекция «Чай и Дао»",
-    excerpt:
-      "Лекция о связи чайной культуры и практики движения: как созерцание и ритм помогают глубже почувствовать принципы тайцзицюань.",
-    readingTime: "6 мин",
-    author: { name: "Михаил Петров", role: "Научный сотрудник" },
-  },
-  {
-    slug: "youth-program-launch",
-    date: "28 февраля 2026 г.",
-    title: "Общество запускает молодёжную программу изучения тайцзицюань",
-    shortTitle: "Молодёжная программа",
-    excerpt:
-      "Общество запускает молодёжную программу: регулярные занятия, лекции и наставничество для тех, кто только начинает путь в тайцзицюань.",
-    readingTime: "3 мин",
-    author: { name: "Анна Иванова", role: "Инструктор" },
-  },
-  {
-    slug: "media-archive-update",
-    date: "20 февраля 2026 г.",
-    title: "Медиа-архив Общества пополнился редкими записями мастеров",
-    shortTitle: "Пополнение медиа-архива",
-    excerpt:
-      "Медиа-архив Общества пополнился редкими материалами прошлых лет — записями демонстраций, интервью и фрагментами семинаров мастеров.",
-    readingTime: "4 мин",
-    author: { name: "Михаил Петров", role: "Научный сотрудник" },
-  },
-  {
-    slug: "partnership-university",
-    date: "13 февраля 2026 г.",
-    title: "Подписано соглашение о сотрудничестве с профильным университетом",
-    shortTitle: "Соглашение с университетом",
-    excerpt:
-      "Подписано соглашение о сотрудничестве с профильным университетом: совместные исследования, публикации и обмен преподавателями.",
-    readingTime: "5 мин",
-    author: { name: "Дмитрий Соколов", role: "Ответственный секретарь" },
-  },
-  {
-    slug: "winter-gathering",
-    date: "30 января 2026 г.",
-    title: "Зимняя встреча сообщества: итоги года и планы на сезон",
-    shortTitle: "Зимняя встреча сообщества",
-    excerpt:
-      "Зимняя встреча сообщества: подвели итоги года, обсудили планы на новый сезон и наметили календарь семинаров и открытых тренировок.",
-    readingTime: "3 мин",
-    author: { name: "Анна Иванова", role: "Инструктор" },
-  },
+  chairmanVisitsBeijing,
+  presidentialCommendation,
+  iksaRanOpenDay,
+  wushuFederationAward,
+  tvBricsInterview,
+  samaraActivityConference,
+  minskTaijiquanDay,
+  taijiquanDayMarch21,
+  taijiquanGoesGlobal,
+  taijiquanDayMoscow,
+  taijiquanDayUnescoHq,
+  conferenceVideo,
+  greetingDeputyForeignMinister,
+  greetingChineseAmbassador,
+  greetingSocietyChairman,
+  firstTaijiquanConference,
+  conferenceProgram,
+  meetingOrthodoxChurch,
+  samaraSportsForum,
+  unescoDeclaresTaijiquanDay,
 ];
 
 // «Другие новости» для статьи: все, кроме текущей, в исходном порядке, первые n.

@@ -13,6 +13,16 @@ import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import ContactFormDrawer from "../components/contacts/ContactFormDrawer";
+import { contactPageSchema } from "../lib/seo";
+
+const description =
+  "Контакты Общества изучения традиционного тайцзицюань: адрес, телефон, e-mail и форма обратной связи.";
+const schema = contactPageSchema({
+  site: Astro.site,
+  path: Astro.url.pathname,
+  name: "Контакты",
+  description,
+});
 
 const EMAIL = "info@taiji-society.ru";
 const mapUrl =
@@ -54,7 +64,8 @@ const socials: SocialCard[] = [
 
 <BaseLayout
   title="Контакты — Общество изучения традиционного тайцзицюань"
-  description="Контакты Общества изучения традиционного тайцзицюань: адрес, телефон, e-mail и форма обратной связи."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" bg="white" />
   <Breadcrumbs

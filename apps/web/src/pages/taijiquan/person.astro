@@ -1,20 +1,37 @@
 ---
-// Страница «Персоналии» (/taijiquan/person). Дубль внутреннего раздела на эталоне
+// Страница «Персоналии» (/taijiquan/person). Внутренний раздел на эталоне
 // /taijiquan/history: solid-Header (активный «Тайцзицюань»), крошки до текущего
-// раздела, общий InteriorHero + контент-заглушка, сквозной Footer. В «Узнайте
-// больше» карточка «Персоналии» приглушена как текущая (current). Контент — заглушка.
+// раздела, общий InteriorHero, сквозной Footer. Контент — TaijiPersons (карточки
+// мастеров + дровер «Подробнее», как блок «Команда» /society; заменил общую
+// заглушку ContentPlaceholder). В «Узнайте больше» карточка «Персоналии» приглушена.
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import ContentPlaceholder from "../../components/ContentPlaceholder.astro";
+import TaijiPersons from "../../components/taiji/TaijiPersons.astro";
 import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
 import Footer from "../../components/Footer.astro";
+import { personCollectionSchema } from "../../lib/seo";
+import { persons } from "../../data/taiji-persons";
+
+// CollectionPage + ItemList мастеров (имя + иероглифическое написание).
+const description =
+  "Персоналии тайцзицюань: Чэнь Вантин, Ян Лучань, У Юйсян, У Цзяньцюань, Ян Чэнфу, Сунь Лутан — мастера и семейные линии, сохранившие традицию.";
+const schema = personCollectionSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: "Персоналии тайцзицюань",
+    description,
+  },
+  persons.map((p) => ({ name: p.name, cjk: p.cjk })),
+);
 ---
 
 <BaseLayout
   title="Персоналии — Общество изучения традиционного тайцзицюань"
-  description="Персоналии тайцзицюань: мастера и семейные линии, сохранившие и передавшие традицию."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Тайцзицюань" />
   <Breadcrumbs
@@ -28,7 +45,7 @@ import Footer from "../../components/Footer.astro";
     title="Персоналии"
     subtitle="Мастера и семейные линии, сохранившие традицию тайцзицюань"
   />
-  <ContentPlaceholder />
+  <TaijiPersons />
   <TaijiExplore current="Персоналии" />
   <Footer />
 </BaseLayout>

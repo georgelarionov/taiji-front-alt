@@ -8,8 +8,13 @@
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { CustomEase } from "gsap/CustomEase";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
+// Единая кривая ускорения reveal-анимаций — та же, что у CSS-токена --ease-smooth
+// (cubic-bezier(0.22, 1, 0.36, 1), easeOutQuint). Так JS- и CSS-движение по сайту
+// идут «одной рукой»: мягкое expo-подобное приземление вместо более резкого power3.
+CustomEase.create("smooth", "0.22, 1, 0.36, 1");
 
 let lenis: Lenis | null = null;
 let rafId = 0;
@@ -39,7 +44,7 @@ function setupReveals() {
         autoAlpha: 1,
         y: 0,
         duration: 0.9,
-        ease: "power3.out",
+        ease: "smooth",
         scrollTrigger: { trigger: el, start: "top 85%", once: true },
       },
     );
@@ -60,7 +65,7 @@ function setupBgReveals() {
         autoAlpha: 1,
         y: 0,
         duration: 1.1,
-        ease: "power3.out",
+        ease: "smooth",
         scrollTrigger: { trigger: el, start: "center 80%", once: true },
       },
     );
@@ -82,7 +87,7 @@ function setupStaggeredReveals() {
         autoAlpha: 1,
         y: 0,
         duration: 1,
-        ease: "power3.out",
+        ease: "smooth",
         stagger: 0.15,
         scrollTrigger: { trigger: group, start: "top 85%", once: true },
       },

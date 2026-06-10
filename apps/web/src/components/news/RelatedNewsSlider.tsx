@@ -79,7 +79,7 @@ export default function RelatedNewsSlider({ cards }: { cards: RelatedCard[] }) {
       <div ref={viewportRef} className="mt-12 touch-pan-y max-lg:mt-8">
         <div
           ref={trackRef}
-          className="flex gap-6 transition-transform duration-500 ease-out max-lg:gap-4"
+          className="flex gap-6 transition-transform duration-500 ease-smooth max-lg:gap-4"
           style={{ transform: `translateX(${offset}px)` }}
         >
           {cards.map((c, i) => (

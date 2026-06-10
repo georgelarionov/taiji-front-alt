@@ -1,18 +1,16 @@
 import { useState } from "react";
-import type { MediaVideo, MediaPhoto, VideoFilter } from "../../data/media";
+import type { MediaVideo } from "../../data/media";
 import Drawer from "../Drawer";
 
-// Медиа-архив (/media-archive): табы Видео/Фото + фильтр категорий + сетки
-// карточек; клик по карточке открывает общий правый дровер (Drawer) с медиа.
-// Остров client:load — всё состояние интерактивно. Контент дровера — заглушка
-// (CMS позже). Типографика — по тип-шкале проекта.
+// Медиа-архив (/media-archive): табы Видео/Фото. «Видео» — сетка карточек реальных
+// материалов с сайта Общества (RuTube); клик открывает общий правый дровер (Drawer)
+// с встроенным плеером + описанием. Фильтра категорий нет (на источнике его нет).
+// «Фото» — пустое состояние «Материалы скоро появятся» (галереи придут позже/из CMS).
+// Остров client:load — интерактивные табы и дровер. Типографика — по тип-шкале.
 
 type Props = {
   videos: MediaVideo[];
-  photos: MediaPhoto[];
-  filters: VideoFilter[];
 };
-type OpenItem = { kind: "video" | "photo"; title: string; date: string };
 
 /* ----------------------------------- иконки (outline, currentColor) -------- */
 const PlayIcon = ({ className = "" }: { className?: string }) => (
@@ -26,25 +24,15 @@ const ImageIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-export default function MediaArchive({ videos, photos, filters }: Props) {
+export default function MediaArchive({ videos }: Props) {
   const [tab, setTab] = useState<"video" | "photo">("video");
-  const [filter, setFilter] = useState<string | null>(null);
-  const [open, setOpen] = useState<OpenItem | null>(null);
-
-  const shownVideos = filter ? videos.filter((v) => v.category === filter) : videos;
+  const [open, setOpen] = useState<MediaVideo | null>(null);
 
   // Список вкладок (для стрелочной навигации roving-tabindex).
   const TABS = [
     ["video", "Видео"],
     ["photo", "Фото"],
   ] as const;
-
-  // Смена вкладки. Уходя с «Видео» сбрасываем фильтр категорий — иначе при
-  // возврате грид молча показывает подвыборку при невидимых кнопках фильтра.
-  function selectTab(id: "video" | "photo") {
-    setTab(id);
-    if (id === "photo") setFilter(null);
-  }
 
   return (
     <div>
@@ -62,12 +50,12 @@ export default function MediaArchive({ videos, photos, filters }: Props) {
                 aria-selected={active}
                 aria-controls="media-panel"
                 tabIndex={active ? 0 : -1}
-                onClick={() => selectTab(id)}
+                onClick={() => setTab(id)}
                 onKeyDown={(e) => {
                   if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
                   e.preventDefault();
                   const next = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length][0];
-                  selectTab(next);
+                  setTab(next);
                   document.getElementById(`media-tab-${next}`)?.focus();
                 }}
                 className={`relative cursor-pointer py-5 font-display text-[17px] font-semibold transition-colors max-lg:py-4 max-lg:text-base ${
@@ -93,93 +81,72 @@ export default function MediaArchive({ videos, photos, filters }: Props) {
         <div className="container-block">
           {tab === "video" ? (
             <>
-              <div className="flex items-end justify-between gap-8 max-lg:flex-col max-lg:items-start max-lg:gap-5">
-                <h2 className="text-h2-compact text-ink">Видеоматериалы</h2>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 max-lg:gap-x-5">
-                  {filters.map((f) => {
-                    const active = filter === f.category;
-                    return (
-                      <button
-                        key={f.label}
-                        type="button"
-                        onClick={() => setFilter(f.category)}
-                        className={`cursor-pointer font-display text-[15px] font-semibold transition-colors ${
-                          active ? "text-accent" : "text-ink/55 hover:text-ink"
-                        }`}
-                      >
-                        {f.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <h2 className="text-h2-compact text-ink">Видеоматериалы</h2>
 
               <div className="mt-10 grid grid-cols-3 gap-x-8 gap-y-12 max-lg:mt-8 max-lg:grid-cols-1 max-lg:gap-y-8">
-                {shownVideos.map((v) => (
-                  <button key={v.id} type="button" onClick={() => setOpen({ kind: "video", title: v.title, date: v.date })} className="group flex cursor-pointer flex-col text-left">
-                    <div className="flex aspect-video w-full items-center justify-center bg-surface-sunken transition-colors group-hover:bg-field">
+                {videos.map((v) => (
+                  <button key={v.id} type="button" onClick={() => setOpen(v)} className="group flex cursor-pointer flex-col text-left">
+                    <div className="relative flex aspect-video w-full items-center justify-center bg-surface-sunken transition-colors group-hover:bg-field">
                       <PlayIcon className="h-12 w-12 text-ink/35" />
+                      {v.embeds.length > 1 && (
+                        <span className="absolute bottom-3 right-3 rounded-full bg-ink/80 px-2.5 py-1 font-display text-xs font-semibold text-white">
+                          {v.embeds.length} видео
+                        </span>
+                      )}
                     </div>
-                    <div className="mt-4 flex items-center gap-3 font-display text-sm">
-                      <span className="font-semibold text-ink/70">{v.category}</span>
-                      <span className="h-1 w-1 rounded-full bg-ink/30" aria-hidden="true" />
-                      <span className="text-ink/45">{v.date}</span>
-                    </div>
+                    <p className="mt-4 font-display text-sm font-semibold text-ink/45">{v.date}</p>
                     <h3 className="mt-2 text-h3 text-ink">{v.title}</h3>
-                    <p className="mt-2 font-sans text-base leading-relaxed text-ink/65">{v.desc}</p>
+                    <p className="mt-2 line-clamp-3 font-sans text-base leading-relaxed text-ink/65">{v.desc[0]}</p>
                   </button>
                 ))}
               </div>
             </>
           ) : (
-            <>
-              <h2 className="text-h2-compact text-ink">Фотогалереи</h2>
-
-              <div className="mt-10 grid grid-cols-3 gap-8 max-lg:mt-8 max-lg:grid-cols-1">
-                {photos.map((p) => (
-                  <button key={p.id} type="button" onClick={() => setOpen({ kind: "photo", title: p.title, date: p.meta })} className="group flex cursor-pointer flex-col text-left">
-                    <div className="flex aspect-[4/3] w-full items-center justify-center bg-surface-sunken transition-colors group-hover:bg-field">
-                      <ImageIcon className="h-12 w-12 text-ink/30" />
-                    </div>
-                    <h3 className="mt-4 text-h3 text-ink">{p.title}</h3>
-                    <p className="mt-2 font-display text-sm font-semibold text-ink/50">{p.meta}</p>
-                    <p className="mt-2 font-sans text-base leading-relaxed text-ink/65">{p.desc}</p>
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 py-10 text-center max-lg:min-h-[260px]">
+              <ImageIcon className="h-12 w-12 text-ink/25" />
+              <h2 className="text-h2-compact text-ink">Материалы скоро появятся</h2>
+              <p className="max-w-[520px] font-sans text-base leading-relaxed text-ink/60 max-lg:text-[15px]">
+                Фотогалереи Общества появятся в этом разделе в ближайшее время.
+              </p>
+            </div>
           )}
         </div>
       </section>
 
-      {/* дровер с медиа (общий компонент) */}
+      {/* дровер с видео (общий компонент): плеер(ы) RuTube + описание */}
       <Drawer open={!!open} onClose={() => setOpen(null)} label={open?.title}>
         {open && (
           <>
             <h2 className="font-serif text-[34px] font-semibold leading-[1.15] text-ink max-lg:text-[26px]">{open.title}</h2>
-            <p className="mt-3 font-serif text-lg italic text-ink/55 max-lg:text-base">{open.date} г.</p>
+            <p className="mt-3 font-serif text-lg italic text-ink/55 max-lg:text-base">{open.date}</p>
 
-            {/* медиа: видео → чёрный плеер с лоудером; фото → плейсхолдер */}
-            {open.kind === "video" ? (
-              <div className="mt-8 flex aspect-video w-full items-center justify-center bg-black max-lg:mt-5">
-                <span className="h-10 w-10 animate-spin rounded-full border-2 border-white/25 border-t-white" aria-hidden="true" />
-              </div>
-            ) : (
-              <div className="mt-8 flex aspect-[4/3] w-full items-center justify-center bg-surface-sunken max-lg:mt-5" aria-hidden="true">
-                <ImageIcon className="h-14 w-14 text-ink/30" />
-              </div>
-            )}
-
-            {/* переключатель языка */}
-            <div className="mt-4 flex items-center gap-4">
-              <a href="#" lang="zh-Hans" className="font-sans text-base text-accent underline underline-offset-2">中文</a>
-              <a href="#" className="font-sans text-base text-accent underline underline-offset-2">English</a>
+            {/* плеер(ы): один или несколько роликов с подписями частей */}
+            <div className="mt-8 flex flex-col gap-8 max-lg:mt-5 max-lg:gap-6">
+              {open.embeds.map((e, i) => (
+                <div key={i}>
+                  {e.label && (
+                    <p className="mb-3 font-display text-[15px] font-semibold text-ink/75">{e.label}</p>
+                  )}
+                  <div className="aspect-video w-full overflow-hidden bg-black">
+                    <iframe
+                      src={e.src}
+                      title={e.label ?? open.title}
+                      loading="lazy"
+                      allow="clipboard-write; autoplay; fullscreen; picture-in-picture; encrypted-media"
+                      allowFullScreen
+                      className="h-full w-full border-0"
+                      style={{ pointerEvents: "auto" }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* описание (заглушка) */}
-            <div className="mt-5 flex flex-col gap-4 font-sans text-[17px] leading-[1.7] text-ink/80 max-lg:text-base">
-              <p>Что привлекает людей в тайцзицюань? Как принципы этого спорта помогают вести переговоры и принимать взвешенные решения в бизнесе?</p>
-              <p>Об этом и не только — в <a href="#" className="text-accent underline underline-offset-2">BRICSтервью</a> ответственного секретаря Общества изучения традиционного тайцзицюань Дмитрия Петровского.</p>
+            {/* описание */}
+            <div className="mt-6 flex flex-col gap-4 font-sans text-[17px] leading-[1.7] text-ink/80 max-lg:text-base">
+              {open.desc.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
             </div>
           </>
         )}

@@ -4,7 +4,6 @@
 // кнопки-ссылки «Миссия и ценности»/«Команда»), справа — белый слайдер персон
 // (React-остров, стрелки/точки меняют контент; пока контент продублирован).
 import { getImage } from "astro:assets";
-import { INFO_PATH } from "../lib/icons";
 import SocietySlider, { type SocietySlide } from "./SocietySlider.tsx";
 // Фото персоны в слайде — это <Image> нельзя рендерить внутри React-острова,
 // поэтому оптимизируем здесь через getImage() и передаём готовый src в слайдер.
@@ -77,10 +76,9 @@ const tabs = [
           </p>
         </div>
 
-        {/* Каллиграфия «传统太极拳学会» + иконка info справа (PEN: 5-block → Frame 345,
-            gap 24, по центру). Кривая уже встроена в раст — отдельного подчёркивания нет.
-            Геометрия иконки info — точно из ноды LJcBI; tint #000 @50% → text-ink/50. */}
-        <div class="mt-10 flex items-center gap-6 max-lg:mt-7 max-lg:gap-4">
+        {/* Каллиграфия «传统太极拳学会» (PEN: 5-block → Frame 345, по центру).
+            Кривая уже встроена в раст — отдельного подчёркивания нет. */}
+        <div class="mt-10 max-lg:mt-7">
           <img
             src={caliSrc.src}
             width={caliSrc.width}
@@ -88,14 +86,6 @@ const tabs = [
             alt="传统太极拳学会"
             class="h-auto w-[144px]"
           />
-          <svg
-            viewBox="0 0 20 20"
-            class="h-5 w-5 shrink-0 text-ink/50"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path d={INFO_PATH} />
-          </svg>
         </div>
 
         {/* Кнопки-ссылки (ведут на отдельные страницы).
@@ -121,7 +111,7 @@ const tabs = [
                   href={tab.href}
                   class="group font-display text-2xl font-semibold leading-none text-ink max-lg:text-xl"
                 >
-                  <span class="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-black/50 after:transition-transform after:duration-300 after:ease-out group-hover:after:scale-x-100">
+                  <span class="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-black/50 after:transition-transform after:duration-300 after:ease-smooth group-hover:after:scale-x-100">
                     {tab.label}
                   </span>
                 </a>

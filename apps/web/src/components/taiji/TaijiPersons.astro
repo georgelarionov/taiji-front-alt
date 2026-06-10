@@ -1,0 +1,153 @@
+---
+// Раздел «Персоналии» (/taijiquan/person). Заменяет общую заглушку
+// ContentPlaceholder. Структура как у блока «Команда» (/society): сетка статичных
+// карточек + дровер «Подробнее» (один остров, рендерится в <body> через портал,
+// открывается по делегированному клику [data-person-open]). Картинок нет —
+// плейсхолдеры портретов. Источники каждой персоны показываются ВНУТРИ её дровера
+// (не внизу страницы). Заголовок страницы (h1) — в InteriorHero, секции — <h2>/<h3>.
+import { getImage } from "astro:assets";
+import { persons, personSources } from "../../data/taiji-persons";
+import TaijiPersonsDrawer from "./TaijiPersonsDrawer";
+import chenWangting from "../../assets/taiji/persons/chen-wangting.jpg";
+import yangLuchan from "../../assets/taiji/persons/yang-luchan.jpg";
+import wuYuxiang from "../../assets/taiji/persons/wu-yuxiang.jpg";
+import yangChengfu from "../../assets/taiji/persons/yang-chengfu.jpg";
+import sunLutang from "../../assets/taiji/persons/sun-lutang.jpg";
+import wuJianquan from "../../assets/taiji/persons/wu-jianquan.webp";
+
+// Портреты: 5 — public domain (Wikimedia Commons): Chen Wanting.jpg, Yang Luchan.jpg,
+// Wu Yuxiang.jpg, Yang-single.jpg (Ян Чэнфу), 1930 sun lutang.jpg. Портрет
+// У Цзяньцюаня добавлен по указанию заказчика из веб-превью (лицензия не
+// подтверждена, в отличие от остальных PD/CC).
+const photoSrc = {
+  "chen-wangting": chenWangting,
+  "yang-luchan": yangLuchan,
+  "wu-yuxiang": wuYuxiang,
+  "yang-chengfu": yangChengfu,
+  "sun-lutang": sunLutang,
+  "wu-jianquan": wuJianquan,
+} as const;
+
+// Оптимизируем в webp; ширина не больше исходной (архивные фото мелкие — без апскейла).
+const photoById: Record<string, string> = {};
+for (const [id, img] of Object.entries(photoSrc)) {
+  photoById[id] = (
+    await getImage({ src: img, width: Math.min(img.width, 900), format: "webp" })
+  ).src;
+}
+
+// Резолвим источники каждой персоны (номера → полные записи) + портрет для дровера.
+const drawerPeople = persons.map((p) => ({
+  ...p,
+  photo: photoById[p.id] ?? null,
+  sources: p.sourceNs
+    .map((n) => personSources.find((s) => s.n === n))
+    .filter((s): s is (typeof personSources)[number] => Boolean(s)),
+}));
+---
+
+<article id="content" class="persons scroll-mt-24 bg-white">
+  {/* ── Вступление (белый фон, колонка чтения) ── */}
+  <section class="pt-16 pb-4 max-lg:pt-12">
+    <div class="container-block">
+      <div data-reveal class="mx-auto max-w-[760px]">
+        <span class="block h-[3px] w-14 bg-accent" aria-hidden="true"></span>
+        <p
+          class="standfirst mt-8 font-serif text-[25px] font-medium leading-[1.5] text-ink max-lg:mt-6 max-lg:text-[20px]"
+        >
+          История тайцзицюань — это не только история форм, стилей и трактатов:
+          традиция передавалась через конкретных людей.
+        </p>
+        <div class="mt-6 flex flex-col gap-5 max-lg:mt-5">
+          <p class="text-body text-ink/80">
+            Семейные мастера, ученики, реформаторы, авторы и преподаватели — через
+            их биографии видно, как локальная боевая практика из центрального
+            Китая постепенно стала сложной системой телесной культуры, а затем —
+            международным явлением.
+          </p>
+          <p class="text-body text-ink/80">
+            При этом историю тайцзицюань важно читать аккуратно. В ней есть
+            легендарные образы, семейные предания и документально более надёжные
+            линии передачи. Поэтому здесь собраны фигуры, которые имеют ключевое
+            значение для формирования основных школ и для распространения
+            тайцзицюань в Китае и за его пределами.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Карточки мастеров (полоса surface-sunken) ── */}
+  <section class="mt-6 bg-surface-sunken py-20 max-lg:mt-4 max-lg:py-14">
+    <div class="container-block flex flex-col gap-12 max-lg:gap-9">
+      <header data-reveal class="flex flex-col gap-4">
+        <p class="text-eyebrow text-accent">Линии и мастера</p>
+        <h2 class="text-h2 text-ink">Мастера и семейные линии</h2>
+      </header>
+
+      <div class="grid grid-cols-3 gap-6 max-lg:grid-cols-1 max-lg:gap-5" data-reveal-stagger>
+        {
+          persons.map((p) => (
+            <article
+              data-reveal-item
+              class="flex flex-col bg-white"
+            >
+              {/* Портрет (PD); нет фото у персоны → плейсхолдер-силуэт. */}
+              {photoById[p.id] ? (
+                <div class="h-[420px] w-full bg-surface p-2 max-lg:h-[380px] max-lg:p-1">
+                  <img
+                    src={photoById[p.id]}
+                    alt={`${p.name} — портрет`}
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div
+                  class="relative flex h-[420px] w-full items-center justify-center overflow-hidden bg-surface max-lg:h-[380px]"
+                  aria-hidden="true"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-12 w-12 text-ink/25"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+                    <path d="M5 21a7 7 0 0 1 14 0" />
+                  </svg>
+                </div>
+              )}
+
+              <div class="flex flex-1 flex-col gap-4 p-7 max-lg:p-5">
+                <span class="text-eyebrow text-accent">{p.line}</span>
+                <h3 class="font-display text-2xl font-semibold leading-[1.25] text-ink max-lg:text-[20px]">
+                  {p.name}{" "}
+                  <span lang="zh-Hans" class="font-serif text-[20px] font-medium text-ink/45">
+                    {p.cjk}
+                  </span>
+                </h3>
+                <p class="text-body text-ink/70">{p.card}</p>
+                <button
+                  type="button"
+                  data-person-open={p.id}
+                  class="mt-auto flex w-full cursor-pointer items-center justify-center bg-accent-soft py-3 font-display text-sm font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
+                >
+                  Подробнее
+                </button>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Дровер «Подробнее» (один на блок; рендерится в <body> через портал).
+        Открывается по клику на [data-person-open] из сетки. */}
+    <TaijiPersonsDrawer client:load people={drawerPeople} />
+  </section>
+</article>

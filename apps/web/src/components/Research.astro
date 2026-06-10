@@ -6,6 +6,7 @@ import { getImage } from "astro:assets";
 import ResearchSlider, {
   type ResearchCard,
 } from "./ResearchSlider.tsx";
+import { researchAll } from "../data/research";
 // Декоративный фон-мазок: прижат к правому краю секции, выходит за вьюпорт
 // (клипает overflow-x-clip секции). Крупная полупрозрачная текстура → webp
 // через getImage() (PNG 1310×1448 → ~−300КБ, без артефактов на градиенте).
@@ -13,29 +14,14 @@ import bg from "../assets/research/bg.png";
 
 const bgImg = await getImage({ src: bg, width: 1310, format: "webp" });
 
-const base: ResearchCard[] = [
-  {
-    year: "2026",
-    category: "Статья",
-    title: "Тайцзицюань в советской физической культуре 1960–70-х годов",
-    desc: "Архивное исследование о первых попытках интеграции китайских внутренних практик в советские оздоровительные программы.",
-  },
-  {
-    year: "2025",
-    category: "Перевод",
-    title: "«Трактат о тайцзицюань» Ван Цзунъюэ: новый комментированный перевод",
-    desc: "Первый академический перевод ключевого классического текста школы Ян на русский язык с подробным комментарием.",
-  },
-  {
-    year: "2025",
-    category: "Полевое исследование",
-    title: "Передача формы 13 в школ семьи Чэнь",
-    desc: "Серия интервью и видеозаписей с мастерами 19-го поколения в деревне Чэньцзягоу. Документирование особенностей передачи базовой формы и работы с энергией.",
-  },
-];
-
-// для примера дублируем до 5 карточек
-const cards: ResearchCard[] = [...base, base[0], base[1]];
+// Реальные материалы раздела (единый датасет data/research): тизер ведёт на /research.
+// Чип категории = тип материала (Источник/Публикация), год — из датасета.
+const cards: ResearchCard[] = researchAll.map((r) => ({
+  year: r.year,
+  category: r.kind,
+  title: r.title,
+  desc: r.desc,
+}));
 ---
 
 <section class="relative overflow-x-clip bg-surface-sunken py-[72px] max-lg:py-16">

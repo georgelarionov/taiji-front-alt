@@ -1,4 +1,40 @@
-User-agent: *
-Allow: /
+# ВРЕМЕННО: сайт работает на временном Railway-домене
+# (taiji-front-production.up.railway.app) — закрываем его от индексации целиком,
+# чтобы временный адрес не попал в выдачу/AI-ответы и не создал дублей до запуска
+# на постоянном домене.
+#
+# КОГДА НАЗНАЧАТ ПОСТОЯННЫЙ ДОМЕН:
+#   1) В astro.config.mjs обновить `site` на новый домен.
+#   2) Здесь: удалить блок «ВРЕМЕННО» ниже и раскомментировать блок «ПОСТОЯННАЯ
+#      КОНФИГУРАЦИЯ» (открывает сайт + явно допускает AI-ботов для цитирования в
+#      ChatGPT/Perplexity/Claude/Gemini/Copilot — это AEO-цель проекта).
+#   3) В блоке Sitemap подставить новый домен.
 
-Sitemap: https://taiji-front-production.up.railway.app/sitemap-index.xml
+# ─── ВРЕМЕННО: всё закрыто ───────────────────────────────────────────────────
+User-agent: *
+Disallow: /
+
+# ─── ПОСТОЯННАЯ КОНФИГУРАЦИЯ (раскомментировать при переезде на свой домен) ───
+# User-agent: *
+# Allow: /
+#
+# # Явный allow AI-краулеров (citation в AI-ответах). При желании можно закрыть
+# # только обучающий CCBot (Common Crawl), не трогая поисково-цитирующих ботов.
+# User-agent: GPTBot
+# Allow: /
+# User-agent: ChatGPT-User
+# Allow: /
+# User-agent: OAI-SearchBot
+# Allow: /
+# User-agent: PerplexityBot
+# Allow: /
+# User-agent: ClaudeBot
+# Allow: /
+# User-agent: anthropic-ai
+# Allow: /
+# User-agent: Google-Extended
+# Allow: /
+# User-agent: Bingbot
+# Allow: /
+#
+# Sitemap: https://taiji-front-production.up.railway.app/sitemap-index.xml

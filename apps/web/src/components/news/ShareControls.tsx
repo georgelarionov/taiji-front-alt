@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 // задел на будущее). URL берём из window.location.href в момент клика, поэтому
 // шеринг не зависит от плейсхолдера домена в astro.config.
 //
-// Токены проекта: круглые кнопки border-border / hover bg-surface, поповер на
+// Токены проекта: квадратные кнопки rounded-[2px] border-border / hover bg-surface, поповер на
 // белом с shadow-popover. Доступность: aria-haspopup/expanded, role="menu",
 // закрытие по Esc и клику вне.
 
@@ -174,7 +174,7 @@ export default function ShareControls({ title }: Props) {
         type="button"
         onClick={() => copyLink("Ссылка скопирована", true)}
         aria-label="Скопировать ссылку"
-        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-border text-ink transition-colors hover:bg-surface"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-[2px] border border-border text-ink transition-colors hover:bg-surface"
       >
         {copied ? <CheckIcon className="h-[18px] w-[18px] text-accent" /> : <LinkIcon className="h-[18px] w-[18px]" />}
       </button>
@@ -187,7 +187,7 @@ export default function ShareControls({ title }: Props) {
           aria-label="Поделиться"
           aria-haspopup="menu"
           aria-expanded={open}
-          className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition-colors ${
+          className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-[2px] border transition-colors ${
             open ? "border-accent bg-accent-soft text-accent" : "border-border text-ink hover:bg-surface"
           }`}
         >
@@ -198,7 +198,7 @@ export default function ShareControls({ title }: Props) {
           <div
             role="menu"
             aria-label="Поделиться в соцсетях"
-            className="absolute right-0 top-[52px] z-50 w-[240px] overflow-hidden rounded-xl border border-border bg-white p-2 shadow-popover animate-[fade-in_0.18s_ease_both] motion-reduce:animate-none"
+            className="absolute right-0 top-[52px] z-50 w-[240px] overflow-hidden rounded-[2px] border border-border bg-white p-2 shadow-popover animate-[fade-in_0.18s_ease_both] motion-reduce:animate-none"
           >
             {menu.map((it) => (
               <button
@@ -206,7 +206,7 @@ export default function ShareControls({ title }: Props) {
                 type="button"
                 role="menuitem"
                 onClick={it.onClick}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-ink transition-colors hover:bg-surface"
+                className="flex w-full cursor-pointer items-center gap-3 rounded-[2px] px-3 py-2.5 text-ink transition-colors hover:bg-surface"
               >
                 <span className="grid h-6 w-6 place-items-center text-ink/80">{it.icon}</span>
                 <span className="font-sans text-base font-medium">{it.label}</span>

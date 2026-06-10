@@ -1,21 +1,26 @@
 ---
 // Карточка новости в ленте /news (фреймы News / NewMobile).
 // Десктоп-first, значения по нодам MagicPath; мобайл — max-lg: оверрайды.
-// Структура: дата → заголовок → плейсхолдер-фото в боксе bg-field → лид-абзац →
-// кнопка «Читать далее». Фото-заглушка — портретный бокс на тоне surface-sunken
-// внутри поля field (реальные фото подключатся из CMS позже). Ссылки (заголовок +
-// «Читать далее») ведут на страницу статьи — href приходит пропсом (/news/<slug>).
+// Структура: дата → заголовок → фото статьи (object-cover в боксе bg-field) →
+// лид-абзац → кнопка «Читать далее». Фото и ссылки приходят пропсами из data/news
+// (реальные материалы сайта Общества). Ссылки (заголовок + «Читать далее») ведут
+// на /news/<slug>.
 //
 // Заголовок карточки — <h2> (статьи ленты = секции под единственным <h1> героя).
 // Размер 28/24px взят точно по дизайну (промежуточный уровень, в type-scale нет).
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
 interface Props {
   date: string;
   title: string;
   excerpt: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
   // Ссылка на страницу статьи (/news/<slug>).
   href: string;
 }
-const { date, title, excerpt, href } = Astro.props;
+const { date, title, excerpt, image, imageAlt, href } = Astro.props;
 ---
 
 <article class="flex flex-col gap-6 max-lg:gap-8">
@@ -32,16 +37,25 @@ const { date, title, excerpt, href } = Astro.props;
         </h2>
       </div>
 
-      {/* Фото-заглушка: портретный бокс на surface-sunken внутри поля field */}
-      <div
-        class="flex h-[455px] items-center justify-center overflow-hidden bg-field py-4 max-lg:h-[200px] max-lg:py-2"
-      >
-        <div
-          class="h-[423px] w-[317px] shrink-0 bg-surface-sunken max-lg:h-[184px] max-lg:w-[138px]"
-          aria-hidden="true"
-        >
-        </div>
-      </div>
+      {/* Обложка новости: fit (object-contain) на подложке цвета шапки (bg-surface),
+          паддинг 8px (пк) / 4px (мобайл). Нет фото — область не рендерится. */}
+      {
+        image && (
+          <a
+            href={href}
+            class="block h-[455px] bg-surface p-2 max-lg:h-[200px] max-lg:p-1"
+            aria-label={title}
+          >
+            <Image
+              src={image}
+              alt={imageAlt ?? title}
+              widths={[400, 809, 1218]}
+              sizes="(max-width: 1024px) 100vw, 809px"
+              class="h-full w-full object-contain"
+            />
+          </a>
+        )
+      }
     </div>
 
     <p

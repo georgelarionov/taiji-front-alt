@@ -71,7 +71,7 @@ export default function EventsTabs() {
                   transform инлайном (не Tailwind-классом) — чтобы гарантированно
                   применялся; растёт из центра (origin-center). */}
               <span
-                className="absolute inset-x-0 bottom-0 h-[7px] origin-center bg-accent transition-transform duration-300 ease-out max-lg:h-[3px]"
+                className="absolute inset-x-0 bottom-0 h-[7px] origin-center bg-accent transition-transform duration-300 ease-smooth max-lg:h-[3px]"
                 style={{ transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
               />
             </button>

@@ -2,8 +2,9 @@
 // Интро внутренних страниц-разделов (фреймы Template-1 / Mobile-Template-1).
 // Full-bleed полоса на тоне surface с декоративным орнаментом-кольцом 太极.
 // Десктоп: контент слева (заголовок + подзаголовок сверху, кнопка-стрелка снизу),
-// орнамент прижат к правому краю фрейма 1440. Мобайл: контент по центру, орнамент
-// по нижнему центру. Фоны раздаём отдельными ассетами (pc / mob) через getImage +
+// орнамент прижат к ПРАВОМУ КРАЮ ЭКРАНА без отступа (background-position: right).
+// Мобайл: контент по центру, орнамент по нижнему центру. Фоны раздаём отдельными
+// ассетами (pc / mob) через getImage +
 // CSS-фон под медиазапросом → грузится только нужный вариант.
 //
 // title / subtitle — заголовок и подзаголовок раздела (История / Теория / …).
@@ -69,7 +70,7 @@ const bgM = await getImage({ src: heroBgMobile, width: 780, format: "webp" });
 
 <style>
   /* Фон полосы: мобильный ассет по умолчанию (орнамент по нижнему центру),
-     десктопный — с ≥1024px (орнамент у правого края фрейма 1440, по центру). */
+     десктопный — с ≥1024px (орнамент прижат к правому краю экрана, без отступа). */
   .interior-hero {
     background-image: var(--bg-m);
     background-repeat: no-repeat;
@@ -79,7 +80,7 @@ const bgM = await getImage({ src: heroBgMobile, width: 780, format: "webp" });
   @media (min-width: 1024px) {
     .interior-hero {
       background-image: var(--bg-d);
-      background-position: center;
+      background-position: right center;
       background-size: 1440px auto;
     }
   }

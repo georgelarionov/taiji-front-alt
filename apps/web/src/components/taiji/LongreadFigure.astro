@@ -1,0 +1,78 @@
+---
+// Фигура лонгридов /taijiquan/* (История/Теория/Практика). Один компонент на все
+// случаи: если передан src — оптимизированное фото (webp, без апскейла), показ
+// «fit» — object-contain на подложке bg-surface с паддингом (как обложки карточек
+// новостей: изображение целиком, без обрезки); иначе — чистый плейсхолдер. Подпись
+// + опц. кредит (для CC-BY обязателен). Reveal — штатный data-reveal.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src?: ImageMetadata; // если нет — рендерим плейсхолдер
+  alt?: string;
+  caption: string;
+  credit?: string; // «Фото: автор · CC BY… · Wikimedia Commons»
+  aspect?: string; // "16/9" | "3/4" | "4/5"
+  width?: string; // max-width утилита, напр. "max-w-[920px]"
+  my?: string; // вертикальные отступы, напр. "my-14"
+}
+const {
+  src,
+  alt = "",
+  caption,
+  credit,
+  aspect = "16/9",
+  width = "max-w-[920px]",
+  my = "my-14",
+} = Astro.props;
+
+// Адаптивные ширины (srcset) — не больше исходной, чтобы не апскейлить.
+// Так мобайл берёт лёгкий вариант, а не один тяжёлый webp для всех экранов.
+const widths = src
+  ? [...new Set([540, 920, Math.min(src.width, 1400)])]
+      .filter((w) => w <= src.width)
+      .sort((a, b) => a - b)
+  : [];
+if (src && widths.length === 0) widths.push(src.width);
+---
+
+<figure data-reveal class={`mx-auto ${my} ${width} max-lg:my-10`}>
+  <div
+    class="w-full overflow-hidden bg-surface p-2 max-lg:p-1"
+    style={`aspect-ratio:${aspect}`}
+  >
+    {
+      src ? (
+        <Image
+          src={src}
+          alt={alt}
+          widths={widths}
+          sizes="(max-width: 1024px) 92vw, 920px"
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-contain"
+        />
+      ) : (
+        <div class="flex h-full w-full items-center justify-center" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            class="h-12 w-12 text-ink/25 max-lg:h-10 max-lg:w-10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="1" />
+            <circle cx="9" cy="9" r="1.8" />
+            <path d="m21 15-4.5-4.5L6 21" />
+          </svg>
+        </div>
+      )
+    }
+  </div>
+  <figcaption class="mt-3 flex flex-col gap-1">
+    <span class="text-caption text-ink/70">{caption}</span>
+    {credit && <span class="font-sans text-[12px] leading-snug text-ink/40">{credit}</span>}
+  </figcaption>
+</figure>

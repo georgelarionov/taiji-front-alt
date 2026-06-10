@@ -5,6 +5,8 @@
 //
 // items — путь от корня к текущей странице. Последний элемент без href трактуется
 // как текущая страница: приглушённый, aria-current="page", без ссылки.
+import JsonLd from "./JsonLd.astro";
+
 interface Crumb {
   label: string;
   href?: string;
@@ -16,6 +18,19 @@ interface Props {
 }
 const { items, bg = "surface" } = Astro.props;
 const bgClass = bg === "white" ? "bg-white" : "bg-surface";
+
+// BreadcrumbList (JSON-LD) из тех же items — навигационная разметка для поиска/AI.
+// Текущая страница (последний элемент без href) идёт без `item` (так допускает Google).
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: items.map((c, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: c.label,
+    ...(c.href ? { item: new URL(c.href, Astro.site).href } : {}),
+  })),
+};
 ---
 
 <nav aria-label="Хлебные крошки" class:list={[bgClass, "gutter-x border-b border-border"]}>
@@ -43,3 +58,4 @@ const bgClass = bg === "white" ? "bg-white" : "bg-surface";
     }
   </ol>
 </nav>
+<JsonLd schema={breadcrumbLd} />

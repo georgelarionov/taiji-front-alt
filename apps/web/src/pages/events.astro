@@ -10,11 +10,25 @@ import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import PageTitleBand from "../components/PageTitleBand.astro";
 import EventsTabs from "../components/events/EventsTabs";
+import { webPageSchema } from "../lib/seo";
+
+// Пока страница — заглушка (списков мероприятий ещё нет) → честный тип WebPage,
+// не CollectionPage (коллекция пустая). Сменить на CollectionPage, когда из CMS
+// появятся реальные мероприятия для ItemList.
+const description =
+  "Мероприятия Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки.";
+const schema = webPageSchema({
+  site: Astro.site,
+  path: Astro.url.pathname,
+  name: "Мероприятия",
+  description,
+});
 ---
 
 <BaseLayout
   title="Мероприятия — Общество изучения традиционного тайцзицюань"
-  description="Мероприятия Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки."
+  description={description}
+  schema={schema}
 >
   <Header variant="solid" activeNav="Мероприятия" />
   <Breadcrumbs
