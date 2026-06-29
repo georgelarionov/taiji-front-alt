@@ -37,33 +37,36 @@ export const navCols: NavCol[] = [
     links: [
       { label: "Миссия и ценности", href: "/society#mission" },
       { label: "Команда", href: "/society#team" },
-      { label: "Партнёры", href: "/society#partners" },
       { label: "Документы", href: "/society#documents" },
+      { label: "Партнёры", href: "/society#partners" },
     ],
   },
   {
-    // /research — два якорных блока (scroll-mt-24 в самой странице):
-    // #sources (Источники) и #publications (Публикации).
+    // /research — якорные блоки (scroll-mt-24 в самой странице): #sources
+    // (Источники), #publications (Публикации), #conferences (Конференции) и
+    // #festivals (Фестивали) — последние два пока заглушки.
     title: "Исследования",
     href: "/research",
     links: [
       { label: "Источники", href: "/research#sources" },
       { label: "Публикации", href: "/research#publications" },
+      { label: "Конференции", href: "/research#conferences" },
+      { label: "Фестивали", href: "/research#festivals" },
     ],
   },
 ];
 
 export const bigLinks: NavLink[] = [
   { label: "Новости", href: "/news" },
-  { label: "Мероприятия", href: "/events" },
+  { label: "Анонсы", href: "/events" },
   { label: "Медиа-архив", href: "/media-archive" },
   { label: "Контакты", href: "/contacts" },
 ];
 
 export const topNav: NavLink[] = [
+  { label: "Общество", href: "/society" },
   { label: "Тайцзицюань", href: "/taijiquan" },
-  { label: "Исследования", href: "/research" },
-  { label: "Об Обществе", href: "/society" },
-  { label: "Мероприятия", href: "/events" },
   { label: "Новости", href: "/news" },
+  { label: "Исследования", href: "/research" },
+  { label: "Анонсы", href: "/events" },
 ];

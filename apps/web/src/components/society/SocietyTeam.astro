@@ -1,8 +1,9 @@
 ---
 // Раздел «Команда» (фрейм Society). Полоса на тоне surface-sunken. Заголовок +
-// карточки персон. Десктоп: сетка 4-кол (6 карточек + ячейка «Свяжитесь с нами» на
-// 2 колонки). Мобайл: слайдер (React-остров). Кнопка «Подробнее» — accent-soft →
-// accent на ховере.
+// карточки персон. Десктоп: 3 ряда в сетке из 6 колонок — линия 1 (2 председателя,
+// col-span-3), линия 2 (3 карточки, col-span-2), линия 3 (Петровский + CTA-карточки
+// «Вступить в общество» и «Свяжитесь с нами» → /contacts, col-span-2). Мобайл:
+// слайдер (React-остров). Кнопка «Подробнее» — accent-soft → accent на ховере.
 // Портреты — это <Image> нельзя рендерить внутри React-острова, поэтому оптимизируем
 // здесь через getImage() и передаём готовый src и в сетку, и в слайдер. Источник
 // 942×1272 (ratio совпадает с боксом 111×150) → 222w webp для карточек (2×, ретина)
@@ -27,7 +28,7 @@ const members = await Promise.all(
     id: bio.id,
     role: bio.role,
     name: bio.name,
-    photo: (await getImage({ src: imgs[i], width: 222, format: "webp" })).src,
+    photo: (await getImage({ src: imgs[i], width: 480, format: "webp" })).src,
   })),
 );
 
@@ -44,13 +45,16 @@ const drawerPeople = await Promise.all(
   <div class="container-block flex flex-col gap-12 py-18 max-lg:gap-10 max-lg:py-12">
     <h2 class="text-h2 text-ink" data-reveal>Команда</h2>
 
-    {/* Десктоп: сетка карточек + ячейка контактов */}
-    <div class="grid grid-cols-4 gap-6 max-lg:hidden" data-reveal-stagger>
+    {/* Десктоп: 3 ряда (2 / 3 / 3) в сетке из 6 колонок. Только ПК. */}
+    <div class="grid grid-cols-6 gap-6 max-lg:hidden" data-reveal-stagger>
       {
-        members.map((m) => (
-          <article data-reveal-item class="flex h-[416px] flex-col bg-white p-7">
+        members.map((m, i) => (
+          <article
+            data-reveal-item
+            class:list={["flex flex-col bg-white p-7", i < 2 ? "col-span-3 h-[392px]" : "col-span-2 h-[440px]"]}
+          >
             <div class="flex flex-1 flex-col justify-between">
-              <div class="flex flex-col gap-[18px]">
+              <div class:list={["flex", i < 2 ? "items-center gap-8" : "flex-col gap-[18px]"]}>
                 <img
                   src={m.photo}
                   alt=""
@@ -58,7 +62,7 @@ const drawerPeople = await Promise.all(
                   height="150"
                   loading="lazy"
                   decoding="async"
-                  class="h-[150px] w-[111px] object-cover"
+                  class:list={["shrink-0 object-cover", i < 2 ? "h-[260px] w-auto" : "h-[200px] w-[150px]"]}
                 />
                 <div class="flex flex-col gap-3">
                   <span class="font-display text-sm font-bold uppercase tracking-[-0.14px] text-accent">
@@ -81,18 +85,24 @@ const drawerPeople = await Promise.all(
         ))
       }
 
-      <div
-        data-reveal-item
-        class="col-span-2 flex flex-col items-center justify-center gap-10 border border-border"
-      >
-        <span class="font-display text-2xl font-semibold text-ink">Свяжитесь с нами</span>
-        <a
-          href="/contacts"
-          class="border border-border px-8 py-4 font-display text-base font-semibold text-ink opacity-50 transition-opacity hover:opacity-100"
-        >
-          Контакты
-        </a>
-      </div>
+      {/* Линия 3 (после Петровского): CTA-карточки → контакты (по дизайну —
+          ячейка с бордером + кнопка «Контакты»). */}
+      {
+        ["Вступить в общество", "Свяжитесь с нами"].map((label) => (
+          <div
+            data-reveal-item
+            class="col-span-2 flex flex-col items-center justify-center gap-10 border border-border text-center"
+          >
+            <span class="font-display text-2xl font-semibold text-ink">{label}</span>
+            <a
+              href="/contacts"
+              class="border border-border px-8 py-4 font-display text-base font-semibold text-ink opacity-50 transition-opacity hover:opacity-100"
+            >
+              Контакты
+            </a>
+          </div>
+        ))
+      }
     </div>
 
     {/* Мобайл: слайдер персон */}

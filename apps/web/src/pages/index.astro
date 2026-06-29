@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import About from "../components/About.astro";
-import Research from "../components/Research.astro";
+// import Research from "../components/Research.astro"; // блок «Исследования» скрыт на главной
 import News from "../components/News.astro";
 import Society from "../components/Society.astro";
 import Contacts from "../components/Contacts.astro";
@@ -29,9 +29,9 @@ const schema = webPageSchema({
       bg-white на обёртке — подстраховка от просвета hero в возможную щель. */}
   <Hero />
   <div class="relative z-10 bg-white">
-    <About />
-    <Research />
+    {/* Порядок блоков; «Исследования» (<Research />) скрыт по запросу */}
     <News />
+    <About />
     <Society />
     <Contacts />
     <Footer />

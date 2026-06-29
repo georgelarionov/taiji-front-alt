@@ -1,11 +1,10 @@
 ---
 // Футер — из design/design.pen, фрейм «footer». Фон accent (#023c97) на всю ширину.
-// Сверху нав-колонки + соцсети, по центру баннер (лого + название + каллиграфия),
-// снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
+// Сверху нав-колонки + соцсети, по центру баннер (лого + название + строка о
+// поддержке), снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
 import { navCols, bigLinks } from "../config/nav";
 import { socials } from "../config/socials";
-import logo from "../assets/footer/logo.png";
-import chineseText from "../assets/footer/chinese-text.svg?url";
+import logo from "../assets/footer/logo-item.svg?url";
 import ornament from "../assets/footer/ornament.png";
 import social1 from "../assets/footer/social-1.png";
 import socialTg from "../assets/footer/social-telegram.png";
@@ -146,15 +145,15 @@ const socialIcons: Record<string, { src: string; w: number; h: number }> = {
         aria-hidden="true"
         class="pointer-events-none absolute left-1/2 top-1/2 w-[1352px] max-w-none -translate-x-1/2 -translate-y-1/2 max-lg:w-[1082px]"
       />
-      {/* Лого + надпись + иероглифы плавно проявляются каскадом (см. smooth.ts) */}
+      {/* Лого + надпись + строка о поддержке плавно проявляются каскадом (см. smooth.ts) */}
       <div data-reveal-stagger class="relative flex flex-col items-center gap-4 max-lg:gap-[16px]">
         <img
           data-reveal-item
-          src={logo.src}
-          width={61}
-          height={81}
+          src={logo}
+          width={52}
+          height={72}
           alt="Логотип Общества"
-          class="h-[81px] w-[61px] object-contain max-lg:h-[81px] max-lg:w-[61px]"
+          class="h-24 w-auto object-contain"
         />
         <p
           data-reveal-item
@@ -162,16 +161,12 @@ const socialIcons: Record<string, { src: string; w: number; h: number }> = {
         >
           ОБЩЕСТВО ИЗУЧЕНИЯ<br />ТРАДИЦИОННОГО ТАЙЦЗИЦЮАНЬ
         </p>
-        {/* Обёртка: autoAlpha анимирует контейнер 0→1, иероглиф внутри сохраняет opacity-50 */}
-        <span data-reveal-item>
-          <img
-            src={chineseText}
-            width={153}
-            height={21}
-            alt=""
-            class="h-[21px] w-[153px] object-contain opacity-50"
-          />
-        </span>
+        <p
+          data-reveal-item
+          class="text-center font-display text-base font-medium leading-[1.5] text-white/85 max-lg:text-[14px] max-lg:leading-[1.4]"
+        >
+          При академической поддержке<br />Института Китая и современной Азии РАН
+        </p>
       </div>
     </div>
 
@@ -179,7 +174,7 @@ const socialIcons: Record<string, { src: string; w: number; h: number }> = {
     {/* На мобиле — колонка (copyright сверху, ссылки + год снизу). */}
     <div class="mt-16 flex flex-col gap-4 opacity-70 max-lg:mt-[40px] max-lg:items-center max-lg:text-center max-lg:gap-[14px] lg:flex-row lg:items-center lg:justify-between">
       <p class="font-display text-base font-semibold max-lg:text-[14px]">
-        © Общество Изучения Традиционного Тайцзицюань
+        © Общество изучения традиционного тайцзицюань
       </p>
       <div class="flex items-center gap-4 max-lg:gap-[10px]">
         <a href="/policy" class="link-underline font-display text-base font-semibold max-lg:text-[14px]">

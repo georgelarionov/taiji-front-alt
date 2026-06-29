@@ -43,7 +43,7 @@ export default function EventsTabs() {
     <div className="flex w-full flex-col items-center">
       <div
         role="tablist"
-        aria-label="Мероприятия"
+        aria-label="Анонсы"
         className="flex items-end justify-center gap-16 max-lg:gap-8"
       >
         {TABS.map((t, i) => {

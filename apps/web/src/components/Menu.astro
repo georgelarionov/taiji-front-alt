@@ -13,7 +13,7 @@
 // обычным <img> (см. гайдлайн по SVG-ассетам).
 import { navCols, bigLinks } from "../config/nav";
 import { socials } from "../config/socials";
-import menuLogo from "../assets/menu/blue-logo.webp";
+import menuLogo from "../assets/menu/color-new-logo.webp";
 import socialMessenger from "../assets/menu/social-messenger.svg?url";
 import socialTelegram from "../assets/menu/social-telegram.svg?url";
 import socialWhatsapp from "../assets/menu/social-whatsapp.svg?url";
@@ -49,10 +49,10 @@ const mobileNavLinks = [
   data-lenis-prevent
   class="fixed inset-0 z-[90] h-svh w-full overflow-y-auto overscroll-contain bg-surface-overlay text-ink"
 >
-  {/* Десктоп: pt-5 (20px) = верх лого совпадает с шапкой (min-h-[94px] items-center,
-      лого h-54 → top (94-54)/2 = 20px) → при открытии меню лого/крестик не «прыгают»
+  {/* Десктоп: pt-[14.5px] = верх лого совпадает с шапкой (min-h-[94px] items-center,
+      лого h-65 → top (94-65)/2 = 14.5px) → при открытии меню лого/крестик не «прыгают»
       относительно логотипа/бургера шапки. Мобайл (pt-3) — по контракту бургер↔меню. */}
-  <div class="gutter-x flex min-h-svh w-full flex-col pt-5 pb-6 max-lg:pt-3 max-lg:pb-[28px]">
+  <div class="gutter-x flex min-h-svh w-full flex-col pt-[14.5px] pb-6 max-lg:pt-3 max-lg:pb-[28px]">
     {/* ───────── Верхняя строка: логотип + крестик ───────── */}
     <div class="flex items-center justify-between gap-10 max-lg:gap-4">
       <a href="/" class="flex items-center" aria-label="На главную">
@@ -61,7 +61,7 @@ const mobileNavLinks = [
           width={menuLogo.width}
           height={menuLogo.height}
           alt="Логотип Общества изучения традиционного тайцзицюань"
-          class="h-[54px] w-auto shrink-0 object-contain max-lg:h-10"
+          class="h-[65px] w-auto shrink-0 object-contain max-lg:h-12"
         />
       </a>
 

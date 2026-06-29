@@ -1,8 +1,8 @@
 ---
-// Страница «Мероприятия» (/events). Собрана по фреймам MagicPath Events /
+// Страница «Анонсы» (/events). Собрана по фреймам MagicPath Events /
 // Eventsmobile на конвенциях проекта. Пока заглушка: списки мероприятий ещё нет,
 // поэтому под табами «Предстоящие/Прошедшие» показывается пустое состояние (CMS
-// позже). Шелл как у /taijiquan: solid-шапка (активный пункт «Мероприятия»), крошки
+// позже). Шелл как у /taijiquan: solid-шапка (активный пункт «Анонсы»), крошки
 // отдельным блоком, сквозной глобальный футер.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
@@ -16,25 +16,25 @@ import { webPageSchema } from "../lib/seo";
 // не CollectionPage (коллекция пустая). Сменить на CollectionPage, когда из CMS
 // появятся реальные мероприятия для ItemList.
 const description =
-  "Мероприятия Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки.";
+  "Анонсы Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки.";
 const schema = webPageSchema({
   site: Astro.site,
   path: Astro.url.pathname,
-  name: "Мероприятия",
+  name: "Анонсы",
   description,
 });
 ---
 
 <BaseLayout
-  title="Мероприятия — Общество изучения традиционного тайцзицюань"
+  title="Анонсы — Общество изучения традиционного тайцзицюань"
   description={description}
   schema={schema}
 >
-  <Header variant="solid" activeNav="Мероприятия" />
+  <Header variant="solid" activeNav="Анонсы" />
   <Breadcrumbs
-    items={[{ label: "Главная", href: "/" }, { label: "Мероприятия" }]}
+    items={[{ label: "Главная", href: "/" }, { label: "Анонсы" }]}
   />
-  <PageTitleBand title="Мероприятия" />
+  <PageTitleBand title="Анонсы" />
 
   <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
     <div class="container-block flex flex-col items-center gap-6">

@@ -14,8 +14,8 @@
 // Логотип отдаём как есть (WebP обычным <img>, не <Image> — мелкую флэт-графику
 // webp пережимал с артефактами).
 import { topNav } from "../config/nav";
-import logoWhite from "../assets/hero/logo-white.webp";
-import logoBlue from "../assets/header/logo-blue.webp";
+import logoWhite from "../assets/header/head-new-logo.webp";
+import logoBlue from "../assets/header/color-new-logo.webp";
 
 interface Props {
   variant?: "overlay" | "solid";
@@ -46,7 +46,7 @@ const logo = solid ? logoBlue : logoWhite;
       width={logo.width}
       height={logo.height}
       alt="Логотип Общества изучения традиционного тайцзицюань"
-      class="h-[54px] w-auto shrink-0 object-contain max-lg:h-10"
+      class="h-[65px] w-auto shrink-0 object-contain max-lg:h-12"
     />
   </a>
 
@@ -89,6 +89,7 @@ const logo = solid ? logoBlue : logoWhite;
         solid ? "hover:bg-ink/5" : "hover:bg-white/15",
       ]}
     >
+      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
       <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
       <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
     </button>

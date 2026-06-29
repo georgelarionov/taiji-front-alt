@@ -1,8 +1,10 @@
 ---
 // Страница «Исследования» (/research). Шелл как у /taijiquan (solid-шапка с активным
 // пунктом «Исследования», крошки отдельным блоком, сквозной футер) + тайтл-баннер.
-// Контент — два якорных блока друг за другом: «Источники» (#sources) и «Публикации»
-// (#publications). Якоря продублированы в бургер-меню и футере (config/nav.ts).
+// Контент — якорные блоки друг за другом: «Источники» (#sources), «Публикации»
+// (#publications), «Конференции» (#conferences) и «Фестивали» (#festivals); последние
+// два пока заглушки «Скоро здесь будет информация». Якоря продублированы в бургер-меню
+// и футере (config/nav.ts).
 // Карточки — внешние ссылки (открываются в новом окне). Материалы отобраны из
 // списков «Источники» лонгридов /taijiquan/{history,theory,practice} — самые значимые
 // первоисточники (переводы классических трактатов, запись ЮНЕСКО) и научные публикации.
@@ -86,6 +88,54 @@ const schema = collectionPageSchema(
           class="mt-14 flex flex-col gap-8 max-lg:mt-10 max-lg:gap-6"
         >
           {publications.map((p) => <ResearchLinkCard {...p} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Конференции (заглушка) ── */}
+  <section
+    id="conferences"
+    class="scroll-mt-24 border-t border-border bg-white py-24 max-lg:py-16"
+  >
+    <div class="container-block">
+      <div>
+        <header data-reveal class="max-w-[760px]">
+          <h2 class="text-h2-compact text-ink">Конференции</h2>
+          <p class="mt-4 text-body text-ink/55">
+            Научные и практические конференции по тайцзицюань.
+          </p>
+        </header>
+
+        <div
+          data-reveal
+          class="mt-14 grid min-h-[180px] place-items-center rounded-[2px] border border-dashed border-border px-6 py-16 text-center max-lg:mt-10 max-lg:min-h-[150px]"
+        >
+          <p class="text-body text-ink/50">Скоро здесь будет информация</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Фестивали (заглушка) ── */}
+  <section
+    id="festivals"
+    class="scroll-mt-24 border-t border-border bg-surface py-24 max-lg:py-16"
+  >
+    <div class="container-block">
+      <div>
+        <header data-reveal class="max-w-[760px]">
+          <h2 class="text-h2-compact text-ink">Фестивали</h2>
+          <p class="mt-4 text-body text-ink/55">
+            Фестивали и культурные программы, посвящённые тайцзицюань.
+          </p>
+        </header>
+
+        <div
+          data-reveal
+          class="mt-14 grid min-h-[180px] place-items-center rounded-[2px] border border-dashed border-border px-6 py-16 text-center max-lg:mt-10 max-lg:min-h-[150px]"
+        >
+          <p class="text-body text-ink/50">Скоро здесь будет информация</p>
         </div>
       </div>
     </div>

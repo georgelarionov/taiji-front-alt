@@ -9,9 +9,9 @@ import SocietySlider, { type SocietySlide } from "./SocietySlider.tsx";
 // поэтому оптимизируем здесь через getImage() и передаём готовый src в слайдер.
 import personSrc from "../assets/society/person-1.png";
 import person2Src from "../assets/society/person-2.webp";
-// Каллиграфия «传统太极拳学会» — плоский брендовый раст (с уже встроенной кривой):
+// Каллиграфия «传统太极拳学会» — вертикальный свиток, плоский брендовый раст:
 // plain <img src={import.src}>, не <Image> (см. конвенции).
-import caliSrc from "../assets/society/cali-symbol-5block.png";
+import caliSrc from "../assets/society/cali-vertical-5block.webp";
 // Декоративный мазок над nav-кнопками (с альфой) — крупная полупрозрачная
 // текстура → webp через getImage() (как фон в Research). Рендерится максимум
 // на 534px → 1068w (2×) покрывает ретину.
@@ -57,14 +57,14 @@ const tabs = [
 ---
 
 {/* Моб: отступ от «Новостей» = 72px (8px этот pt + 64px нижний pb «Новостей»). */}
-<section class="bg-white pb-24 max-lg:pt-2 max-lg:pb-16">
+<section class="bg-white pt-24 pb-24 max-lg:pt-16 max-lg:pb-16">
   <div class="container-block">
     <div data-reveal class="grid grid-cols-1 lg:grid-cols-[692fr_660fr]">
       {/* ───────── Левая панель (surface) ───────── */}
       <div class="flex flex-col bg-surface p-12 max-lg:p-6 max-lg:pt-12">
         <div class="flex max-w-[557px] flex-col gap-6 max-lg:gap-4">
           <h2 class="font-display text-[32px] font-semibold leading-[1.1] text-ink max-lg:text-[26px]">
-            Об Обществе
+            Общество
           </h2>
           <p class="font-sans text-base font-medium leading-[1.375] text-ink/80 max-lg:text-[15px]">
             Общество изучения традиционного тайцзицюань — добровольное
@@ -76,33 +76,29 @@ const tabs = [
           </p>
         </div>
 
-        {/* Каллиграфия «传统太极拳学会» (PEN: 5-block → Frame 345, по центру).
-            Кривая уже встроена в раст — отдельного подчёркивания нет. */}
-        <div class="mt-10 max-lg:mt-7">
-          <img
-            src={caliSrc.src}
-            width={caliSrc.width}
-            height={caliSrc.height}
-            alt="传统太极拳学会"
-            class="h-auto w-[144px]"
-          />
-        </div>
-
         {/* Кнопки-ссылки (ведут на отдельные страницы).
-            Сверху — декоративный мазок: img и первая линия в одной обёртке без gap,
-            чтобы мазок сидел «ровно на линии». Hover: подчёркивание текста растёт
-            слева направо (line @50%, origin-left). */}
-        <nav class="mt-auto flex flex-col gap-6 pt-8 max-lg:mt-7 max-lg:gap-6 max-lg:pt-0">
-          <div class="flex flex-col">
+            Сверху — каллиграфия поверх абсолютного декоративного мазка, затем
+            первая линия без дополнительного gap. Hover: подчёркивание текста
+            растёт слева направо (line @50%, origin-left). */}
+        <nav class="mt-auto flex flex-col gap-6 pt-6 max-lg:mt-0 max-lg:gap-6 max-lg:pt-0">
+          <div class="relative h-[208px] max-lg:h-[96px]">
             <img
               src={brushImg.src}
               alt=""
               aria-hidden="true"
               loading="lazy"
               decoding="async"
-              class="pointer-events-none h-[138px] w-[534px] max-w-full object-contain object-left select-none max-lg:h-[96px]"
+              class="pointer-events-none absolute bottom-0 left-0 z-0 h-[138px] w-[534px] max-w-full object-contain object-left select-none max-lg:h-[96px]"
             />
-            <span class="h-px w-full bg-black/15"></span>
+            <img
+              src={caliSrc.src}
+              width={caliSrc.width}
+              height={caliSrc.height}
+              alt="传统太极拳学会"
+              lang="zh-Hans"
+              class="absolute bottom-6 left-0 z-10 h-[200px] w-auto select-none max-lg:hidden"
+            />
+            <span class="absolute bottom-0 left-0 z-20 h-px w-full bg-border"></span>
           </div>
           {
             tabs.map((tab) => (
@@ -115,7 +111,7 @@ const tabs = [
                     {tab.label}
                   </span>
                 </a>
-                <span class="h-px w-full bg-black/15" />
+                <span class="h-px w-full bg-border" />
               </Fragment>
             ))
           }

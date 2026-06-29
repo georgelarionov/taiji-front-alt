@@ -3,7 +3,7 @@
 // SocietyMobile на конвенциях проекта. Шапка — solid-вариант с белым фоном
 // (bg="white") и активным пунктом «Об Обществе»; крошки Главная → Общество (тоже на
 // белом); футер — сквозной глобальный. Разделы: hero → миссии и ценности → команда →
-// партнёры → документы.
+// документы → партнёры.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
@@ -30,12 +30,12 @@ const schema = aboutPageSchema({
   description={description}
   schema={schema}
 >
-  <Header variant="solid" activeNav="Об Обществе" bg="white" />
+  <Header variant="solid" activeNav="Общество" bg="white" />
   <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Общество" }]} bg="white" />
   <SocietyHero />
   <SocietyMission />
   <SocietyTeam />
-  <SocietyPartners />
   <SocietyDocuments />
+  <SocietyPartners />
   <Footer />
 </BaseLayout>
