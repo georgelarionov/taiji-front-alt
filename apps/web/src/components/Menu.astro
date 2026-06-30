@@ -11,7 +11,7 @@
 // Нав-структура — общий источник src/config/nav (тот же конфиг, что у Footer);
 // иконки соцсетей — готовые SVG-кнопки (56×56 с рамкой и чёрным глифом), отдаём
 // обычным <img> (см. гайдлайн по SVG-ассетам).
-import { navCols, bigLinks } from "../config/nav";
+import { navCols, bigLinks, topNav } from "../config/nav";
 import { socials } from "../config/socials";
 import menuLogo from "../assets/menu/color-new-logo.webp";
 import socialMessenger from "../assets/menu/social-messenger.svg?url";
@@ -27,12 +27,21 @@ const socialIcons: Record<string, string> = {
   vk: socialVk,
 };
 
-// Мобильная навигация: единый плоский список топ-уровня с разделителями.
-// Порядок по дизайну uZNPI: колонки navCols по заголовкам, затем bigLinks.
-// Несём href вместе с label — у заголовка колонки это col.href (раздел верхнего
-// уровня), у крупных ссылок — их собственный href.
+// Порядок верхнего уровня меню выровнен под шапку ПК (topNav): сначала
+// «Общество», затем «Тайцзицюань», «Исследования». navCols оставляем в исходном
+// порядке — его по индексам использует Footer — и сортируем локальную копию по
+// позиции раздела в topNav (общий источник порядка, устойчиво к добавлениям).
+const order = topNav.map((t) => t.href);
+const menuCols = [...navCols].sort(
+  (a, b) => order.indexOf(a.href) - order.indexOf(b.href),
+);
+
+// Мобильная навигация: единый плоский список топ-уровня с разделителями —
+// колонки menuCols по заголовкам, затем bigLinks. Несём href вместе с label —
+// у заголовка колонки это col.href (раздел верхнего уровня), у крупных ссылок —
+// их собственный href.
 const mobileNavLinks = [
-  ...navCols.map((col) => ({ label: col.title, href: col.href })),
+  ...menuCols.map((col) => ({ label: col.title, href: col.href })),
   ...bigLinks,
 ];
 ---
@@ -93,7 +102,7 @@ const mobileNavLinks = [
       {/* ── Десктоп: колонки с подпунктами ── */}
       <nav class="flex flex-wrap gap-x-[88px] gap-y-10 max-lg:hidden">
         {
-          navCols.map((col, i) => (
+          menuCols.map((col, i) => (
             <div data-menu-item style={`--i:${i}`} class="flex flex-col gap-4">
               <h2 class="font-display text-2xl font-semibold">
                 <a href={col.href} class="link-underline">
