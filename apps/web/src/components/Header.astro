@@ -5,7 +5,9 @@
 // глобальный рантайм меню lib/menu.ts через data-menu-open).
 //
 // Два варианта (меняется ТОЛЬКО цвет/состояние — раскладка одна):
-//   overlay — светлая шапка поверх hero (главная): белое лого/текст/бургер, фон прозрачный.
+//   overlay — шапка поверх hero (главная): сплошная белая подложка bg-white на всю
+//             ширину (чтобы цветной локап читался поверх светлого видео),
+//             тёмный текст/бургер.
 //   solid   — на сплошном фоне (внутренние страницы): синее лого, тёмный текст,
 //             фон surface + нижний бордер, у активного пункта (activeNav) — текст
 //             accent + постоянный нижний бордер (+ aria-current="page").
@@ -14,7 +16,6 @@
 // Логотип отдаём как есть (WebP обычным <img>, не <Image> — мелкую флэт-графику
 // webp пережимал с артефактами).
 import { topNav } from "../config/nav";
-import logoWhite from "../assets/header/head-new-logo.webp";
 import logoBlue from "../assets/header/color-new-logo.webp";
 
 interface Props {
@@ -28,8 +29,8 @@ interface Props {
 const { variant = "overlay", activeNav, bg = "surface" } = Astro.props;
 const solid = variant === "solid";
 const solidBg = bg === "white" ? "bg-white" : "bg-surface";
-// Синий локап на светлом фоне (solid) / белый поверх hero (overlay).
-const logo = solid ? logoBlue : logoWhite;
+// Цветной сине-красный локап в обоих вариантах (тот же, что в фикс-меню StickyNav).
+const logo = logoBlue;
 ---
 
 <header
@@ -37,7 +38,9 @@ const logo = solid ? logoBlue : logoWhite;
   data-page-header={variant}
   class:list={[
     "gutter-x flex min-h-[94px] items-center justify-between gap-10 max-lg:min-h-0 max-lg:gap-8 max-lg:pt-3 max-lg:pb-4",
-    solid && `${solidBg} border-b border-border`,
+    solid
+      ? `${solidBg} border-b border-border`
+      : "border-b border-border bg-white",
   ]}
 >
   <a href="/" class="flex items-center gap-4" aria-label="На главную">
@@ -62,11 +65,9 @@ const logo = solid ? logoBlue : logoWhite;
                 aria-current={isActive ? "page" : undefined}
                 class:list={[
                   "relative flex h-[94px] items-center font-display text-[15px] font-semibold leading-[1.1] transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:rounded-[1px] after:transition-transform after:duration-300 hover:after:scale-x-100",
-                  solid
-                    ? isActive
-                      ? "text-accent after:bg-accent"
-                      : "text-ink after:bg-accent"
-                    : "text-white after:bg-white",
+                  solid && isActive
+                    ? "text-accent after:bg-accent"
+                    : "text-ink after:bg-accent",
                   isActive ? "after:scale-x-100" : "after:scale-x-0",
                 ]}
               >
@@ -86,12 +87,12 @@ const logo = solid ? logoBlue : logoWhite;
       aria-expanded="false"
       class:list={[
         "-m-3.5 flex cursor-pointer flex-col gap-2 rounded-[2px] p-3.5 transition-colors max-lg:m-0 max-lg:-mr-1.5 max-lg:grid max-lg:h-11 max-lg:w-11 max-lg:place-content-center max-lg:gap-1.5 max-lg:p-0",
-        solid ? "hover:bg-ink/5" : "hover:bg-white/15",
+        "hover:bg-ink/5",
       ]}
     >
-      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
-      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
-      <span class:list={["block h-0.5 w-10 rounded-[1px] max-lg:w-7", solid ? "bg-ink" : "bg-white"]}></span>
+      <span class="block h-0.5 w-10 rounded-[1px] bg-ink max-lg:w-7"></span>
+      <span class="block h-0.5 w-10 rounded-[1px] bg-ink max-lg:w-7"></span>
+      <span class="block h-0.5 w-10 rounded-[1px] bg-ink max-lg:w-7"></span>
     </button>
   </nav>
 </header>

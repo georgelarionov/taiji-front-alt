@@ -425,3 +425,42 @@ html.menu-open {
     transition: visibility 0s;
   }
 }
+
+/* ── Лента /news: переключатель вида «1 колонка / 2 колонки» (только ПК) ──
+   Zero-JS: radio-инпуты в тулбаре + :has() переключают раскладку .news-items и
+   .news-rest между одной колонкой (max-w-809 + <hr>-разделители) и сеткой 2×N.
+   Сетка включается ТОЛЬКО на десктопе (≥1024px); мобайл всегда одна колонка. */
+@media (min-width: 1024px) {
+  /* В режиме сетки тулбар и лента занимают всю ширину контейнера (не 809). */
+  .news-feed:has(#news-view-grid:checked) .news-bar,
+  .news-feed:has(#news-view-grid:checked) .news-items {
+    max-width: none;
+  }
+  .news-feed:has(#news-view-grid:checked) .news-items,
+  .news-feed:has(#news-view-grid:checked) .news-more[open] .news-rest {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+    row-gap: 48px;
+    align-items: start;
+  }
+  /* Кнопка «Показать ещё» (details) — на всю ширину сетки. */
+  .news-feed:has(#news-view-grid:checked) .news-more {
+    grid-column: 1 / -1;
+  }
+  /* Разделители-линии в сетке не нужны. */
+  .news-feed:has(#news-view-grid:checked) hr {
+    display: none;
+  }
+  /* Компактные карточки в сетке: ниже обложка, лид в 3 строки. */
+  .news-feed:has(#news-view-grid:checked) .news-cover {
+    height: 340px;
+  }
+  .news-feed:has(#news-view-grid:checked) .news-excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

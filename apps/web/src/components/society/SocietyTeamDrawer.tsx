@@ -5,8 +5,9 @@ import type { HistoryEntry, TeamBio } from "../../data/society-team";
 // Дровер «Подробнее» блока «Команда» (/society). Открывается по клику на любой
 // триггер [data-team-open="<id>"] в статической сетке (SocietyTeam.astro) и в
 // мобильном слайдере (SocietyTeamSlider.tsx). Использует общий Drawer (правая
-// панель + скролл контента). Структура: фото + роль/имя → «Описание» →
-// «Биография» (пункты, у Марченко — вложенный список). Текст хранится в
+// панель + скролл контента). Структура: фото + роль/имя → описание (текст) →
+// биография (пункты, у Марченко — вложенный список), без подписей-заголовков.
+// Текст хранится в
 // src/data/society-team.ts. Фото (большой webp) подмешивается в SocietyTeam.astro.
 
 export type DrawerPerson = TeamBio & { photo: string };
@@ -106,9 +107,8 @@ export default function SocietyTeamDrawer({ people }: { people: DrawerPerson[] }
             </div>
           </div>
 
-          {/* Описание */}
+          {/* Описание — без подписи, просто текст */}
           <section className="flex flex-col gap-3">
-            <h3 className="text-eyebrow text-ink/45">Описание</h3>
             {person.description.map((p, i) => (
               <p key={i} className="text-body text-ink/80">
                 {renderText(p)}
@@ -116,15 +116,12 @@ export default function SocietyTeamDrawer({ people }: { people: DrawerPerson[] }
             ))}
           </section>
 
-          {/* Биография (пункты) */}
-          <section className="flex flex-col gap-4">
-            <h3 className="text-eyebrow text-ink/45">Биография</h3>
-            <ul className="flex flex-col gap-4">
-              {person.history.map((entry, i) => (
-                <HistoryItem key={i} entry={entry} />
-              ))}
-            </ul>
-          </section>
+          {/* Биография — без подписи, просто пункты */}
+          <ul className="flex flex-col gap-4">
+            {person.history.map((entry, i) => (
+              <HistoryItem key={i} entry={entry} />
+            ))}
+          </ul>
         </div>
       )}
     </Drawer>

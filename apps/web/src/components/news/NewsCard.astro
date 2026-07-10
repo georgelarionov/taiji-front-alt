@@ -43,7 +43,7 @@ const { date, title, excerpt, image, imageAlt, href } = Astro.props;
         image && (
           <a
             href={href}
-            class="block h-[455px] bg-surface p-2 max-lg:h-[200px] max-lg:p-1"
+            class="news-cover block h-[455px] bg-surface p-2 max-lg:h-[200px] max-lg:p-1"
             aria-label={title}
           >
             <Image
@@ -59,7 +59,7 @@ const { date, title, excerpt, image, imageAlt, href } = Astro.props;
     </div>
 
     <p
-      class="font-sans text-[18px] font-medium leading-[1.4] text-ink/70 max-lg:text-base max-lg:leading-[1.6]"
+      class="news-excerpt font-sans text-[18px] font-medium leading-[1.4] text-ink/70 max-lg:text-base max-lg:leading-[1.6]"
     >
       {excerpt}
     </p>

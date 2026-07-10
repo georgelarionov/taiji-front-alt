@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MediaVideo } from "../../data/media";
 import Drawer from "../Drawer";
 
@@ -27,6 +27,24 @@ const ImageIcon = ({ className = "" }: { className?: string }) => (
 export default function MediaArchive({ videos }: Props) {
   const [tab, setTab] = useState<"video" | "photo">("video");
   const [open, setOpen] = useState<MediaVideo | null>(null);
+
+  // Диплинк из хаба конференции (/research → карточка «Трансляция»): #video-<id> в URL
+  // → сразу открыть дровер нужного видео. Читаем при монтировании острова (client:load)
+  // и по hashchange (на случай навигации в пределах страницы).
+  useEffect(() => {
+    const openFromHash = () => {
+      const m = window.location.hash.match(/^#video-(.+)$/);
+      if (!m) return;
+      const v = videos.find((x) => x.id === decodeURIComponent(m[1]));
+      if (v) {
+        setTab("video");
+        setOpen(v);
+      }
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [videos]);
 
   // Список вкладок (для стрелочной навигации roving-tabindex).
   const TABS = [

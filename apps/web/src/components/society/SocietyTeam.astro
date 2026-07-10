@@ -12,7 +12,11 @@
 import { getImage } from "astro:assets";
 import SocietyTeamSlider from "./SocietyTeamSlider";
 import SocietyTeamDrawer from "./SocietyTeamDrawer";
+import MembershipFormDrawer from "./MembershipFormDrawer";
 import { teamBios } from "../../data/society-team";
+
+// E-mail Общества (тот же, что на /contacts) — закрепляется внизу формы-дровера.
+const EMAIL = "info@taiji-society.ru";
 import p1 from "../../assets/society/team-1.webp";
 import p2 from "../../assets/society/team-2.webp";
 import p3 from "../../assets/society/team-3.webp";
@@ -85,21 +89,35 @@ const drawerPeople = await Promise.all(
         ))
       }
 
-      {/* Линия 3 (после Петровского): CTA-карточки → контакты (по дизайну —
-          ячейка с бордером + кнопка «Контакты»). */}
+      {/* Линия 3 (после Петровского): CTA-карточки. «Вступить в общество» →
+          кнопка «Отправить заявку», открывает дровер с формой заявки на вступление
+          (триггер ловит остров MembershipFormDrawer). «Свяжитесь с нами» → /contacts. */}
       {
-        ["Вступить в общество", "Свяжитесь с нами"].map((label) => (
+        [
+          { label: "Вступить в общество", cta: "Отправить заявку", membership: true },
+          { label: "Свяжитесь с нами", cta: "Контакты", href: "/contacts" },
+        ].map((c) => (
           <div
             data-reveal-item
             class="col-span-2 flex flex-col items-center justify-center gap-10 border border-border text-center"
           >
-            <span class="font-display text-2xl font-semibold text-ink">{label}</span>
-            <a
-              href="/contacts"
-              class="border border-border px-8 py-4 font-display text-base font-semibold text-ink opacity-50 transition-opacity hover:opacity-100"
-            >
-              Контакты
-            </a>
+            <span class="font-display text-2xl font-semibold text-ink">{c.label}</span>
+            {c.membership ? (
+              <button
+                type="button"
+                data-membership-open
+                class="cursor-pointer border border-border bg-white px-8 py-4 font-display text-base font-semibold text-ink transition-colors hover:border-ink/40"
+              >
+                {c.cta}
+              </button>
+            ) : (
+              <a
+                href={c.href}
+                class="border border-border bg-white px-8 py-4 font-display text-base font-semibold text-ink transition-colors hover:border-ink/40"
+              >
+                {c.cta}
+              </a>
+            )}
           </div>
         ))
       }
@@ -113,5 +131,8 @@ const drawerPeople = await Promise.all(
     {/* Дровер «Подробнее» (один на блок; рендерится в <body> через портал).
         Открывается по клику на [data-team-open] из сетки и из слайдера. */}
     <SocietyTeamDrawer client:load people={drawerPeople} />
+
+    {/* Дровер с формой заявки на вступление (триггер [data-membership-open]). */}
+    <MembershipFormDrawer client:load email={EMAIL} />
   </div>
 </section>

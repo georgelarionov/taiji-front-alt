@@ -1,15 +1,14 @@
 ---
-// Страница «Анонсы» (/events). Собрана по фреймам MagicPath Events /
-// Eventsmobile на конвенциях проекта. Пока заглушка: списки мероприятий ещё нет,
-// поэтому под табами «Предстоящие/Прошедшие» показывается пустое состояние (CMS
-// позже). Шелл как у /taijiquan: solid-шапка (активный пункт «Анонсы»), крошки
-// отдельным блоком, сквозной глобальный футер.
+// Страница «Анонсы» (/events). Пока заглушка: списков мероприятий ещё нет —
+// показываем простое пустое состояние (табы «Предстоящие/Прошедшие» и подпись
+// «События Общества» убраны до появления данных из CMS; остров EventsTabs больше
+// не используется). Шелл как у /taijiquan: solid-шапка (активный пункт «Анонсы»),
+// крошки отдельным блоком, сквозной глобальный футер.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import PageTitleBand from "../components/PageTitleBand.astro";
-import EventsTabs from "../components/events/EventsTabs";
 import { webPageSchema } from "../lib/seo";
 
 // Пока страница — заглушка (списков мероприятий ещё нет) → честный тип WebPage,
@@ -37,11 +36,15 @@ const schema = webPageSchema({
   <PageTitleBand title="Анонсы" />
 
   <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
-    <div class="container-block flex flex-col items-center gap-6">
-      <span class="text-center font-display text-base font-semibold text-ink/50">
-        События Общества
-      </span>
-      <EventsTabs client:load />
+    <div class="container-block">
+      <div
+        data-reveal
+        class="grid min-h-[520px] place-items-center rounded-[2px] border border-dashed border-border px-6 text-center max-lg:min-h-[420px]"
+      >
+        <p class="font-display text-lg font-semibold text-ink/50 max-lg:text-base">
+          Скоро здесь будет информация
+        </p>
+      </div>
     </div>
   </section>
 

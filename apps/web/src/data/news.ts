@@ -31,6 +31,7 @@ export interface NewsAuthor {
 export type Block =
   | { type: "p"; text: string; lead?: boolean } // абзац (lead — первый, акцентный)
   | { type: "h2"; text: string } // подзаголовок внутри статьи
+  | { type: "list"; items: string[] } // маркированный список
   | { type: "image"; src: ImageMetadata; alt: string; caption?: string } // врезанное фото
   | { type: "quote"; text: string } // цитата
   | { type: "video"; embed: string; title?: string }; // встроенное видео (src iframe)
@@ -54,6 +55,9 @@ export const SOCIETY_AUTHOR: NewsAuthor = {
 };
 
 // Каждая статья — свой модуль. Порядок в массиве = порядок в ленте (свежие сверху).
+import tolyattiStrategicSession from "./news/tolyatti-strategic-session";
+import legendsOfTaijiFestival from "./news/legends-of-taiji-festival";
+import pmef2026 from "./news/pmef-2026";
 import chairmanVisitsBeijing from "./news/chairman-visits-beijing";
 import presidentialCommendation from "./news/presidential-commendation";
 import iksaRanOpenDay from "./news/iksa-ran-open-day";
@@ -76,6 +80,9 @@ import samaraSportsForum from "./news/samara-sports-forum";
 import unescoDeclaresTaijiquanDay from "./news/unesco-declares-taijiquan-day";
 
 export const articles: NewsArticle[] = [
+  tolyattiStrategicSession,
+  legendsOfTaijiFestival,
+  pmef2026,
   chairmanVisitsBeijing,
   presidentialCommendation,
   iksaRanOpenDay,
@@ -102,3 +109,19 @@ export const articles: NewsArticle[] = [
 export function relatedArticles(slug: string, n = 6): NewsArticle[] {
   return articles.filter((a) => a.slug !== slug).slice(0, n);
 }
+
+// Материалы первой конференции (Москва, декабрь 2025) — для хаба-дровера на /research.
+// Ссылаемся на уже существующие статьи ленты (без отдельной страницы). Порядок = как в
+// articles (свежие сверху: видеозапись → приветствия → о конференции → программа).
+export const CONFERENCE_2025_SLUGS = [
+  "conference-video",
+  "greeting-deputy-foreign-minister",
+  "greeting-chinese-ambassador",
+  "greeting-society-chairman",
+  "first-taijiquan-conference",
+  "conference-program",
+];
+
+export const conferenceArticles: NewsArticle[] = articles.filter((a) =>
+  CONFERENCE_2025_SLUGS.includes(a.slug),
+);

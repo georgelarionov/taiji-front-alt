@@ -3,6 +3,7 @@
 // → Block). Каждый блок отображается на тип-шкале проекта:
 //   • p          → абзац text-body (16px); lead-абзац — font-medium, остальные ink/80;
 //   • h2         → подзаголовок text-h2-compact (32/26);
+//   • list       → маркированный список (пункты с accent-точкой);
 //   • image      → <figure> с оптимизированным <Image> (w-full) + подпись (caption);
 //   • quote      → font-serif, border-l accent;
 //   • video      → встроенный <iframe> 16:9 (pointer-events:auto — обходит глобальный
@@ -29,6 +30,21 @@ const { body } = Astro.props;
       }
       if (block.type === "h2") {
         return <h2 class="text-h2-compact mt-4 text-ink">{block.text}</h2>;
+      }
+      if (block.type === "list") {
+        return (
+          <ul class="flex flex-col gap-2.5">
+            {block.items.map((item) => (
+              <li class="flex gap-3 text-body text-ink/80">
+                <span
+                  class="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                  aria-hidden="true"
+                />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        );
       }
       if (block.type === "image") {
         return (
