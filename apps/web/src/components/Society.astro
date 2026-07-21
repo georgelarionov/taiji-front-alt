@@ -5,6 +5,9 @@
 // (React-остров, стрелки/точки меняют контент; пока контент продублирован).
 import { getImage } from "astro:assets";
 import SocietySlider, { type SocietySlide } from "./SocietySlider.tsx";
+// Дровер заявки на вступление — тот же остров, что на /society (блок «Команда»).
+// Триггер — кнопка [data-membership-open] в списке ссылок ниже.
+import MembershipFormDrawer from "./society/MembershipFormDrawer";
 // Фото персоны в слайде — это <Image> нельзя рендерить внутри React-острова,
 // поэтому оптимизируем здесь через getImage() и передаём готовый src в слайдер.
 import personSrc from "../assets/society/person-1.png";
@@ -47,13 +50,18 @@ const board: SocietySlide = {
 const slides: SocietySlide[] = [chair, board];
 
 // Ведут на секции страницы /society (якоря scroll-mt-24 в components/society/*) —
-// та же раскладка, что в config/nav.ts navCols[1].links.
-const tabs = [
+// та же раскладка, что в config/nav.ts navCols[1].links. Последний пункт —
+// «Вступить в общество»: не ссылка, а триггер дровера с формой заявки (membership).
+const tabs: { label: string; href?: string; membership?: boolean }[] = [
   { label: "Миссия и ценности", href: "/society#mission" },
   { label: "Команда", href: "/society#team" },
   { label: "Документы", href: "/society#documents" },
   { label: "Партнёры", href: "/society#partners" },
+  { label: "Вступить в общество", membership: true },
 ];
+
+// E-mail Общества (закрепляется внизу дровера заявки).
+const EMAIL = "info@taiji-society.ru";
 ---
 
 {/* Моб: отступ от «Новостей» = 72px (8px этот pt + 64px нижний pb «Новостей»). */}
@@ -96,21 +104,33 @@ const tabs = [
               height={caliSrc.height}
               alt="传统太极拳学会"
               lang="zh-Hans"
-              class="absolute bottom-6 left-0 z-10 h-[200px] w-auto select-none max-lg:hidden"
+              class="absolute bottom-14 left-0 z-10 h-[150px] w-auto select-none max-lg:hidden"
             />
             <span class="absolute bottom-0 left-0 z-20 h-px w-full bg-border"></span>
           </div>
           {
             tabs.map((tab) => (
               <Fragment>
-                <a
-                  href={tab.href}
-                  class="group font-display text-2xl font-semibold leading-none text-ink max-lg:text-xl"
-                >
-                  <span class="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-black/50 after:transition-transform after:duration-300 after:ease-smooth group-hover:after:scale-x-100">
-                    {tab.label}
-                  </span>
-                </a>
+                {tab.membership ? (
+                  <button
+                    type="button"
+                    data-membership-open
+                    class="group cursor-pointer text-left font-display text-2xl font-semibold leading-none text-ink max-lg:text-xl"
+                  >
+                    <span class="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-black/50 after:transition-transform after:duration-300 after:ease-smooth group-hover:after:scale-x-100">
+                      {tab.label}
+                    </span>
+                  </button>
+                ) : (
+                  <a
+                    href={tab.href}
+                    class="group font-display text-2xl font-semibold leading-none text-ink max-lg:text-xl"
+                  >
+                    <span class="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-black/50 after:transition-transform after:duration-300 after:ease-smooth group-hover:after:scale-x-100">
+                      {tab.label}
+                    </span>
+                  </a>
+                )}
                 <span class="h-px w-full bg-border" />
               </Fragment>
             ))
@@ -125,5 +145,9 @@ const tabs = [
         <SocietySlider client:load slides={slides} />
       </div>
     </div>
+
+    {/* Дровер с формой заявки на вступление (триггер [data-membership-open]
+        в списке ссылок). Порталится в <body>. */}
+    <MembershipFormDrawer client:load email={EMAIL} />
   </div>
 </section>

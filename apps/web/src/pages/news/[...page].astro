@@ -1,0 +1,67 @@
+---
+// Лента «Новости» с постраничной пагинацией (Astro paginate → страница 1 = /news,
+// далее /news/2, /news/3; см. доки Routing → Pagination). Шелл как у /taijiquan:
+// solid-шапка (синее лого, активный пункт «Новости»), крошки, сквозной футер.
+// На каждой странице: сетка «3 в ряд» (дефолт) / 1 колонка (тумблер), все 6 карточек
+// показываются сразу, номера страниц листают между реальными URL (см. NewsList /
+// Pagination). CMS подключится позже.
+//
+// Соседний [slug].astro (страница статьи) — именованный параметр, у него приоритет
+// над spread [...page], так что /news/<slug> ведёт на статью, а /news/2 — на страницу
+// ленты; пересечения сгенерированных путей нет (слагов-чисел «2»/«3» среди статей нет).
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import PageTitleBand from "../../components/PageTitleBand.astro";
+import NewsList from "../../components/news/NewsList.astro";
+import Footer from "../../components/Footer.astro";
+import { articles } from "../../data/news";
+import { collectionPageSchema } from "../../lib/seo";
+
+// paginate() выполняется в изолированном scope getStaticPaths — можно использовать
+// только импорты (articles). Каждая карточка ведёт на свою статью /news/<slug>.
+export const getStaticPaths = (({ paginate }) => {
+  const items = articles.map((a) => ({
+    date: a.date,
+    title: a.title,
+    excerpt: a.excerpt,
+    image: a.image,
+    imageAlt: a.imageAlt,
+    href: `/news/${a.slug}`,
+  }));
+  // 6 карточек на страницу (в сетке 3×N — 2 ряда), все показываются сразу.
+  return paginate(items, { pageSize: 6 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+
+// Уникальный <title> для страниц 2+ (иначе дубли для SEO/каноникал).
+const pageSuffix = page.currentPage > 1 ? ` — страница ${page.currentPage}` : "";
+
+const description =
+  "Новости Общества изучения традиционного тайцзицюань: события, участие в конференциях, публикации и жизнь сообщества.";
+
+// CollectionPage + ItemList для карточек ТЕКУЩЕЙ страницы (порядок = свежие сверху).
+const schema = collectionPageSchema(
+  {
+    site: Astro.site,
+    path: Astro.url.pathname,
+    name: `Новости${pageSuffix}`,
+    description,
+  },
+  page.data.map((it) => ({ href: it.href, name: it.title })),
+);
+---
+
+<BaseLayout
+  title={`Новости${pageSuffix} — Общество изучения традиционного тайцзицюань`}
+  description={description}
+  schema={schema}
+>
+  <Header variant="solid" activeNav="Новости" />
+  <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Новости" }]} />
+  <PageTitleBand title="Новости" />
+  <NewsList items={page.data} page={page} />
+  <Footer />
+</BaseLayout>

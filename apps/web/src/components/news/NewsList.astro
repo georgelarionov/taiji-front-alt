@@ -1,17 +1,20 @@
 ---
-// Лента новостей /news. По умолчанию — одна колонка max-w-[809px] по центру; между
-// карточками <hr>-разделитель border-border (по дизайну — линия по центру 64px-зазора).
+// Лента новостей /news. По умолчанию (ПК) — сетка «3 в ряд» на всю ширину контейнера;
+// альтернатива — одна колонка max-w-[809px] по центру (между карточками <hr>).
 //
-// Переключатель вида (ТОЛЬКО ПК, .news-bar с max-lg:hidden): «1 колонка / 2 колонки».
-// Zero-JS — два radio-инпута + :has() в global.css переключают .news-items/.news-rest
-// между колонкой и сеткой 2×N (мобайл всегда одна колонка). Иконки — currentColor.
+// Переключатель вида (ТОЛЬКО ПК, .news-bar с max-lg:hidden): «1 колонка / 3 в ряд».
+// Zero-JS — два radio-инпута + :has() в global.css переключают .news-items между
+// колонкой и сеткой 3×N (мобайл всегда одна колонка). Иконки — currentColor.
+// Дефолт — сетка 3 в ряд (см. global.css: раскладка на :not(:has(list:checked))).
 //
-// «Показать ещё» — zero-JS через <details>/<summary> (не ломается под <ClientRouter />,
-// доступно с клавиатуры): первые `initial` карточек статичны, кнопка + остальные лежат
-// в <details> (rest обёрнут в .news-rest — чтобы в режиме сетки лечь в свою 2-колоночную
-// решётку). <summary> стилизован как ghost-кнопка и прячется при раскрытии
-// (details[open] > summary{display:none}).
+// Все карточки страницы показываются сразу (по 6 из paginate()); отдельной кнопки
+// «Показать ещё» нет — навигация по ленте только цифрами пагинации.
+//
+// Постраничная пагинация (опц. проп `page` из Astro paginate()) рендерится снизу через
+// <Pagination>: номера листают между реальными URL /news · /news/2 · …
+// (см. pages/news/[...page]).
 import NewsCard from "./NewsCard.astro";
+import Pagination from "./Pagination.astro";
 import type { ImageMetadata } from "astro";
 
 interface Item {
@@ -24,11 +27,14 @@ interface Item {
 }
 interface Props {
   items: Item[];
-  initial?: number;
+  // Метаданные страницы из paginate() — для нижней навигации по страницам.
+  page?: {
+    currentPage: number;
+    lastPage: number;
+    url: { prev?: string; next?: string };
+  };
 }
-const { items, initial = 6 } = Astro.props;
-const visible = items.slice(0, initial);
-const rest = items.slice(initial);
+const { items, page } = Astro.props;
 const rule = "my-8 border-0 border-t border-border max-lg:my-10";
 
 const toggleLabel =
@@ -38,7 +44,9 @@ const toggleLabel =
 <section class="bg-white pt-12 pb-[140px] max-lg:py-10">
   <div class="container-block">
     <div class="news-feed">
-      {/* Тулбар «Вид: [1 колонка] [сетка]» — только ПК. Radio + :has() (zero-JS). */}
+      {/* Тулбар «Вид: [3 в ряд] [1 колонка]» — только ПК. Radio + :has() (zero-JS).
+          Дефолт-primary «3 в ряд» идёт первым и отмечен (checked); раскладка в
+          global.css висит на :not(:has(#news-view-list:checked)) → сетка по умолчанию. */}
       <div class="news-bar mx-auto mb-8 w-full max-w-[809px] max-lg:hidden">
         <div class="flex items-center justify-end gap-3">
           <span class="font-display text-sm font-semibold text-ink/60">Вид:</span>
@@ -48,43 +56,44 @@ const toggleLabel =
             <input
               type="radio"
               name="news-view"
-              id="news-view-list"
-              class="peer/list sr-only"
+              id="news-view-grid"
+              class="peer/grid sr-only"
               checked
             />
             <label
-              for="news-view-list"
-              title="В одну колонку"
+              for="news-view-grid"
+              title="3 в ряд"
               class:list={[
                 toggleLabel,
-                "peer-checked/list:bg-accent peer-checked/list:text-white peer-focus-visible/list:ring-2 peer-focus-visible/list:ring-accent/40",
+                "peer-checked/grid:bg-accent peer-checked/grid:text-white peer-focus-visible/grid:ring-2 peer-focus-visible/grid:ring-accent/40",
               ]}
             >
-              <span class="sr-only">В одну колонку</span>
+              <span class="sr-only">3 в ряд</span>
               <svg viewBox="0 0 20 20" fill="currentColor" class="h-[18px] w-[18px]" aria-hidden="true">
-                <rect x="3" y="4" width="14" height="3" rx="1"></rect>
-                <rect x="3" y="13" width="14" height="3" rx="1"></rect>
+                <rect x="2" y="3" width="4" height="14" rx="1"></rect>
+                <rect x="8" y="3" width="4" height="14" rx="1"></rect>
+                <rect x="14" y="3" width="4" height="14" rx="1"></rect>
               </svg>
             </label>
 
             <input
               type="radio"
               name="news-view"
-              id="news-view-grid"
-              class="peer/grid sr-only"
+              id="news-view-list"
+              class="peer/list sr-only"
             />
             <label
-              for="news-view-grid"
-              title="В два столбца"
+              for="news-view-list"
+              title="1 в ряд"
               class:list={[
                 toggleLabel,
-                "peer-checked/grid:bg-accent peer-checked/grid:text-white peer-focus-visible/grid:ring-2 peer-focus-visible/grid:ring-accent/40",
+                "peer-checked/list:bg-accent peer-checked/list:text-white peer-focus-visible/list:ring-2 peer-focus-visible/list:ring-accent/40",
               ]}
             >
-              <span class="sr-only">В два столбца</span>
+              <span class="sr-only">1 в ряд</span>
               <svg viewBox="0 0 20 20" fill="currentColor" class="h-[18px] w-[18px]" aria-hidden="true">
-                <rect x="3" y="3" width="6" height="14" rx="1"></rect>
-                <rect x="11" y="3" width="6" height="14" rx="1"></rect>
+                <rect x="3" y="4" width="14" height="3" rx="1"></rect>
+                <rect x="3" y="13" width="14" height="3" rx="1"></rect>
               </svg>
             </label>
           </fieldset>
@@ -93,42 +102,16 @@ const toggleLabel =
 
       <div class="news-items mx-auto w-full max-w-[809px]">
         {
-          visible.map((item, i) => (
+          items.map((item, i) => (
             <Fragment>
               {i > 0 && <hr class={rule} />}
               <NewsCard {...item} />
             </Fragment>
           ))
         }
-
-        {
-          rest.length > 0 && (
-            <details class="news-more">
-              <summary class="news-more-btn mx-auto mt-12 flex w-fit cursor-pointer list-none items-center justify-center border border-accent px-8 py-4 font-display text-base font-semibold text-accent transition-colors hover:bg-accent hover:text-white max-lg:mt-10">
-                Показать ещё
-              </summary>
-              <div class="news-rest">
-                {rest.map((item) => (
-                  <Fragment>
-                    <hr class={rule} />
-                    <NewsCard {...item} />
-                  </Fragment>
-                ))}
-              </div>
-            </details>
-          )
-        }
       </div>
+
+      {page && <Pagination page={page} />}
     </div>
   </div>
 </section>
-
-<style>
-  /* Прячем кнопку, когда лента раскрыта; убираем дефолтный маркер <details>. */
-  details[open] > summary {
-    display: none;
-  }
-  .news-more-btn::-webkit-details-marker {
-    display: none;
-  }
-</style>

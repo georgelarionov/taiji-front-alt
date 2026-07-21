@@ -1,0 +1,29 @@
+---
+// Раздел «Члены общества» (перед «Документами»). Пока заглушки: 3 карточки в ряд
+// с надписью «Скоро» (реальные члены появятся позже, CMS). Первая белая секция после
+// sunken-«Команды» → py-22 (задаёт верхний зазор); дальше Documents/Partners идут на
+// pb-22. Стиль плейсхолдеров — как в SocietyPartners.
+---
+
+<section id="members" class="scroll-mt-24 bg-white">
+  <div class="container-block flex flex-col gap-14 py-22 max-lg:gap-8 max-lg:py-12">
+    <h2 class="text-h2 text-ink" data-reveal>Члены общества</h2>
+    <div
+      class="grid grid-cols-3 gap-6 max-lg:grid-cols-1 max-lg:gap-4"
+      data-reveal-stagger
+    >
+      {
+        Array.from({ length: 3 }).map(() => (
+          <div
+            data-reveal-item
+            class="flex min-h-[237px] items-center justify-center border border-border max-lg:min-h-[160px]"
+          >
+            <span class="font-display text-[15px] font-semibold text-ink/35">
+              Скоро
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

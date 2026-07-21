@@ -23,11 +23,11 @@ interface Props {
 const { date, title, excerpt, image, imageAlt, href } = Astro.props;
 ---
 
-<article class="flex flex-col gap-6 max-lg:gap-8">
+<article class="news-card flex flex-col gap-6 max-lg:gap-8">
   <div class="flex flex-col gap-6 max-lg:gap-4">
-    <div class="flex flex-col gap-8 max-lg:gap-6">
+    <div class="news-card-top flex flex-col gap-8 max-lg:gap-6">
       <div class="flex flex-col gap-3">
-        <p class="font-display text-base font-medium leading-[1.4] text-ink">
+        <p class="news-date font-display text-base font-medium leading-[1.4] text-ink">
           {date}
         </p>
         <h2
@@ -67,7 +67,7 @@ const { date, title, excerpt, image, imageAlt, href } = Astro.props;
 
   <a
     href={href}
-    class="inline-flex w-fit items-center justify-center bg-accent px-6 py-4 font-display text-base font-semibold leading-none text-white transition-colors hover:bg-accent/90"
+    class="news-card-cta inline-flex w-fit items-center justify-center bg-accent px-6 py-4 font-display text-base font-semibold leading-none text-white transition-colors hover:bg-accent/90"
   >
     Читать далее
   </a>

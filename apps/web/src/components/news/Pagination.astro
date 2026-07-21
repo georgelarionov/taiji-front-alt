@@ -1,0 +1,97 @@
+---
+// Постраничная пагинация ленты /news (zero-JS). Реальные URL страниц через
+// Astro paginate(): страница 1 = /news, далее /news/2, /news/3 (см. pages/news/[...page]).
+// Рендерится только когда страниц больше одной. Стрелки ‹ › используют общий
+// ARROW_PATH (как у слайдеров); текущая страница = span с aria-current, остальные —
+// обычные <a>. При большом числе страниц список сворачивается окном с «…».
+import { ARROW_PATH } from "../../lib/icons";
+
+interface Props {
+  page: {
+    currentPage: number;
+    lastPage: number;
+    url: { prev?: string; next?: string };
+  };
+}
+const { page } = Astro.props;
+const { currentPage, lastPage } = page;
+
+// URL страницы N (страница 1 = базовый /news, без номера).
+const hrefFor = (n: number) => (n === 1 ? "/news" : `/news/${n}`);
+
+// Окно номеров: 1 … (cur-1) cur (cur+1) … last. «…» вставляется на разрывах.
+function buildPages(cur: number, last: number): (number | "gap")[] {
+  const wanted = new Set<number>([1, last, cur - 1, cur, cur + 1]);
+  const nums = [...wanted].filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
+  const out: (number | "gap")[] = [];
+  let prev = 0;
+  for (const n of nums) {
+    if (n - prev > 1) out.push("gap");
+    out.push(n);
+    prev = n;
+  }
+  return out;
+}
+const pages = buildPages(currentPage, lastPage);
+
+const numBase =
+  "grid h-12 min-w-12 place-items-center rounded-[2px] border px-3.5 font-display text-base font-semibold leading-none transition-colors";
+const numIdle = "border-border text-ink hover:border-accent hover:text-accent";
+const numActive = "border-accent bg-accent text-white";
+const arrowBase =
+  "grid h-12 w-12 place-items-center rounded-[2px] border transition-colors";
+const arrowIdle = "border-border text-ink hover:border-accent hover:text-accent";
+const arrowOff = "border-border/50 text-ink/25 cursor-default";
+---
+
+{
+  lastPage > 1 && (
+    <nav aria-label="Пагинация" class="mt-14 flex items-center justify-center gap-2 max-lg:mt-10">
+      {/* ‹ Предыдущая */}
+      {page.url.prev ? (
+        <a href={page.url.prev} rel="prev" aria-label="Предыдущая страница" class:list={[arrowBase, arrowIdle]}>
+          <svg viewBox="0 0 16 15.5563" class="h-3.5 w-3.5 rotate-180" fill="currentColor" aria-hidden="true">
+            <path d={ARROW_PATH} />
+          </svg>
+        </a>
+      ) : (
+        <span aria-hidden="true" class:list={[arrowBase, arrowOff]}>
+          <svg viewBox="0 0 16 15.5563" class="h-3.5 w-3.5 rotate-180" fill="currentColor">
+            <path d={ARROW_PATH} />
+          </svg>
+        </span>
+      )}
+
+      {pages.map((p) =>
+        p === "gap" ? (
+          <span class="grid h-12 w-7 place-items-center text-ink/40" aria-hidden="true">
+            …
+          </span>
+        ) : p === currentPage ? (
+          <span aria-current="page" aria-label={`Страница ${p}`} class:list={[numBase, numActive]}>
+            {p}
+          </span>
+        ) : (
+          <a href={hrefFor(p)} aria-label={`Страница ${p}`} class:list={[numBase, numIdle]}>
+            {p}
+          </a>
+        ),
+      )}
+
+      {/* Следующая › */}
+      {page.url.next ? (
+        <a href={page.url.next} rel="next" aria-label="Следующая страница" class:list={[arrowBase, arrowIdle]}>
+          <svg viewBox="0 0 16 15.5563" class="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
+            <path d={ARROW_PATH} />
+          </svg>
+        </a>
+      ) : (
+        <span aria-hidden="true" class:list={[arrowBase, arrowOff]}>
+          <svg viewBox="0 0 16 15.5563" class="h-3.5 w-3.5" fill="currentColor">
+            <path d={ARROW_PATH} />
+          </svg>
+        </span>
+      )}
+    </nav>
+  )
+}
