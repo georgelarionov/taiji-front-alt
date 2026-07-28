@@ -122,6 +122,55 @@ function setupHeroParallax() {
   );
 }
 
+// Якорные ссылки (<a href="#id">) при включённом Lenis.
+//
+// ГОЧА (из-за неё «не работали» #team/#partners на /society): по якорю страницу
+// двигает НЕ браузер, а <ClientRouter /> — его делегированный click-обработчик
+// перехватывает вообще все same-origin ссылки (включая чистые #hash), делает
+// preventDefault и внутри navigate() выставляет location.href → нативный скачок
+// скролла. Lenis же ведёт свою анимацию animatedScroll → targetScroll в rAF; если
+// в этот момент он ещё доигрывает инерцию после колеса (lerp 0.1 ≈ секунда), он
+// не видит внешнего изменения scrollY и возвращает страницу к СВОЕЙ цели: хеш в
+// адресе меняется, а страница стоит на месте.
+//
+// Поэтому перехватываем такие клики САМИ и ведём их через lenis.scrollTo().
+// Слушатель — в фазе CAPTURE: обработчик ClientRouter'а висит на document в фазе
+// всплытия и зарегистрирован раньше нашего (наш вешается на astro:page-load), так
+// что в bubble мы бы получили событие уже с defaultPrevented. В capture мы первые,
+// а ClientRouter затем сам отваливается по своей проверке ev.defaultPrevented.
+//
+// Отступ под фикс-шапку НЕ дублируем в JS: Lenis сам вычитает scroll-margin-top
+// цели (у секций стоит scroll-mt-24 = 96px), поэтому scrollTo без offset — иначе
+// отступ удваивается (192px).
+// Только левый клик без модификаторов (Ctrl/Cmd-клик, новая вкладка — нативные).
+// Без Lenis (reduced-motion, no-JS) слушатель не вешается: работает нативное
+// поведение + тот же CSS scroll-mt.
+function onAnchorClick(e: MouseEvent) {
+  if (e.defaultPrevented || e.button !== 0) return;
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const link = (e.target as Element | null)?.closest?.("a");
+  if (!link || link.hasAttribute("download") || link.target === "_blank") return;
+
+  const href = link.getAttribute("href");
+  if (!href || href.length < 2 || !href.startsWith("#")) return;
+
+  // getElementById, а не querySelector: id может начинаться с цифры и т.п.
+  const target = document.getElementById(decodeURIComponent(href.slice(1)));
+  if (!target || !lenis) return;
+
+  e.preventDefault();
+  lenis.scrollTo(target);
+  // Нативный переход по фрагменту переносит на цель и ФОКУС (на этом держится
+  // скип-линк «Перейти к содержимому» → <main id="main">, да и после клика по
+  // якорю Tab должен продолжать с этой секции). Мы default отменили — делаем сами;
+  // tabindex="-1" оставляет элемент вне tab-порядка, но делает фокусируемым.
+  if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+  target.focus({ preventScroll: true });
+  // Адрес держим в синхроне (кнопка «назад», копирование ссылки), но через
+  // history — иначе смена location.hash снова вызовет нативный скачок.
+  history.pushState(null, "", href);
+}
+
 function init() {
   if (prefersReducedMotion()) {
     // Без анимаций — просто показываем контент.
@@ -132,6 +181,7 @@ function init() {
     return;
   }
   startSmoothScroll();
+  document.addEventListener("click", onAnchorClick, true);
   setupReveals();
   setupBgReveals();
   setupStaggeredReveals();
@@ -142,6 +192,7 @@ function init() {
 function destroy() {
   cancelAnimationFrame(rafId);
   rafId = 0;
+  document.removeEventListener("click", onAnchorClick, true);
   lenis?.destroy();
   lenis = null;
   ScrollTrigger.getAll().forEach((t) => t.kill());

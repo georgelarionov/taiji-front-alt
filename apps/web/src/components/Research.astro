@@ -6,7 +6,7 @@ import { getImage } from "astro:assets";
 import ResearchSlider, {
   type ResearchCard,
 } from "./ResearchSlider.tsx";
-import { researchAll } from "../data/research";
+import { getResearchAll } from "../lib/cms/research";
 // Декоративный фон-мазок: прижат к правому краю секции, выходит за вьюпорт
 // (клипает overflow-x-clip секции). Крупная полупрозрачная текстура → webp
 // через getImage() (PNG 1310×1448 → ~−300КБ, без артефактов на градиенте).
@@ -16,6 +16,7 @@ const bgImg = await getImage({ src: bg, width: 1310, format: "webp" });
 
 // Реальные материалы раздела (единый датасет data/research): тизер ведёт на /research.
 // Чип категории = тип материала (Источник/Публикация), год — из датасета.
+const researchAll = await getResearchAll();
 const cards: ResearchCard[] = researchAll.map((r) => ({
   year: r.year,
   category: r.kind,

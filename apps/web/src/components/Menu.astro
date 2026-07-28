@@ -8,18 +8,20 @@
 // Логотип — тот же полный локап, что в шапке Hero, но синяя версия (меню на
 // светлом фоне): blue-logo.webp, отдаём обычным <img> (плоский бренд-растр, см.
 // гайдлайн по ассетам — не <Image>). Размер совпадает с лого в шапке (h-10 моб).
-// Нав-структура — общий источник src/config/nav (тот же конфиг, что у Footer);
+// Нав-структура — из CMS (глобал «Навигация»), тот же источник, что у Footer;
 // иконки соцсетей — готовые SVG-кнопки (56×56 с рамкой и чёрным глифом), отдаём
 // обычным <img> (см. гайдлайн по SVG-ассетам).
-import { navCols, bigLinks, topNav } from "../config/nav";
-import { socials } from "../config/socials";
+import { getNavigation, getSiteSettings } from "../lib/cms/settings";
 import menuLogo from "../assets/menu/color-new-logo.webp";
 import socialMessenger from "../assets/menu/social-messenger.svg?url";
 import socialTelegram from "../assets/menu/social-telegram.svg?url";
 import socialWhatsapp from "../assets/menu/social-whatsapp.svg?url";
 import socialVk from "../assets/menu/social-vk.svg?url";
 
-// Локальная карта id → svg-ассет (состав/alt/href — из общего config/socials).
+const { navCols, bigLinks, topNav } = await getNavigation();
+const { socials } = await getSiteSettings();
+
+// Локальная карта id → svg-ассет (состав/alt/href — из настроек сайта в CMS).
 const socialIcons: Record<string, string> = {
   messenger: socialMessenger,
   telegram: socialTelegram,

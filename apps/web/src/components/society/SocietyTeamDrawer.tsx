@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Drawer from "../Drawer";
-import type { HistoryEntry, TeamBio } from "../../data/society-team";
+import type { HistoryEntry, TeamBio } from "../../lib/cms/society";
 
 // Дровер «Подробнее» блока «Команда» (/society). Открывается по клику на любой
 // триггер [data-team-open="<id>"] в статической сетке (SocietyTeam.astro) и в
@@ -8,9 +8,9 @@ import type { HistoryEntry, TeamBio } from "../../data/society-team";
 // панель + скролл контента). Структура: фото + роль/имя → описание (текст) →
 // биография (пункты, у Марченко — вложенный список), без подписей-заголовков.
 // Текст хранится в
-// src/data/society-team.ts. Фото (большой webp) подмешивается в SocietyTeam.astro.
+// CMS. Фото (большой webp) подмешивается в SocietyTeam.astro.
 
-export type DrawerPerson = TeamBio & { photo: string };
+export type DrawerPerson = Omit<TeamBio, "photo"> & { photo: string };
 
 // Делегированный click-листенер вешаем ОДИН раз на модуль-левел (как в
 // ContactFormDrawer / menu.ts): document переживает SPA-свопы, а cleanup

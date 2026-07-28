@@ -1,0 +1,48 @@
+---
+// Картинка из CMS. Обёртка над <Image>: файлы Payload — удалённые, поэтому нужны
+// явные width/height (они приходят из API) и разрешённый хост в astro.config.
+//
+// На сборке Astro скачивает оригинал и сам жмёт его в webp-srcset — ровно так же,
+// как раньше поступал с локальными импортами. Ширины подрезаем по оригиналу,
+// чтобы не просить апскейл.
+import { Image } from "astro:assets";
+import type { CmsImage } from "../lib/cms/client";
+
+interface Props {
+  image: CmsImage;
+  widths?: number[];
+  sizes?: string;
+  alt?: string;
+  class?: string;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
+  decoding?: "async" | "sync" | "auto";
+}
+
+const {
+  image,
+  widths,
+  sizes,
+  alt,
+  class: className,
+  loading,
+  fetchpriority,
+  decoding,
+} = Astro.props;
+
+const capped = widths?.filter((w) => w <= image.width);
+const resolved = capped?.length ? capped : undefined;
+---
+
+<Image
+  src={image.url}
+  width={image.width}
+  height={image.height}
+  widths={resolved}
+  sizes={resolved ? sizes : undefined}
+  alt={alt ?? image.alt}
+  class={className}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  decoding={decoding}
+/>

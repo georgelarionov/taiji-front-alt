@@ -16,8 +16,10 @@
 //
 // z-index — z-[70]: ВЫШЕ контента (z-10) и hero (z-0), но НИЖЕ дровера (z-[80])
 // и полноэкранного меню (z-[90]) — чтобы они корректно перекрывали эту шапку.
-import { topNav } from "../config/nav";
+import { getNavigation } from "../lib/cms/settings";
 import logoBlue from "../assets/menu/color-new-logo.webp";
+
+const { topNav } = await getNavigation();
 
 // Активный пункт — по текущему пути: точное совпадение или вложенный раздел
 // (/taijiquan/history → активна «Тайцзицюань»). На главной (/) — без активного.

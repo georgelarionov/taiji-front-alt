@@ -12,11 +12,13 @@ import TaijiPersons from "../../components/taiji/TaijiPersons.astro";
 import TaijiExplore from "../../components/taiji/TaijiExplore.astro";
 import Footer from "../../components/Footer.astro";
 import { personCollectionSchema } from "../../lib/seo";
-import { persons } from "../../data/taiji-persons";
+import { getPersons } from "../../lib/cms/persons";
 
 // CollectionPage + ItemList мастеров (имя + иероглифическое написание).
 const description =
   "Персоналии тайцзицюань: Чэнь Вантин, Ян Лучань, У Юйсян, У Цзяньцюань, Ян Чэнфу, Сунь Лутан — мастера и семейные линии, сохранившие традицию.";
+const persons = await getPersons();
+
 const schema = personCollectionSchema(
   {
     site: Astro.site,

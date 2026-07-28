@@ -15,7 +15,7 @@
 // topNav — горизонтальное меню (только десктоп) — из единого конфига навигации.
 // Логотип отдаём как есть (WebP обычным <img>, не <Image> — мелкую флэт-графику
 // webp пережимал с артефактами).
-import { topNav } from "../config/nav";
+import { getNavigation } from "../lib/cms/settings";
 import logoBlue from "../assets/header/color-new-logo.webp";
 
 interface Props {
@@ -27,6 +27,7 @@ interface Props {
 }
 
 const { variant = "overlay", activeNav, bg = "surface" } = Astro.props;
+const { topNav } = await getNavigation();
 const solid = variant === "solid";
 const solidBg = bg === "white" ? "bg-white" : "bg-surface";
 // Цветной сине-красный локап в обоих вариантах (тот же, что в фикс-меню StickyNav).

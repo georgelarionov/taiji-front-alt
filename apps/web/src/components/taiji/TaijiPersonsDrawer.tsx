@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Drawer from "../Drawer";
-import type { PersonSource, TaijiPerson } from "../../data/taiji-persons";
+import type { PersonSource, TaijiPerson } from "../../lib/cms/persons";
 import { EXTERNAL_ARROW_PATH } from "../../lib/icons";
 
 // Дровер «Подробнее» раздела «Персоналии» (/taijiquan/person). Открывается по
 // клику на любой триггер [data-person-open="<id>"] в статической сетке карточек
 // (TaijiPersons.astro). Использует общий Drawer (правая панель + скролл). Структура:
 // плейсхолдер портрета + линия/имя → мета (линия/годы/значение) → биография →
-// ИСТОЧНИКИ (внутри дровера, не внизу страницы). Текст — src/data/taiji-persons.ts.
+// ИСТОЧНИКИ (внутри дровера, не внизу страницы). Текст — из CMS.
 
 // Персона с уже разрешёнными источниками + портретом (резолвятся в TaijiPersons.astro).
 export type DrawerPerson = TaijiPerson & {

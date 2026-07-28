@@ -1,7 +1,12 @@
 ---
-// Раздел «Партнёры» (фрейм Society). Заголовок + сетка плейсхолдеров логотипов.
-// Десктоп: 4 в ряд (высота 204). Мобайл: сетка 2×2 (высота 120). Реальные логотипы
-// появятся позже (CMS).
+// Раздел «Партнёры» (фрейм Society). Заголовок + сетка логотипов из CMS
+// (коллекция «Партнёры»). Десктоп: 4 в ряд (высота 204). Мобайл: сетка 2×2
+// (высота 120). Пока партнёров не завели — показываем плейсхолдеры.
+import CmsPicture from "../CmsPicture.astro";
+import { getPartners } from "../../lib/cms/society";
+
+const partners = await getPartners();
+const placeholders = partners.length === 0 ? Array.from({ length: 4 }) : [];
 ---
 
 <section id="partners" class="scroll-mt-24 bg-white">
@@ -12,7 +17,35 @@
       data-reveal-stagger
     >
       {
-        Array.from({ length: 4 }).map(() => (
+        partners.map((partner) => {
+          const Box = partner.url ? "a" : "div";
+          return (
+            <Box
+              data-reveal-item
+              href={partner.url}
+              target={partner.url ? "_blank" : undefined}
+              rel={partner.url ? "noopener noreferrer" : undefined}
+              class="flex h-[204px] items-center justify-center border border-border p-6 max-lg:h-[120px] max-lg:p-4"
+            >
+              {partner.logo ? (
+                <CmsPicture
+                  image={partner.logo}
+                  alt={partner.name}
+                  widths={[200, 400]}
+                  sizes="200px"
+                  class="max-h-full w-auto object-contain"
+                />
+              ) : (
+                <span class="px-4 text-center font-display text-[15px] font-semibold text-ink/70">
+                  {partner.name}
+                </span>
+              )}
+            </Box>
+          );
+        })
+      }
+      {
+        placeholders.map(() => (
           <div
             data-reveal-item
             class="flex h-[204px] items-center justify-center border border-border max-lg:h-[120px]"

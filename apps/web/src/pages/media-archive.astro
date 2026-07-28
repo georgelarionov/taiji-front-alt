@@ -3,14 +3,17 @@
 // крошки отдельным блоком, сквозной глобальный футер. Контент — остров
 // MediaArchive (табы Видео/Фото + фильтр + сетки карточек + дровер по клику).
 // «Медиа-архив» нет в верхнем меню (живёт в меню/футере) → активного пункта topNav
-// нет. Данные — из data/media (заглушки; CMS позже).
+// нет. Данные — из CMS (коллекция «Видео»).
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ContactBar from "../components/ContactBar.astro";
 import Footer from "../components/Footer.astro";
 import MediaArchive from "../components/media/MediaArchive";
-import { videos } from "../data/media";
+import { getVideos } from "../lib/cms/media";
 import { collectionPageSchema } from "../lib/seo";
+
+const videos = await getVideos();
 
 const description =
   "Медиа-архив Общества изучения традиционного тайцзицюань: видео, фотогалереи и материалы для погружения в традицию.";
@@ -41,6 +44,7 @@ const schema = collectionPageSchema({
       </p>
     </div>
   </section>
+  <ContactBar />
 
   <MediaArchive client:load videos={videos} />
 

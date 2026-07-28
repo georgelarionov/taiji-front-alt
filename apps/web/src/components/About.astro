@@ -2,13 +2,9 @@
 // 2-block — «О тайцзицюань». Собрано из design/design.pen, фрейм «2-block».
 // Обычный контейнер (не full-bleed): max-w-1440 + px-11 (44px) → контент 1352 на ≥1440.
 // Хедер (заголовок + плашка-кнопка с каллиграфией) и сетка 2×2 карточек-разделов.
-import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
+import CmsPicture from "./CmsPicture.astro";
+import { getAboutContent } from "../lib/cms/settings";
 import headerLogo from "../assets/about/calif-symbols.png";
-import historyImg from "../assets/about/history-card.png";
-import theoryImg from "../assets/about/theory-card.png";
-import practiceImg from "../assets/about/practice-card.png";
-import personsImg from "../assets/about/persons-card.png";
 
 // Класс «Подробнее» — как в блоке «Новости»: анимированное подчёркивание (от левого
 // края), проявляется на hover всей карточки (group-hover). w-fit — линия по ширине
@@ -16,33 +12,10 @@ import personsImg from "../assets/about/persons-card.png";
 const moreClass =
   "link-underline-group z-10 w-fit font-display text-base font-semibold leading-[1.1] text-accent";
 
-// href — на соответствующую подстраницу раздела /taijiquan/*.
-const cards: { title: string; desc: string; href: string; image?: ImageMetadata }[] = [
-  {
-    title: "История",
-    desc: "Происхождения и развития тайцзицюань как традиции, школы мысли и практики.",
-    href: "/taijiquan/history",
-    image: historyImg,
-  },
-  {
-    title: "Теория",
-    desc: "Основные понятия, принципы движения и идеи, на которых строится тайцзицюань.",
-    href: "/taijiquan/theory",
-    image: theoryImg,
-  },
-  {
-    title: "Практика",
-    desc: "Формы, упражнения и методы, через которые традиция передаётся и сохраняется.",
-    href: "/taijiquan/practice",
-    image: practiceImg,
-  },
-  {
-    title: "Персоналии",
-    desc: "Мастера, исследователи и носители традиции, повлиявшие на тайцзицюань.",
-    href: "/taijiquan/person",
-    image: personsImg,
-  },
-];
+// Заголовок, подзаголовок и карточки разделов — из CMS (глобал «Блок о тайцзицюань»).
+// Каждая карточка ведёт на свою подстраницу /taijiquan/*.
+const about = await getAboutContent();
+const cards = about.cards;
 ---
 
 <section class="border-y border-black/15 bg-white pt-16 pb-24 max-lg:py-16">
@@ -55,10 +28,10 @@ const cards: { title: string; desc: string; href: string; image?: ImageMetadata 
       >
         <div class="flex max-w-[454px] flex-col gap-[18px] max-lg:max-w-none max-lg:gap-6">
           <h2 class="font-display text-[40px] font-semibold leading-[1.1] text-ink max-lg:text-[30px]">
-            О тайцзицюань
+            {about.heading}
           </h2>
           <p class="font-sans text-base font-medium text-ink/65 max-lg:text-[15px]">
-            Многовековая школа мысли, практики и наставничества
+            {about.subtitle}
           </p>
         </div>
 
@@ -96,8 +69,8 @@ const cards: { title: string; desc: string; href: string; image?: ImageMetadata 
               {/* hover-изображение-коллаж справа (десктоп; на мобиле скрыто) */}
               {card.image && (
                 <div class="pointer-events-none absolute inset-y-7 right-7 z-[5] flex items-center opacity-0 transition-opacity duration-700 ease-smooth group-hover:opacity-100 max-lg:hidden">
-                  <Image
-                    src={card.image}
+                  <CmsPicture
+                    image={card.image}
                     alt=""
                     widths={[280, 560]}
                     sizes="280px"

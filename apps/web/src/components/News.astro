@@ -4,8 +4,8 @@
 // справа две карточки (дата + заголовок). Снизу — кнопка «Все новости».
 // Карточка целиком — ссылка (<a>): на hover проявляется подложка #f7f5f4 (inset-2),
 // «Подробнее» анимированно подчёркивается, курсор — pointer.
-import { Image } from "astro:assets";
-import { articles } from "../data/news";
+import CmsPicture from "./CmsPicture.astro";
+import { getArticles } from "../lib/cms/news";
 
 // Класс «Подробнее»: анимированное подчёркивание, проявляющееся на hover карточки
 // (group-hover). w-fit — чтобы линия была по ширине текста, а не растягивалась
@@ -13,9 +13,10 @@ import { articles } from "../data/news";
 const moreClass =
   "link-underline-group z-10 w-fit font-display text-base font-semibold text-accent";
 
-// 3 самые свежие новости из единого датасета src/data/news.ts (свежие сверху):
+// 3 самые свежие новости из CMS (свежие сверху):
 // первая — большой карточкой (фото + анонс), две следующие — справа. Карточки
 // ведут на /news/<slug>. Источник один → блок не разъезжается с лентой/статьями.
+const articles = await getArticles();
 const [featured, ...side] = articles.slice(0, 3);
 ---
 
@@ -63,8 +64,8 @@ const [featured, ...side] = articles.slice(0, 3);
                   {
                     featured.image && (
                       <div class="flex h-[296px] w-full items-center justify-center bg-surface p-2">
-                        <Image
-                          src={featured.image}
+                        <CmsPicture
+                          image={featured.image}
                           alt={featured.imageAlt ?? featured.title}
                           widths={[320, 480, 760]}
                           sizes="480px"

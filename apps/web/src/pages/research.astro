@@ -12,17 +12,22 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ContactBar from "../components/ContactBar.astro";
 import Footer from "../components/Footer.astro";
 import PageTitleBand from "../components/PageTitleBand.astro";
 import ResearchLinkCard from "../components/research/ResearchLinkCard.astro";
 import ConferenceDrawer from "../components/research/ConferenceDrawer";
-import { sources, publications } from "../data/research";
-import { conferenceArticles } from "../data/news";
+import { getSources, getPublications } from "../lib/cms/research";
+import { getConferenceArticles } from "../lib/cms/news";
 import { collectionPageSchema } from "../lib/seo";
 
 // Первая конференция (Москва, декабрь 2025). Карточка в секции «Конференции» открывает
 // дровер-хаб (ConferenceDrawer): новости — ссылки на существующие статьи, трансляция —
 // диплинк в видеоархив (#video-<id>), документы/публикации — заглушки.
+const sources = await getSources();
+const publications = await getPublications();
+const conferenceArticles = await getConferenceArticles();
+
 const CONFERENCE_TITLE =
   "Первая научно-практическая конференция «Тайцзицюань — нематериальное культурное наследие человечества, феномен китайской цивилизации»";
 const CONFERENCE_PLACE = "Москва · декабрь 2025 г.";
@@ -61,6 +66,7 @@ const schema = collectionPageSchema(
     items={[{ label: "Главная", href: "/" }, { label: "Исследования" }]}
   />
   <PageTitleBand title="Исследования" />
+  <ContactBar />
 
   {/* ── Источники ── */}
   <section id="sources" class="scroll-mt-24 bg-white py-24 max-lg:py-16">

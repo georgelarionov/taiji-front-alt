@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../components/Hero.astro";
+import HomeIntro from "../components/HomeIntro.astro";
+// import Hero from "../components/Hero.astro"; // старый 1-block (hero-слайдер) — заменён на HomeIntro
 import About from "../components/About.astro";
 // import Research from "../components/Research.astro"; // блок «Исследования» скрыт на главной
 import News from "../components/News.astro";
@@ -23,17 +24,15 @@ const schema = webPageSchema({
   description={SITE_DESCRIPTION}
   schema={schema}
 >
-  {/* Главная — собирается поблочно из design/design.pen */}
-  {/* Hero — неподвижный sticky-фон (z-0, см. HeroSlider). Всё, что ниже, лежит
-      в слое z-10 → наезжает поверх hero при скролле (параллакс-перекрытие).
-      bg-white на обёртке — подстраховка от просвета hero в возможную щель. */}
-  <Hero />
-  <div class="relative z-10 bg-white">
-    {/* Порядок блоков; «Исследования» (<Research />) скрыт по запросу */}
-    <News />
-    <Society />
-    <About />
-    <Contacts />
-    <Footer />
-  </div>
+  {/* Главная — собирается поблочно. 1-block — новый вводный экран HomeIntro
+      (design/new-1-block): статичный, шапка внутри блока. Sticky-параллакс
+      старого hero больше не действует, поэтому обёртки z-10 нет — блоки идут
+      обычным потоком (у каждого свой bg-white). */}
+  <HomeIntro />
+  {/* Порядок блоков; «Исследования» (<Research />) скрыт по запросу */}
+  <News />
+  <Society />
+  <About />
+  <Contacts />
+  <Footer />
 </BaseLayout>

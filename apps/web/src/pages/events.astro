@@ -1,19 +1,22 @@
 ---
-// Страница «Анонсы» (/events). Пока заглушка: списков мероприятий ещё нет —
-// показываем простое пустое состояние (табы «Предстоящие/Прошедшие» и подпись
-// «События Общества» убраны до появления данных из CMS; остров EventsTabs больше
-// не используется). Шелл как у /taijiquan: solid-шапка (активный пункт «Анонсы»),
+// Страница «Анонсы» (/events). Список ведётся в CMS (коллекция «Анонсы»); пока он
+// пуст — показываем пустое состояние. Табы «Предстоящие/Прошедшие» и подпись
+// «События Общества» убраны по просьбе заказчика; остров EventsTabs не используется. Шелл как у /taijiquan: solid-шапка (активный пункт «Анонсы»),
 // крошки отдельным блоком, сквозной глобальный футер.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ContactBar from "../components/ContactBar.astro";
 import Footer from "../components/Footer.astro";
 import PageTitleBand from "../components/PageTitleBand.astro";
+import CmsPicture from "../components/CmsPicture.astro";
+import { getEvents } from "../lib/cms/events";
 import { webPageSchema } from "../lib/seo";
 
-// Пока страница — заглушка (списков мероприятий ещё нет) → честный тип WebPage,
-// не CollectionPage (коллекция пустая). Сменить на CollectionPage, когда из CMS
-// появятся реальные мероприятия для ItemList.
+// Анонсы ведутся в CMS. Пока их нет — страница честно показывает пустое состояние.
+const events = await getEvents();
+
+// Пока анонсов нет — тип WebPage, а не CollectionPage (нечего перечислять).
 const description =
   "Анонсы Общества изучения традиционного тайцзицюань: предстоящие и прошедшие события, семинары и открытые тренировки.";
 const schema = webPageSchema({
@@ -34,17 +37,58 @@ const schema = webPageSchema({
     items={[{ label: "Главная", href: "/" }, { label: "Анонсы" }]}
   />
   <PageTitleBand title="Анонсы" />
+  <ContactBar />
 
   <section class="bg-white pt-16 pb-48 max-lg:pt-12 max-lg:pb-28">
     <div class="container-block">
-      <div
-        data-reveal
-        class="grid min-h-[520px] place-items-center rounded-[2px] border border-dashed border-border px-6 text-center max-lg:min-h-[420px]"
-      >
-        <p class="font-display text-lg font-semibold text-ink/50 max-lg:text-base">
-          Скоро здесь будет информация
-        </p>
-      </div>
+      {
+        events.length === 0 ? (
+          <div
+            data-reveal
+            class="grid min-h-[520px] place-items-center rounded-[2px] border border-dashed border-border px-6 text-center max-lg:min-h-[420px]"
+          >
+            <p class="font-display text-lg font-semibold text-ink/50 max-lg:text-base">
+              Скоро здесь будет информация
+            </p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-2 gap-6 max-lg:grid-cols-1" data-reveal-stagger>
+            {events.map((event) => (
+              <article
+                data-reveal-item
+                class="flex flex-col gap-6 border border-border p-8 max-lg:gap-4 max-lg:p-6"
+              >
+                {event.image && (
+                  <CmsPicture
+                    image={event.image}
+                    widths={[400, 664, 996]}
+                    sizes="(max-width: 1024px) 100vw, 664px"
+                    class="aspect-[2/1] w-full bg-surface object-cover"
+                  />
+                )}
+                <div class="flex flex-col gap-3">
+                  <p class="font-display text-base font-medium text-ink/70">
+                    {event.date}
+                    {event.place ? ` · ${event.place}` : ""}
+                  </p>
+                  <h2 class="font-display text-[26px] font-semibold leading-[1.2] text-ink max-lg:text-[21px]">
+                    {event.title}
+                  </h2>
+                </div>
+                <p class="text-body text-ink/70">{event.desc}</p>
+                {event.url && (
+                  <a
+                    href={event.url}
+                    class="link-underline w-fit font-display text-base font-semibold text-accent"
+                  >
+                    Подробнее
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
 

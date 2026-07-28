@@ -81,6 +81,16 @@ export default defineConfig({
     },
   ],
 
+  // Картинки CMS — удалённые файлы Payload. Хост нужно разрешить явно, иначе Astro
+  // откажется их оптимизировать. Оптимизация происходит на сборке (сайт статический),
+  // так что в прод уезжает такой же webp-srcset, как у локальных ассетов.
+  image: {
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'cms-production-4b9a.up.railway.app' },
+    ],
+  },
+
   vite: {
     plugins: [tailwindcss()],
     // Разрешаем туннели ngrok (ведущая точка = любой поддомен) — иначе Vite

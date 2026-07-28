@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { MediaVideo } from "../../data/media";
+import type { MediaVideo } from "../../lib/cms/media";
 import Drawer from "../Drawer";
 
 // Медиа-архив (/media-archive): табы Видео/Фото. «Видео» — сетка карточек реальных

@@ -2,8 +2,11 @@
 // Футер — из design/design.pen, фрейм «footer». Фон accent (#023c97) на всю ширину.
 // Сверху нав-колонки + соцсети, по центру баннер (лого + название + строка о
 // поддержке), снизу копирайт + ссылки. Белые ассеты отдаём обычным <img> (без lossy-оптимизации).
-import { navCols, bigLinks } from "../config/nav";
-import { socials } from "../config/socials";
+import { getNavigation, getSiteSettings } from "../lib/cms/settings";
+
+// Навигация и соцсети — из CMS (глобалы «Навигация» и «Настройки сайта»).
+const { navCols, bigLinks } = await getNavigation();
+const { socials } = await getSiteSettings();
 import logo from "../assets/footer/logo-item.svg?url";
 import ornament from "../assets/footer/ornament.png";
 import social1 from "../assets/footer/social-1.png";
@@ -12,7 +15,7 @@ import socialWa from "../assets/footer/social-whatsapp.png";
 import socialVk from "../assets/footer/social-vk.png";
 
 // Локальная карта id → png-ассет + его размеры (состав/alt/href — из общего
-// config/socials). Ассеты футера отличаются от меню (png vs svg) и по размерам.
+// настроек сайта в CMS). Ассеты футера отличаются от меню (png vs svg) и по размерам.
 const socialIcons: Record<string, { src: string; w: number; h: number }> = {
   messenger: { src: social1.src, w: 20, h: 19 },
   telegram: { src: socialTg.src, w: 20, h: 15 },

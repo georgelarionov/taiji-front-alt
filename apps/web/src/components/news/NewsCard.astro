@@ -8,14 +8,14 @@
 //
 // Заголовок карточки — <h2> (статьи ленты = секции под единственным <h1> героя).
 // Размер 28/24px взят точно по дизайну (промежуточный уровень, в type-scale нет).
-import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
+import CmsPicture from "../CmsPicture.astro";
+import type { CmsImage } from "../../lib/cms/client";
 
 interface Props {
   date: string;
   title: string;
   excerpt: string;
-  image?: ImageMetadata;
+  image?: CmsImage;
   imageAlt?: string;
   // Ссылка на страницу статьи (/news/<slug>).
   href: string;
@@ -46,8 +46,8 @@ const { date, title, excerpt, image, imageAlt, href } = Astro.props;
             class="news-cover block h-[455px] bg-surface p-2 max-lg:h-[200px] max-lg:p-1"
             aria-label={title}
           >
-            <Image
-              src={image}
+            <CmsPicture
+              image={image}
               alt={imageAlt ?? title}
               widths={[400, 809, 1218]}
               sizes="(max-width: 1024px) 100vw, 809px"

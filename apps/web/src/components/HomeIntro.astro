@@ -1,0 +1,106 @@
+---
+// 1-block (новый) — вводный экран главной вместо hero-слайдера.
+// Источник: design/new-1-block/Главная-1.png (артборд 1440×750, замеры сняты
+// попиксельно: гаттеры 44px, сетка 2 колонки с gap 24px, картинки 2:1 (664×330),
+// нижняя плашка 96px = контент 64 + py-16).
+//
+// Полностью статичен — нулевой JS (в отличие от старого Hero-острова).
+// Шапка живёт ВНУТРИ блока, как раньше в Hero.
+//
+// Высота — ПО КОНТЕНТУ (не 100svh): картинки держат фиксированную пропорцию 2:1
+// и на ПК, и на мобиле; блок нигде не растягивается под вьюпорт.
+// Вариант шапки — solid (белый фон + нижний бордер, как в макете): его же читает
+// StickyNav (data-page-header="solid" → IntersectionObserver), поэтому фикс-шапка
+// выезжает сразу, как только настоящая шапка ушла за верх вьюпорта.
+import CmsPicture from "./CmsPicture.astro";
+import Header from "./Header.astro";
+import ContactBar from "./ContactBar.astro";
+import { ARROW_PATH } from "../lib/icons";
+// Тушевые иллюстрации приходят из CMS (глобал «Главная страница»); пропорция
+// исходников 2:1 — ровно пропорция карточки, кроп не нужен.
+import { getHomeCards } from "../lib/cms/settings";
+
+const cards = await getHomeCards();
+---
+
+<section class="bg-white">
+  <Header variant="solid" bg="white" />
+
+  {/* Единственный h1 страницы: в макете текстового заголовка нет, поэтому он
+      скрыт визуально (заголовки карточек — h2). */}
+  <h1 class="sr-only">Общество изучения традиционного тайцзицюань</h1>
+
+  {/* pt-12 = 48px от нижней линии шапки до плашек-картинок. */}
+  <div class="container-block pt-12 pb-10 max-lg:pt-4 max-lg:pb-12">
+    {/* Десктоп — 2 колонки; мобайл — друг под другом, начиная с «Общества». */}
+    <div
+      class="grid grid-cols-2 gap-6 max-lg:grid-cols-1 max-lg:gap-10"
+      data-reveal-stagger
+    >
+      {
+        cards.map((card, i) => (
+          <a
+            href={card.href}
+            data-reveal-item
+            class="group flex flex-col gap-6 max-lg:gap-4"
+          >
+            {/* Картинка карточки: ПК — 5:3 (664×398, выше исходной пропорции;
+                object-cover подрезает по бокам), мобайл — исходные 2:1.
+                Ширины считаны от кропа: на ПК высота 398 требует масштаба
+                664×398 → 800w при 1x и 1600w при 2x (исходник 1992 — апскейла нет),
+                поэтому наборы 800/1200/1600, а 664 остаётся для 1x-мобилы.
+                bg-surface — подложка до декодирования. Обе на первом экране →
+                eager (дефолтный lazy тормозил бы LCP), приоритет — первой.
+                ПК: у первой карточки картинка НИЖЕ текста (order-2) — колонки идут
+                «в шахматку». Мобайл — везде обычный порядок: картинка → текст. */}
+            {card.image && (
+            <CmsPicture
+              image={card.image}
+              widths={[664, 800, 1200, 1600]}
+              sizes="(max-width: 1023px) 100vw, 664px"
+              loading="eager"
+              fetchpriority={i === 0 ? "high" : "auto"}
+              class:list={[
+                "aspect-[5/3] w-full bg-surface object-cover max-lg:aspect-[2/1]",
+                i === 0 && "order-2 max-lg:order-none",
+              ]}
+            />
+            )}
+
+            {/* Текстовый блок — отдельной колонкой, чтобы порядок с картинкой
+                менялся одним order (расстояние между ними — gap-6 = 24px). */}
+            <div class:list={["flex flex-col", i === 0 && "order-1 max-lg:order-none"]}>
+              {/* Размер 36px — промежуточный между шкальными text-name (39) и
+                  text-h2 (40): берём базу text-name (serif/semibold/leading-none)
+                  и перекрываем только кегль (утилита перебивает @layer components). */}
+              <h2 class="text-name text-[36px] text-ink max-lg:text-[26px]">
+                {card.title}
+              </h2>
+
+              <p class="mt-5 max-w-[320px] text-body text-ink/70 max-lg:mt-3">
+                {card.description}
+              </p>
+
+              {/* Ховер по всей карточке приглушает «Узнать больше» (opacity). */}
+              <span class="mt-5 inline-flex w-fit items-center gap-2.5 border-b border-accent pb-2 font-display text-base font-semibold text-accent transition-opacity duration-300 group-hover:opacity-60 max-lg:mt-4">
+                Узнать больше
+                <svg
+                  viewBox="0 0 16 15.5563"
+                  class="h-3 w-3 shrink-0 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d={ARROW_PATH} />
+                </svg>
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  {/* Контактная плашка — общий компонент (та же плашка под первым блоком
+      внутренних страниц). На главной нужна и верхняя линия. */}
+  <ContactBar topBorder />
+</section>

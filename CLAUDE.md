@@ -27,6 +27,10 @@ All run from the repo root (pnpm workspace; the web app's package name is `web`)
 - `pnpm build` — static build → `apps/web/dist`
 - `pnpm preview` — serve the production build
 - `pnpm check` — `astro check` (TypeScript/Astro diagnostics; this is the only "test/lint" gate currently)
+- `pnpm --filter cms dev` — админка Payload на http://localhost:3000/admin
+- `pnpm --filter cms generate:types` / `generate:importmap` — после правок схемы/компонентов админки
+- `pnpm --filter cms migrate:content` — первичное наполнение базы из `apps/web/src/data/**`
+- Сборка сайта против прод-CMS: `CMS_URL=https://cms-production-4b9a.up.railway.app pnpm build`
 
 Scoped operations on the web app:
 
@@ -39,13 +43,74 @@ There is **no unit-test runner** wired up yet.
 
 **Monorepo** (pnpm workspaces: `apps/*`, `packages/*`). The site is an information/brand portal. Priorities driving the stack choice: speed, cross-browser stability, and rich animations. Next.js was deliberately rejected.
 
-Current state — **frontend-first, CMS added later**. The main page is **fully assembled and polished**, and a **foundation pass is done** (audit fixes, global components, design-system tokens/type-scale, a11y/SEO shell — see the **Foundation update** section below and `docs/conventions.md`). Current phase: **building the remaining pages** on that foundation.
-- `apps/web` — Astro 6, **static output** (deploys as a static upload, no SSR), React 19 islands, Tailwind 4, `sharp` (required for `<Image>` optimization).
-- Planned (not yet created): `apps/cms` (Payload CMS self-hosted + SQLite) and `packages/types` (Payload-generated types shared into the web app). The web app will consume Payload over REST/GraphQL; the backend choice does not affect the frontend.
+Current state — **страницы собраны, контент переведён в CMS**. The main page is **fully assembled and polished**, a **foundation pass is done** (audit fixes, global components, design-system tokens/type-scale, a11y/SEO shell — see the **Foundation update** section below and `docs/conventions.md`), и весь редактируемый контент теперь живёт в Payload (см. **CMS (Payload)** ниже).
+- `apps/web` — Astro 6, **static output** (deploys as a static upload, no SSR), React 19 islands, Tailwind 4, `sharp` (required for `<Image>` optimization). Контент читается из CMS **на сборке**.
+- `apps/cms` — Payload 3 внутри Next.js 16, Postgres (Railway), загрузки на томе. Админка русская.
+- `packages/types` — пока не создан; типы Payload генерируются в `apps/cms/src/payload-types.ts`.
+
+## CMS (Payload) — единый источник контента
+
+Весь редактируемый контент сайта живёт в **Payload 3** (`apps/cms`, Next.js 16 + Postgres).
+Сайт остаётся статикой: данные читаются **на сборке** через REST, изменения выезжают
+следующей пересборкой.
+
+- **Админка:** `https://cms-production-4b9a.up.railway.app/admin`, интерфейс на русском
+  (`i18n.fallbackLanguage: 'ru'`). Первый пользователь заводится там же при первом входе.
+- **Локально:** `pnpm --filter cms dev` (порт 3000). `apps/cms/.env` (не в репозитории) держит
+  `DATABASE_URL` (публичный адрес того же Postgres на Railway), `PAYLOAD_SECRET`,
+  `PAYLOAD_PUBLIC_SERVER_URL`. То есть локальная разработка и прод смотрят в ОДНУ базу —
+  контент, залитый с ноутбука, сразу виден в боевой админке.
+- **Коллекции:** `news` (тело — конструктор блоков: абзац/подзаголовок/список/изображение/
+  цитата/видео, черновики+версии), `events`, `videos` (медиа-архив), `research`, `team`,
+  `partners`, `persons` + `taiji-sources` (связь), `media`, `documents` (PDF), `users`.
+- **Глобалы:** `home`, `about-block`, `society-page`, `contacts-page`, `navigation`,
+  `site-settings` (телефон, почта, адрес, строка академической поддержки, соцсети, карта).
+- **Слой на сайте:** `apps/web/src/lib/cms/*` — тонкие мапперы, возвращающие ТЕ ЖЕ типы, что
+  раньше лежали в `src/data` (`NewsArticle`, `MediaVideo`, `ResearchItem`, `TeamBio`,
+  `TaijiPerson`). Компоненты почти не изменились — поменялся только источник. Адрес CMS —
+  переменная `CMS_URL` (по умолчанию `http://localhost:3000`). Если CMS недоступна, сборка
+  **падает с внятной ошибкой** — молча отдать пустой сайт нельзя.
+- **Картинки CMS — удалённые файлы:** рендерятся через **`CmsPicture.astro`** (обёртка над
+  `<Image>`: у Payload берутся `url`/`width`/`height`), хост разрешён в `astro.config.mjs`
+  → `image.remotePatterns`. Astro скачивает и жмёт их на сборке, как локальные ассеты. Где
+  нужен готовый URL для React-острова — `lib/cms/image.ts` → `optimizedSrc()`.
+- **Первичное наполнение:** `pnpm --filter cms migrate:content` — скрипт
+  `apps/cms/scripts/migrate-from-code.ts` собирает старые модули `apps/web/src/data/**`
+  (esbuild подменяет импорты картинок на пути к файлам) и заливает всё в Payload.
+  Идемпотентно по слагам. **`src/data/**` сайтом больше НЕ читается** — это исходник для
+  сидинга; правки контента делаются в админке.
+- **Кнопка «Опубликовать на сайте»** в админке (`components/RebuildButton.tsx` →
+  `POST /api/rebuild-site` → `endpoints/rebuild.ts` → `lib/railway.ts`) просит Railway
+  пересобрать сервис `web`. Нужны переменные сервиса `cms`: `RAILWAY_API_TOKEN` (создаётся
+  в дашборде Railway), `WEB_SERVICE_ID`, `WEB_ENVIRONMENT_ID` (последние две уже заданы).
+
+### Гочи Payload, на которые уже наступили
+
+- **Шаблон `templates/blank` из ветки `main`** тянет `workspace:*` зависимости и файлы
+  маршрутов от dev-версии (`NullField`, `generatePayloadViewport`), несовместимые с
+  релизом. Брать шаблон **по тегу** (`gh:payloadcms/payload/templates/blank#v3.86.0`) и
+  сразу перегенерировать import map (`pnpm --filter cms generate:importmap`).
+- **Turbopack в pnpm-монорепо:** `turbopack.root` в `next.config.ts` должен указывать на
+  **корень репозитория**, а не на `apps/cms` — реальные пакеты лежат в
+  `<репо>/node_modules/.pnpm`, а Turbopack разрешает симлинки в реальные пути и не берёт
+  то, что выше его корня. Считать корень от `process.cwd()`, не от `import.meta.url`:
+  TS-конфиг компилируется во временный файл.
+- **Поле массива нельзя называть `id`:** в Postgres так зовётся служебный ключ строки
+  массива, и Payload попытается записать строку в integer-колонку (у соцсетей поле
+  называется `network`).
+- **`next build` тайпчекает и `scripts/`** — служебные скрипты вынесены в `exclude`
+  у `apps/cms/tsconfig.json`.
+- **Деплой `cms` идёт из папки приложения** (`cd apps/cms && railway up`), поэтому
+  `apps/cms/railway.json` подхватывается как конфиг сборки. Загрузка файлов на том —
+  `railway volume files -v cms-volume upload <абсолютный путь> / --overwrite` (корень тома
+  = `/data`; заливка в `/media` даёт вложенность `media/media`).
 
 ## Deploy (Railway · Railpack)
 
-Production is on **Railway**, built by **Railpack** (auto-deploys on push to `origin/main`). The site is **static** (Astro SSG → `apps/web/dist`), served by Caddy — no Node server in prod.
+Production is on **Railway** (проект `unique-transformation`), built by **Railpack**. Три сервиса: **`web`** (статика Astro → Caddy), **`cms`** (Payload/Next, домен `cms-production-4b9a.up.railway.app`, том `/data` под медиа) и **`Postgres`**. The site is **static** (Astro SSG → `apps/web/dist`), served by Caddy — no Node server in prod.
+
+- **Сервису `web` нужна переменная `CMS_URL`** (уже задана) — иначе сборка пойдёт в `localhost:3000` и упадёт.
+- **Сервис `cms` деплоится из `apps/cms`** (`railway up` из этой папки), настройки сборки — в `apps/cms/railway.json`. К GitHub он пока НЕ подключён: автодеплой по пушу работает только у `web`.
 
 - **REQUIRED service env var: `RAILPACK_SPA_OUTPUT_DIR=apps/web/dist`.** Without it the build fails with *“No start command detected”* (Railpack defaults to expecting a server). This var triggers the Railpack `node`-provider SPA mode → Caddy serves the dir, no start command.
 - **The service Start Command MUST be empty.** SPA mode = Caddy serves the static dir with **no start command**. If a custom Start Command is set (e.g. `pnpm --filter web dev`), it overrides Caddy: without the SPA var it runs the dev server on `localhost:4321` (Railway edge can’t reach it → *“Application failed to respond”*); with the SPA var the runtime is the Caddy image **without pnpm** → crash loop `pnpm: command not found`. Real cause of the 2026-06-29 outage on the **new** project `unique-transformation` (service `web`, domain `web-production-f86bab.up.railway.app`): missing SPA var **+** a `pnpm --filter web dev` Start Command. Fix on any fresh Railway project: set the SPA var **and** clear the Start Command (keep Build Command `pnpm --filter web build`).
@@ -105,11 +170,12 @@ The hero stays a **stationary bottom layer**; everything below scrolls up *over*
 
 ## Page composition (built — now polishing)
 
-The whole main page is assembled in `apps/web/src/pages/index.astro`, one component per design block. The table below lists the **design identities**; the **home now renders them in this order: Hero → News → Society → About → Contacts → Footer**, with the **`3-block` Research slider hidden** (commented out in `index.astro` — the component + `/research` page stay). Each block lives in `apps/web/src/components/` with assets under `src/assets/<block>/`:
+The whole main page is assembled in `apps/web/src/pages/index.astro`, one component per design block. The table below lists the **design identities**; the **home now renders them in this order: HomeIntro → News → Society → About → Contacts → Footer**, with the **`3-block` Research slider hidden** (commented out in `index.astro` — the component + `/research` page stay). Each block lives in `apps/web/src/components/` with assets under `src/assets/<block>/`:
 
 | Block | Component | Notes |
 |---|---|---|
-| `1-block` | `Hero.astro` + `HeroSlider.tsx` | **full-bleed**, 100svh, **slider** (cross-fade bg video/image + per-slide text & CTA, pagination dots, arrows 50% at ends); static menu + bottom strip passed in via named slots; bg video `hero-video.webm`/`.mp4` + `hero-bg.webp` poster. Reveal gated on loader (see Loader ↔ Hero reveal); **sticky parallax base** — content below overlaps + darkens it on scroll (see Hero parallax overlap) |
+| `1-block` (new) | `HomeIntro.astro` | **Текущий** первый экран (макет `design/new-1-block/Главная-1.png`): статичный, нулевой JS. **Высота по контенту — не 100svh** (пробовали фикс-высоту с растяжением картинок — откатили): `Header variant="solid" bg="white"` внутри блока → 48px → 2 карточки-ссылки (тушевая иллюстрация **строго 2:1** — `src/assets/home/intro-{society,taijiquan}.webp`, исходники 1992×990, `<Image widths=[664,996,1328] sizes>`, `loading="eager"` (первый экран), `fetchpriority="high"` у первой → `text-name` → описание `max-w-[320px]` → «Узнать больше» с постоянным accent-подчёркиванием, гаснет по ховеру карточки) → **`ContactBar topBorder`** (общая плашка, см. ниже). **ПК — «шахматка»:** у первой карточки текст сверху, картинка снизу (`order-2`/`order-1`), у второй обычный порядок; на мобиле обе — картинка → текст (`max-lg:order-none`), карточки друг под другом. Мобайл: карточки друг под другом (Общество первым); плашка в два ряда — телефон+e-mail колонкой, ниже строка поддержки (13px) + эмблема 44px. **Картинки — заглушки** (см. Placeholders) |
+| `1-block` (legacy) | `Hero.astro` + `HeroSlider.tsx` | Старый hero-слайдер — **снят с главной** (импорт закомментирован в `index.astro`), файлы и ассеты сохранены. Был: full-bleed 100svh слайдер, шапка/плашка через слоты, reveal по лоудеру, sticky-параллакс-база. Разделы «Loader ↔ Hero reveal» и «Hero parallax overlap» ниже описывают именно его — на текущей главной они не действуют (`setupHeroParallax` не находит `[data-hero-darken]` и выходит) |
 | `2-block` | `About.astro` | «О тайцзицюань» — 2×2 bordered cards |
 | `3-block` | `Research.astro` + `ResearchSlider.tsx` | «Исследования» — full-width `surface-sunken` bg; horizontal card slider bleeding off the right edge. **Currently hidden on home** (`<Research />` commented out in `index.astro`) |
 | `4-block` | `News.astro` | «Новости» — 1 big + 2 stacked cards + full-width CTA |
@@ -124,6 +190,7 @@ The first interior page — **`apps/web/src/pages/taijiquan.astro`** (route `/ta
 - **Compose inside `BaseLayout`** (no Hero): `<Header variant="solid" activeNav="…" />` → `<Breadcrumbs items={[…]} />` → page sections → `<Footer />`. Menu/shell come from `BaseLayout`.
 - **`Header variant="solid"`** = interior chrome (same geometry as `overlay`; both now share the colour lockup + dark text/burger — see Responsive → Header logo): colour logo (`src/assets/header/color-new-logo.webp`, plain `<img>`), `bg-surface` + bottom `border-border`, dark nav text, ink burger. **Active topNav item** via `activeNav` prop (matched by label) → `text-accent` + persistent bottom border + `aria-current="page"`. (Emit exactly ONE of `text-ink`/`text-accent` per item — both = ink wins the cascade.) **Optional `bg` prop** (`"surface"` default / `"white"`) switches the solid band background — `/society` uses `"white"`.
 - **`Breadcrumbs.astro`** = separate static block under the header (`items: {label, href?}[]`; last item without href = current → muted `text-ink/70` + `aria-current="page"`); `bg-surface` + bottom border, continues the header band. **Same optional `bg` prop** (`"surface"`/`"white"`) — keep it in sync with the header (`/society` = both `white`).
+- **`ContactBar.astro` — общая контактная плашка** (телефон · e-mail + «При академической поддержке … РАН» + чёрная эмблема ИКСА РАН). Единый источник: первый экран главной (`HomeIntro`, с `topBorder`) и **под первым блоком** страниц `/society`, `/news`, `/research`, `/events`, `/media-archive`. Проп **`topBorder`** (по умолчанию `false`) добавляет верхнюю линию — нужен только там, где над плашкой нет своего `border-b`; на внутренних страницах верхняя кромка = нижний бордер первого блока (SocietyHero / PageTitleBand / интро-баннер), иначе двойная линия. Строку поддержки из 2-го блока `/society` (`SocietyMission`) убрали — она теперь только в плашке.
 - **Shared interior building blocks:** **`InteriorHero.astro`** (props `title`/`subtitle` — the section-intro band with the ornament bg, full-bleed image on mobile; `/taijiquan/*` use it) and **`ContentPlaceholder.astro`** (stub «Контент-блок» — *was* the `/taijiquan/*` body, now replaced by real per-page content; kept for reuse). **`TaijiExplore`** («Узнайте больше») takes an optional **`current`** prop to dim the current-section card (renders non-link + `aria-current`), and links cards to the real `/taijiquan/<slug>` routes.
 - **`/society` is the richer interior reference:** desktop static grids ↔ **mobile React-slider islands** (`components/society/` — `SocietyValuesSlider`/`SocietyTeamSlider` + shared `SliderControls`, dot pattern active `w-[65px]`/inactive `w-6 opacity-35`, `aria-live` on a *stable* wrapper with `key` on the inner card); white header band; **PDF documents** in `public/docs/` linked `target="_blank" rel="noopener"`, file size read at build via `fs.statSync` («Скачать PDF (X mb)»), PDF glyph = `PDF_PATH` in `icons.ts`. The desktop **«Команда»** grid (`SocietyTeam.astro`) is a 6-col grid laid out as **3 rows (2 / 3 / 3)**: row 1 = 2 wide председатель cards (`col-span-3`, horizontal portrait-left), rows 2–3 = `col-span-2` cards, ending in two white bordered CTA cells: **«Вступить в общество» → button «Отправить заявку»** opens the membership-application form in the shared `Drawer` (**`MembershipFormDrawer.tsx`**, trigger `[data-membership-open]`, module-level delegated listener like `ContactFormDrawer`; fields ФИО / дата рождения / школа / стиль / линия преемственности / длительность / контакты школы / вклад → «Заявка отправлена»), and **«Свяжитесь с нами» → `/contacts`**. The **«Подробнее» drawer** (`SocietyTeamDrawer`) shows portrait + role/name → description → bio bullets **without** «Описание»/«Биография» section labels (plain text). Section order: миссия → команда → **документы → партнёры**.
 - **`/news` is the feed reference:** centered title band **`PageTitleBand.astro`** (shared by /news, /events, /research — *not* `InteriorHero`: a `bg-surface` band with a centered `text-h1` and only a **bottom** `border-b`, since the top edge is the Breadcrumbs' own bottom border, else the two stack into a double line; ornament-bg deferred; takes a `title` prop), single-column `max-w-[809px]` list of `NewsCard.astro` (date → title `<h2>` (linked) → article cover — **real photo**, `object-contain` **fit** on a `bg-surface` pad (no photo → cover omitted) → excerpt → «Читать далее») separated by `<hr>` rules; **cards link to `/news/<slug>`** (title + «Читать далее»). **«Показать ещё» is zero-JS** (`NewsList.astro`): first N cards static, the rest + the button live in a `<details>` (rest wrapped in `.news-rest`); `<summary>` is the styled ghost button, hidden on expand via `details[open] > summary{display:none}` (no island, survives `<ClientRouter />`, keyboard-accessible). **Desktop view toggle «1 колонка / 2 колонки»** (`NewsList.astro` toolbar `.news-bar`, `max-lg:hidden`) is **also zero-JS** — two `radio` inputs + `:has()` rules in `global.css` switch `.news-items`/`.news-rest` between one column (max-w-809 + `<hr>`) and a **2-col grid** (compact covers via anchor class `.news-cover`, lead clamped via `.news-excerpt`, `<hr>` hidden); grid gated `@media (min-width:1024px)` → mobile always one column. **News data is single-sourced via `src/data/news.ts`** — an index that imports one module per article from `src/data/news/<slug>.ts` (**real content** migrated from `taiji-society.ru`). Each `NewsArticle`: `excerpt`, optional `image`/`imageAlt`, a `body` of typed `Block`s (`p`/`h2`/`list`/`image`/`quote`/`video` — `video` = a RuTube embed src, `list` = a bullet list of strings), optional `author` (defaults to `SOCIETY_AUTHOR`). Exposes `articles[]` (date-desc), `relatedArticles()`, and **`conferenceArticles`** (the 6 Dec-2025 conference materials, for the `/research` hub); both the feed and the article page read it; CMS later.
@@ -201,6 +268,7 @@ Design now lives on **MagicPath** (MagicCanvas) — the old `design/design.pen` 
 - **Stale Vite deps:** after `pnpm -C apps/web add …` while `pnpm dev` is running, the browser may 504 “Outdated Optimize Dep” and break hydration → **restart `pnpm dev`** (re-optimizes deps).
 - **`data-reveal` on the page’s last element won’t fire:** ScrollTrigger `top 85%` is unreachable at max scroll, so it stays `opacity:0`. Don’t put `data-reveal` on the bottom-most element (resolves itself once more content is added below).
 - **Full-bleed + horizontal scroll:** elements wider than the viewport (full-bleed bgs, `w-screen`, bleeding sliders) need `overflow-x-clip` on their section/footer so they don’t add page-level horizontal scroll. Verify `scrollWidth ≤ innerWidth`.
+- **Якорные ссылки `#id` ломались из-за связки ClientRouter + Lenis** (симптом: на `/society` «Команда»/«Партнёры» меняли хеш, но страница стояла на месте). Причина: `<ClientRouter />` перехватывает клик по ЛЮБОЙ same-origin ссылке, включая чистые `#hash`, делает `preventDefault()` и внутри `navigate()` выставляет `location.href` → нативный скачок скролла; Lenis в этот момент доигрывает свою rAF-анимацию (инерция после колеса, `lerp 0.1` ≈ секунда), внешнего изменения `scrollY` не видит и возвращает страницу к своей цели. Спокойный клик по «остывшей» странице при этом работал — отсюда «через раз». **Решение (`smooth.ts` `onAnchorClick`):** свой делегированный обработчик в фазе **capture** (обработчик ClientRouter'а висит в bubble и зарегистрирован раньше — в bubble мы получали событие уже `defaultPrevented`; ClientRouter, наоборот, сам отваливается по своей проверке `ev.defaultPrevented`) → `lenis.scrollTo(target)` **без offset** (Lenis сам вычитает `scroll-margin-top` цели, у секций `scroll-mt-24`; свой `-96` давал двойной отступ 192px) + `history.pushState` для адреса + перенос фокуса на цель (`tabindex="-1"`, иначе ломается скип-линк). Вешается/снимается вместе с Lenis в `init()`/`destroy()`; при reduced-motion Lenis нет → нативное поведение + CSS `scroll-mt`.
 - **`position:sticky` dies under a clipping ancestor:** any ancestor between the sticky element and the scroll root with `overflow:hidden/clip/auto/scroll` silently kills stickiness — so the hero parallax would stop pinning. The hero’s chain (`body` → `main#main` → `astro-island` `display:contents` → `section`) is clean — `<main>` is deliberately overflow-free; the only `overflow:hidden` rules (`html.loading`, `.lenis-stopped`) apply **only during the loader/menu**, not during scroll. Don’t add `overflow` to `html`/`body`/the content wrapper, or the hero stops sticking (this is also why full-bleed clipping uses `overflow-x-clip` on the inner block, not a global overflow).
 - **`backdrop-filter` over moving content = jank:** a large `backdrop-blur` recomputes **every frame** when what’s behind it changes (autoplay video, hydrating islands), tanking FPS. The loader uses a pre-baked static frosted **image** instead of a live blur.
 - **First-load animation stutter:** main-thread JS animations (GSAP rAF) stutter during the initial hydration/decode burst. Defer the start to `requestIdleCallback` (the loader does this) and judge smoothness in **prod** (`pnpm build && pnpm preview`) — dev (HMR + React dev + unbundled modules) is always jankier on first load.

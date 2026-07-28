@@ -1,6 +1,6 @@
 ---
-// Тело статьи (rich-text) — рендер типизированных блоков из датасета (см. data/news
-// → Block). Каждый блок отображается на тип-шкале проекта:
+// Тело статьи (rich-text) — рендер типизированных блоков из CMS (см. lib/cms/news
+// → Block; в админке это конструктор блоков у новости). Каждый блок отображается на тип-шкале проекта:
 //   • p          → абзац text-body (16px); lead-абзац — font-medium, остальные ink/80;
 //   • h2         → подзаголовок text-h2-compact (32/26);
 //   • list       → маркированный список (пункты с accent-точкой);
@@ -9,8 +9,8 @@
 //   • video      → встроенный <iframe> 16:9 (pointer-events:auto — обходит глобальный
 //                  .lenis-smooth iframe{pointer-events:none}, иначе плеер не кликается).
 // Заголовки внутри тела — <h2> (единственный <h1> — заголовок статьи в ArticleIntro).
-import { Image } from "astro:assets";
-import type { Block } from "../../data/news";
+import CmsPicture from "../CmsPicture.astro";
+import type { Block } from "../../lib/cms/news";
 
 interface Props {
   body: Block[];
@@ -49,8 +49,8 @@ const { body } = Astro.props;
       if (block.type === "image") {
         return (
           <figure class="my-2 flex flex-col gap-3">
-            <Image
-              src={block.src}
+            <CmsPicture
+              image={block.src}
               alt={block.alt}
               widths={[400, 809, 1218]}
               sizes="(max-width: 1024px) 100vw, 809px"

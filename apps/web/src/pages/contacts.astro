@@ -13,6 +13,7 @@ import Header from "../components/Header.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Footer from "../components/Footer.astro";
 import ContactFormDrawer from "../components/contacts/ContactFormDrawer";
+import { getSiteSettings, getContactsContent } from "../lib/cms/settings";
 import { contactPageSchema } from "../lib/seo";
 
 const description =
@@ -24,19 +25,24 @@ const schema = contactPageSchema({
   description,
 });
 
-const EMAIL = "info@taiji-society.ru";
-const mapUrl =
-  "https://yandex.ru/maps/?text=" +
-  encodeURIComponent("Москва, Нахимовский проспект, д.32");
+// Контакты и карта — из CMS (глобал «Настройки сайта»), тексты страницы — из
+// глобала «Страница Контакты».
+const settings = await getSiteSettings();
+const contacts = await getContactsContent();
 
-// Встраиваемый виджет той же конструкции карты, что в присланном скрипте (um-хэш).
-const mapWidgetSrc =
-  "https://yandex.ru/map-widget/v1/?um=constructor%3A17aa7c6da5bc66b337f00920483efe0bf6026e0db0b732306ff9c06ecddde557&source=constructor";
+const EMAIL = settings.email;
+const mapUrl =
+  "https://yandex.ru/maps/?text=" + encodeURIComponent(settings.address ?? "");
+const mapWidgetSrc = settings.mapEmbed ?? "";
 
 const info = [
-  { label: "Адрес", value: "Москва, Нахимовский проспект, д.32", href: mapUrl, external: true },
-  { label: "Телефон", value: "+7 903 747 9367", href: "tel:+79037479367" },
-  { label: "Время работы", value: "Пн – Пт: с 10:00 до 19:00" },
+  ...(settings.address
+    ? [{ label: "Адрес", value: settings.address, href: mapUrl, external: true }]
+    : []),
+  { label: "Телефон", value: settings.phone, href: `tel:${settings.phoneHref}` },
+  ...(settings.workingHours
+    ? [{ label: "Время работы", value: settings.workingHours }]
+    : []),
   { label: "E-mail", value: EMAIL, href: `mailto:${EMAIL}` },
 ];
 
@@ -75,7 +81,7 @@ const socials: SocialCard[] = [
 
   <section class="bg-white">
     <div class="container-block py-16 max-lg:py-12">
-      <h1 class="text-h1 text-ink">Контакты</h1>
+      <h1 class="text-h1 text-ink">{contacts.heading}</h1>
 
       {/* ───────── Инфо-строка ───────── */}
       <div class="mt-12 border-t border-border max-lg:mt-8 max-lg:border-y">
@@ -148,7 +154,7 @@ const socials: SocialCard[] = [
           class="group relative flex min-h-[220px] cursor-pointer flex-col justify-end bg-accent p-7 text-white transition-colors hover:bg-accent/90 max-lg:min-h-[150px] max-lg:p-6"
         >
           <div class="flex items-end justify-between gap-4">
-            <span class="font-display text-base font-bold uppercase tracking-wide max-lg:text-[15px]">Отправить сообщение</span>
+            <span class="font-display text-base font-bold uppercase tracking-wide max-lg:text-[15px]">{contacts.ctaTitle}</span>
             <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 18 18 6" /><path d="M10 6h8v8" />
             </svg>

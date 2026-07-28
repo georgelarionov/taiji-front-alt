@@ -1,28 +1,29 @@
 ---
-// Страница отдельной новости (/news/<slug>). Статически генерируется по датасету
-// data/news (getStaticPaths). Шелл как у остальных внутренних страниц: solid-шапка
+// Страница отдельной новости (/news/<slug>). Статически генерируется по данным CMS
+// (getStaticPaths тянет коллекцию news на сборке). Шелл как у остальных внутренних страниц: solid-шапка
 // (активный пункт «Новости»), крошки отдельным блоком, сквозной глобальный футер —
 // чтобы страница не выглядела инородной. Контент в центральной колонке чтения 809px:
 // дата → заголовок → мета+шеринг → главное изображение → rich-text → автор. Ниже —
-// full-bleed слайдер «Другие новости». Тело статьи пока общий плейсхолдер (CMS позже).
+// full-bleed слайдер «Другие новости». Тело статьи — блоки из CMS.
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import Footer from "../../components/Footer.astro";
-import { Image } from "astro:assets";
+import CmsPicture from "../../components/CmsPicture.astro";
 import ArticleIntro from "../../components/news/ArticleIntro.astro";
 import ArticleBody from "../../components/news/ArticleBody.astro";
 import ArticleAuthor from "../../components/news/ArticleAuthor.astro";
 import RelatedNews from "../../components/news/RelatedNews.astro";
 import {
-  articles,
-  relatedArticles,
+  getArticles,
+  getRelatedArticles,
   SOCIETY_AUTHOR,
   type NewsArticle,
-} from "../../data/news";
+} from "../../lib/cms/news";
 import { articleSchema, ruDateToISO } from "../../lib/seo";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const articles = await getArticles();
   return articles.map((article) => ({
     params: { slug: article.slug },
     props: { article },
@@ -33,7 +34,7 @@ interface Props {
   article: NewsArticle;
 }
 const { article } = Astro.props;
-const related = relatedArticles(article.slug, 6);
+const related = await getRelatedArticles(article.slug, 6);
 
 // NewsArticle: заголовок, лид, главное фото (абс. URL), дата публикации (ISO).
 // headline ограничен рекомендацией Google ≤110 симв.: у длинных заголовков
@@ -46,7 +47,7 @@ const schema = articleSchema(
     path: Astro.url.pathname,
     name: headline,
     description: article.excerpt,
-    image: article.image?.src,
+    image: article.image?.url,
   },
   { type: "NewsArticle", datePublished: ruDateToISO(article.date), section: "Новости" },
 );
@@ -81,8 +82,8 @@ const schema = articleSchema(
         {
           article.image && (
             <div class="mt-10 aspect-video w-full bg-surface p-2 max-lg:mt-6 max-lg:p-1">
-              <Image
-                src={article.image}
+              <CmsPicture
+                image={article.image}
                 alt={article.imageAlt ?? article.title}
                 widths={[400, 809, 1218]}
                 sizes="(max-width: 1024px) 100vw, 809px"

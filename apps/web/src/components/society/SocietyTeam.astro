@@ -8,39 +8,32 @@
 // здесь через getImage() и передаём готовый src и в сетку, и в слайдер. Источник
 // 942×1272 (ratio совпадает с боксом 111×150) → 222w webp для карточек (2×, ретина)
 // и 444w для дровера (отображается крупнее). Роль/имя и биографии — единый источник
-// src/data/society-team.ts (порядок записей = порядок портретов team-1..6).
-import { getImage } from "astro:assets";
+// коллекция «Команда Общества» в CMS (порядок карточек — поле «Порядок»).
+import { optimizedSrc } from "../../lib/cms/image";
 import SocietyTeamSlider from "./SocietyTeamSlider";
 import SocietyTeamDrawer from "./SocietyTeamDrawer";
 import MembershipFormDrawer from "./MembershipFormDrawer";
-import { teamBios } from "../../data/society-team";
+import { getTeam } from "../../lib/cms/society";
 
 // E-mail Общества (тот же, что на /contacts) — закрепляется внизу формы-дровера.
 const EMAIL = "info@taiji-society.ru";
-import p1 from "../../assets/society/team-1.webp";
-import p2 from "../../assets/society/team-2.webp";
-import p3 from "../../assets/society/team-3.webp";
-import p4 from "../../assets/society/team-4.webp";
-import p5 from "../../assets/society/team-5.webp";
-import p6 from "../../assets/society/team-6.webp";
-
-const imgs = [p1, p2, p3, p4, p5, p6];
+const teamBios = await getTeam();
 
 // Карточки/слайдер: id (для триггера дровера) + роль/имя + портрет 222w.
 const members = await Promise.all(
-  teamBios.map(async (bio, i) => ({
+  teamBios.map(async (bio) => ({
     id: bio.id,
     role: bio.role,
     name: bio.name,
-    photo: (await getImage({ src: imgs[i], width: 480, format: "webp" })).src,
+    photo: bio.photo ? await optimizedSrc(bio.photo, 480) : "",
   })),
 );
 
 // Дровер: полная биография + портрет 444w.
 const drawerPeople = await Promise.all(
-  teamBios.map(async (bio, i) => ({
+  teamBios.map(async (bio) => ({
     ...bio,
-    photo: (await getImage({ src: imgs[i], width: 444, format: "webp" })).src,
+    photo: bio.photo ? await optimizedSrc(bio.photo, 444) : "",
   })),
 );
 ---
