@@ -3,6 +3,15 @@
 // (society/SocietyHero.astro): слева — каллиграфия 太极拳, заголовок с
 // подзаголовком, описание и навигация по разделам страницы; справа — тушевая
 // живопись. Мобайл: та же колонка, ссылки приглушены, картина на всю ширину.
+//
+// Две тонкости раскладки:
+// • картина лежит в растягивающейся обёртке (`self-stretch` + `object-cover`),
+//   поэтому прижата к верхней и нижней кромке блока — без полей подложки, как
+//   бы ни менялась высота текстовой колонки;
+// • каллиграфия — `self-start`: без него <img> как flex-элемент растягивается
+//   на всю ширину колонки, а `object-contain` центрирует рисунок, и знаки
+//   уезжают вправо от заголовка.
+//
 // Нижней границы у секции нет — линию рисует следующий блок (border-y у
 // TaijiHistory), иначе получилась бы двойная.
 import { Image } from "astro:assets";
@@ -17,14 +26,14 @@ const links = [
 ];
 ---
 
-<section class="overflow-x-clip bg-white">
+<section class="overflow-x-clip bg-surface">
   <div class="container-block">
     <div
-      class="flex items-center justify-between gap-12 max-lg:flex-col max-lg:items-stretch max-lg:gap-8 max-lg:pt-8"
+      class="flex items-stretch justify-between gap-12 max-lg:flex-col max-lg:gap-8 max-lg:pt-8"
     >
       <div
         data-reveal
-        class="flex max-w-[560px] flex-col gap-[92px] max-lg:max-w-none max-lg:gap-10"
+        class="flex max-w-[560px] flex-col justify-center gap-12 max-lg:max-w-none max-lg:gap-10"
       >
         <div class="flex flex-col gap-6 max-lg:gap-4">
           <img
@@ -33,7 +42,7 @@ const links = [
             height={caligraph.height}
             alt=""
             aria-hidden="true"
-            class="h-[38px] w-auto object-contain max-lg:h-[27px]"
+            class="h-[38px] w-auto self-start object-contain object-left max-lg:h-[27px]"
           />
           <div class="flex flex-col gap-4 max-lg:gap-3">
             <h1
@@ -69,14 +78,18 @@ const links = [
         </nav>
       </div>
 
-      <Image
-        src={heroImg}
+      <div
         data-reveal
-        alt="Тушевая живопись: фигура в халате, выполняющая форму тайцзицюань"
-        widths={[390, 720, 1440]}
-        sizes="(max-width: 1023px) 100vw, 720px"
-        class="h-auto w-[720px] shrink-0 object-contain max-lg:-mx-4 max-lg:w-[calc(100%+2rem)] max-lg:max-w-none"
-      />
+        class="relative min-h-[519px] w-[720px] shrink-0 self-stretch max-lg:-mx-4 max-lg:aspect-[2160/1557] max-lg:min-h-0 max-lg:w-[calc(100%+2rem)]"
+      >
+        <Image
+          src={heroImg}
+          alt="Тушевая живопись: фигура в халате, выполняющая форму тайцзицюань"
+          widths={[390, 720, 1440]}
+          sizes="(max-width: 1023px) 100vw, 720px"
+          class="absolute inset-0 h-full w-full object-cover object-right"
+        />
+      </div>
     </div>
   </div>
 </section>
