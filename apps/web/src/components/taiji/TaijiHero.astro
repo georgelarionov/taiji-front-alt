@@ -5,9 +5,10 @@
 // живопись. Мобайл: та же колонка, ссылки приглушены, картина на всю ширину.
 //
 // Две тонкости раскладки:
-// • картина лежит в растягивающейся обёртке (`self-stretch` + `object-cover`),
-//   поэтому прижата к верхней и нижней кромке блока — без полей подложки, как
-//   бы ни менялась высота текстовой колонки;
+// • картина занимает всю оставшуюся ширину (`flex-1`) и держит своё
+//   соотношение через `aspect`, поэтому кадр не подрезается, а высота блока
+//   задаётся именно ею: текст всегда ниже и центрируется в этой высоте с
+//   запасом воздуха. Прижата к верхней и нижней кромке — полей подложки нет;
 // • каллиграфия — `self-start`: без него <img> как flex-элемент растягивается
 //   на всю ширину колонки, а `object-contain` центрирует рисунок, и знаки
 //   уезжают вправо от заголовка.
@@ -33,31 +34,31 @@ const links = [
     >
       <div
         data-reveal
-        class="flex max-w-[560px] flex-col justify-center gap-12 max-lg:max-w-none max-lg:gap-10"
+        class="flex w-[480px] shrink-0 flex-col justify-center gap-14 max-lg:w-auto max-lg:gap-10"
       >
-        <div class="flex flex-col gap-6 max-lg:gap-4">
+        <div class="flex flex-col gap-5 max-lg:gap-4">
           <img
             src={caligraph.src}
             width={caligraph.width}
             height={caligraph.height}
             alt=""
             aria-hidden="true"
-            class="h-[38px] w-auto self-start object-contain object-left max-lg:h-[27px]"
+            class="h-[30px] w-auto self-start object-contain object-left max-lg:h-[24px]"
           />
-          <div class="flex flex-col gap-4 max-lg:gap-3">
+          <div class="flex flex-col gap-3">
             <h1
-              class="font-serif text-[48px] font-semibold leading-[1.1] text-ink max-lg:text-[32px]"
+              class="font-serif text-[40px] font-semibold leading-[1.1] text-ink max-lg:text-[30px]"
             >
               Тайцзицюань
             </h1>
             <p
-              class="font-sans text-base font-medium leading-relaxed text-ink/70 max-lg:text-[14px]"
+              class="font-sans text-[15px] font-medium leading-relaxed text-ink/70 max-lg:text-[14px]"
             >
               Кулак Великого Предела
             </p>
           </div>
           <p
-            class="max-w-[520px] font-sans text-[18px] leading-relaxed text-ink max-lg:text-[15px]"
+            class="max-w-[440px] font-sans text-[16px] leading-relaxed text-ink max-lg:max-w-none max-lg:text-[15px]"
           >
             Традиционное китайское искусство движения, которое возникло как боевое
             искусство, а сегодня широко практикуется как мягкая оздоровительная и
@@ -69,7 +70,7 @@ const links = [
             links.map((l) => (
               <a
                 href={l.href}
-                class="link-underline w-fit font-display text-base font-semibold text-ink max-lg:opacity-50"
+                class="link-underline w-fit font-display text-[15px] font-semibold text-ink max-lg:opacity-50"
               >
                 {l.label}
               </a>
@@ -80,14 +81,14 @@ const links = [
 
       <div
         data-reveal
-        class="relative min-h-[519px] w-[720px] shrink-0 self-stretch max-lg:-mx-4 max-lg:aspect-[2160/1557] max-lg:min-h-0 max-lg:w-[calc(100%+2rem)]"
+        class="relative aspect-[2160/1557] flex-1 self-center max-lg:-mx-4 max-lg:w-[calc(100%+2rem)] max-lg:flex-none"
       >
         <Image
           src={heroImg}
           alt="Тушевая живопись: фигура в халате, выполняющая форму тайцзицюань"
-          widths={[390, 720, 1440]}
-          sizes="(max-width: 1023px) 100vw, 720px"
-          class="absolute inset-0 h-full w-full object-cover object-right"
+          widths={[390, 720, 1080, 1440]}
+          sizes="(max-width: 1023px) 100vw, 840px"
+          class="absolute inset-0 h-full w-full object-cover object-center"
         />
       </div>
     </div>
