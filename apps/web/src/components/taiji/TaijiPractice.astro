@@ -13,7 +13,8 @@ const bgM = await getImage({ src: practiceBgMobile, width: 900, format: "webp" }
 ---
 
 <section
-  class="practice-band relative min-h-[825px] overflow-hidden mt-22 border-y border-border bg-cover bg-center max-lg:mt-16"
+  id="praktika"
+  class="practice-band relative min-h-[825px] scroll-mt-24 overflow-hidden mt-22 border-y border-border bg-cover bg-center max-lg:mt-16"
   style={`--bg-d:url('${bgD.src}');--bg-m:url('${bgM.src}')`}
 >
   {/* Мягкий светлый скрим под текстом — поднимает контраст ink над тёмными

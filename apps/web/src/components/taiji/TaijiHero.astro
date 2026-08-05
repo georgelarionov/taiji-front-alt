@@ -1,30 +1,43 @@
 ---
-// Интро страницы «Тайцзицюань» (фрейм Taiji / TaijiMobile). Центрированная
-// колонка: каллиграфия 太极拳 → заголовок + подзаголовок → описание → кнопка-
-// стрелка вниз (якорь к разделу «Истоки»). Каллиграфия — плоский brush-PNG,
-// отдаём обычным <img> (не <Image>), декоративная (alt="" aria-hidden).
+// Интро страницы «Тайцзицюань». Раскладка повторяет hero «Об Обществе»
+// (society/SocietyHero.astro): слева — каллиграфия 太极拳, заголовок с
+// подзаголовком, описание и навигация по разделам страницы; справа — тушевая
+// живопись. Мобайл: та же колонка, ссылки приглушены, картина на всю ширину.
+// Нижней границы у секции нет — линию рисует следующий блок (border-y у
+// TaijiHistory), иначе получилась бы двойная.
+import { Image } from "astro:assets";
+import heroImg from "../../assets/taiji/hero.webp";
 import caligraph from "../../assets/taiji/caligraph.png";
+
+const links = [
+  { label: "Истоки", href: "#istoki" },
+  { label: "Теория", href: "#teoriya" },
+  { label: "Персоналии", href: "#personalii" },
+  { label: "Практика", href: "#praktika" },
+];
 ---
 
-<section class="bg-surface">
+<section class="overflow-x-clip bg-white">
   <div class="container-block">
     <div
-      data-reveal
-      class="mx-auto flex max-w-[640px] flex-col items-center gap-18 py-18 text-center max-lg:gap-18 max-lg:py-16"
+      class="flex items-center justify-between gap-12 max-lg:flex-col max-lg:items-stretch max-lg:gap-8 max-lg:pt-8"
     >
-      <div class="flex flex-col items-center gap-4">
-        <img
-          src={caligraph.src}
-          width={caligraph.width}
-          height={caligraph.height}
-          alt=""
-          aria-hidden="true"
-          class="h-[38px] w-auto object-contain max-lg:h-[27px]"
-        />
-        <div class="flex flex-col items-center gap-6 max-lg:gap-4">
-          <div class="flex flex-col items-center gap-4 max-lg:gap-3">
+      <div
+        data-reveal
+        class="flex max-w-[560px] flex-col gap-[92px] max-lg:max-w-none max-lg:gap-10"
+      >
+        <div class="flex flex-col gap-6 max-lg:gap-4">
+          <img
+            src={caligraph.src}
+            width={caligraph.width}
+            height={caligraph.height}
+            alt=""
+            aria-hidden="true"
+            class="h-[38px] w-auto object-contain max-lg:h-[27px]"
+          />
+          <div class="flex flex-col gap-4 max-lg:gap-3">
             <h1
-              class="font-serif text-[48px] font-medium leading-[1.1] text-ink max-lg:text-[40px]"
+              class="font-serif text-[48px] font-semibold leading-[1.1] text-ink max-lg:text-[32px]"
             >
               Тайцзицюань
             </h1>
@@ -35,33 +48,35 @@ import caligraph from "../../assets/taiji/caligraph.png";
             </p>
           </div>
           <p
-            class="max-w-[560px] font-sans text-[18px] leading-relaxed text-ink max-lg:text-[15px]"
+            class="max-w-[520px] font-sans text-[18px] leading-relaxed text-ink max-lg:text-[15px]"
           >
             Традиционное китайское искусство движения, которое возникло как боевое
             искусство, а сегодня широко практикуется как мягкая оздоровительная и
             медитативная практика.
           </p>
         </div>
+        <nav class="flex flex-col gap-4" aria-label="Разделы страницы">
+          {
+            links.map((l) => (
+              <a
+                href={l.href}
+                class="link-underline w-fit font-display text-base font-semibold text-ink max-lg:opacity-50"
+              >
+                {l.label}
+              </a>
+            ))
+          }
+        </nav>
       </div>
 
-      <a
-        href="#istoki"
-        aria-label="Перейти к разделу «Истоки»"
-        class="grid h-12 w-12 place-items-center bg-accent text-white transition-colors hover:bg-accent/90 max-lg:h-10 max-lg:w-10"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          class="h-6 w-6 max-lg:h-5 max-lg:w-5"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M12 5v14M5 12l7 7 7-7"></path>
-        </svg>
-      </a>
+      <Image
+        src={heroImg}
+        data-reveal
+        alt="Тушевая живопись: фигура в халате, выполняющая форму тайцзицюань"
+        widths={[390, 720, 1440]}
+        sizes="(max-width: 1023px) 100vw, 720px"
+        class="h-auto w-[720px] shrink-0 object-contain max-lg:-mx-4 max-lg:w-[calc(100%+2rem)] max-lg:max-w-none"
+      />
     </div>
   </div>
 </section>

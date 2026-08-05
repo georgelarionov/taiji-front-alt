@@ -30,8 +30,11 @@ const schema = articleSchema({
   description={description}
   schema={schema}
 >
-  <Header variant="solid" activeNav="Тайцзицюань" />
-  <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Тайцзицюань" }]} />
+  <Header variant="solid" activeNav="Тайцзицюань" bg="white" />
+  <Breadcrumbs
+    items={[{ label: "Главная", href: "/" }, { label: "Тайцзицюань" }]}
+    bg="white"
+  />
   <TaijiHero />
   <TaijiHistory />
   <TaijiTheory />
