@@ -15,6 +15,7 @@ export type SocietySlide = {
   title: string;
   bio: string;
   quote: string;
+  quoteLabel?: string; // по умолчанию «Приветственная цитата:»
   photo: string; // оптимизированный src (getImage в Society.astro)
 };
 
@@ -84,10 +85,10 @@ export default function SocietySlider({ slides }: { slides: SocietySlide[] }) {
           </div>
         </div>
 
-        {/* Приветственная цитата */}
+        {/* Цитата персоны (лейбл переопределяется слайдом) */}
         <div className="flex flex-col gap-4 max-lg:gap-3">
           <p className="font-serif text-xl font-semibold text-ink/50 max-lg:text-lg">
-            Приветственная цитата:
+            {s.quoteLabel ?? "Приветственная цитата:"}
           </p>
           <blockquote className="border border-border py-6 pl-6 pr-9 font-sans text-base font-medium leading-[1.375] text-ink max-lg:p-5 max-lg:text-[14px]">
             {s.quote}
