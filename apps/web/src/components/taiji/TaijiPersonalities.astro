@@ -1,8 +1,9 @@
 ---
 // Раздел «Персоналии» (фрейм Taiji). Десктоп: слева текст + кнопка (кнопка прижата
-// книзу), справа портрет в surface-боксе. Мобайл: текст → портрет → кнопка
-// (левая колонка «растворяется» через max-lg:contents, порядок задаётся order-*).
-// Портрет — фото, отдаём через <Image> (адаптивный webp).
+// книзу), справа фотография. Мобайл: текст → фото → кнопка (левая колонка
+// «растворяется» через max-lg:contents, порядок задаётся order-*).
+// Фото горизонтальное — заполняет бокс целиком (object-cover), подложка
+// surface остаётся фолбэком на время загрузки. Отдаём через <Image> (адаптивный webp).
 import { Image } from "astro:assets";
 import portrait from "../../assets/taiji/personalities.webp";
 ---
@@ -39,16 +40,16 @@ import portrait from "../../assets/taiji/personalities.webp";
         </a>
       </div>
 
-      {/* Портрет в surface-боксе */}
+      {/* Фотография в surface-боксе */}
       <div
-        class="flex h-[420px] w-[630px] shrink-0 items-center justify-center bg-surface max-lg:order-2 max-lg:h-[270px] max-lg:w-full"
+        class="h-[420px] w-[630px] shrink-0 overflow-hidden bg-surface max-lg:order-2 max-lg:h-[270px] max-lg:w-full"
       >
         <Image
           src={portrait}
-          alt="Статуя Чэнь Вантина — основоположника стиля Чэнь тайцзицюань"
-          widths={[148, 231, 300, 462]}
-          sizes="(max-width: 1023px) 148px, 231px"
-          class="h-[372px] w-auto object-contain max-lg:h-[238px]"
+          alt="Памятник мастеру тайцзицюань перед традиционным китайским павильоном"
+          widths={[630, 1024, 1260]}
+          sizes="(max-width: 1023px) 100vw, 630px"
+          class="h-full w-full object-cover"
         />
       </div>
     </div>
