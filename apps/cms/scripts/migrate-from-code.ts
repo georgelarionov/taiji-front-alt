@@ -105,34 +105,62 @@ const data = await loadWebData()
 let uploaded = 0
 const mediaCache = new Map<string, number>()
 
-/** Загружает файл в media (или переиспользует уже загруженный с тем же именем). */
-async function mediaId(filePath: string, alt: string): Promise<number | undefined> {
-  if (!filePath) return undefined
-  if (mediaCache.has(filePath)) return mediaCache.get(filePath)
-
-  const filename = path.basename(filePath)
+/** Ищет уже загруженный media с таким именем И таким же размером файла. */
+async function findUploaded(filename: string, size: number): Promise<number | undefined> {
   const existing = await payload.find({
     collection: 'media',
     where: { filename: { equals: filename } },
     limit: 1,
     pagination: false,
   })
+  const doc = existing.docs[0]
+  return doc && doc.filesize === size ? (doc.id as number) : undefined
+}
 
-  if (existing.docs.length) {
-    const id = existing.docs[0].id as number
-    mediaCache.set(filePath, id)
-    return id
-  }
+/** Загружает файл в media (или переиспользует уже загруженный — тот же файл). */
+async function mediaId(filePath: string, alt: string): Promise<number | undefined> {
+  if (!filePath) return undefined
+  if (mediaCache.has(filePath)) return mediaCache.get(filePath)
 
   if (!fs.existsSync(filePath)) {
     console.warn(`  ! файла нет на диске: ${filePath}`)
     return undefined
   }
 
+  // Имена ассетов уникальны только внутри папки статьи — у многих это просто `1.jpg`.
+  // Совпадения имени мало: сверяем ещё и размер, иначе статья молча получит чужую
+  // фотографию (так `1.jpg`/`2.jpg` ноябрьских новостей схлопнулись с файлами
+  // первой конференции). Занято чужим файлом → грузим под именем с префиксом папки.
+  const size = fs.statSync(filePath).size
+  const filename = path.basename(filePath)
+  const scoped = `${path.basename(path.dirname(filePath))}-${filename}`
+
+  for (const name of [filename, scoped]) {
+    const id = await findUploaded(name, size)
+    if (id) {
+      mediaCache.set(filePath, id)
+      return id
+    }
+  }
+
+  const taken = Boolean((await payload.find({
+    collection: 'media',
+    where: { filename: { equals: filename } },
+    limit: 1,
+    pagination: false,
+  })).docs.length)
+
+  let source = filePath
+  if (taken) {
+    source = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'taiji-media-')), scoped)
+    fs.copyFileSync(filePath, source)
+    console.warn(`  ~ имя ${filename} занято другим файлом → загружаю как ${scoped}`)
+  }
+
   const created = await payload.create({
     collection: 'media',
     data: { alt: alt || filename },
-    filePath,
+    filePath: source,
   })
   uploaded += 1
   mediaCache.set(filePath, created.id as number)

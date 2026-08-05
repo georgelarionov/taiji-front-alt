@@ -58,6 +58,10 @@ let uploaded = 0
 async function mediaId(file: string, alt: string): Promise<number> {
   if (cache.has(file)) return cache.get(file)!
 
+  const filePath = path.join(PHOTOS_DIR, file)
+  if (!fs.existsSync(filePath)) throw new Error(`Нет файла: ${filePath}`)
+  const size = fs.statSync(filePath).size
+
   const existing = await payload.find({
     collection: 'media',
     where: { filename: { equals: file } },
@@ -65,12 +69,15 @@ async function mediaId(file: string, alt: string): Promise<number> {
     pagination: false,
   })
   if (existing.docs.length) {
+    // Совпадения имени мало — под ним может лежать чужой файл (в media уже есть
+    // обезличенные `1.jpg` и т.п.), и статья молча получит не ту фотографию.
+    if (existing.docs[0].filesize !== size) {
+      throw new Error(`Имя ${file} занято другим файлом (media #${existing.docs[0].id}) — переименуйте фото.`)
+    }
     cache.set(file, existing.docs[0].id as number)
     return existing.docs[0].id as number
   }
 
-  const filePath = path.join(PHOTOS_DIR, file)
-  if (!fs.existsSync(filePath)) throw new Error(`Нет файла: ${filePath}`)
   const created = await payload.create({ collection: 'media', data: { alt }, filePath })
   uploaded += 1
   cache.set(file, created.id as number)
