@@ -1,21 +1,21 @@
 ---
 // Раздел «Партнёры» (фрейм Society). Заголовок + сетка логотипов из CMS
-// (коллекция «Партнёры»). Десктоп: 4 в ряд (высота 204). Мобайл: сетка 2×2
-// (высота 120). Пока партнёров не завели — показываем плейсхолдеры.
+// (коллекция «Партнёры»). Плашка растянута на половину ряда — 2 в ряд и на
+// десктопе, и на мобайле; логотип внутри вписан в квадратный фрейм, поэтому
+// лого разных пропорций читаются одинаково. У партнёра с сайтом плашка —
+// внешняя ссылка (новая вкладка) со стрелкой ↗ в правом верхнем углу.
 import CmsPicture from "../CmsPicture.astro";
 import { getPartners } from "../../lib/cms/society";
+import { EXTERNAL_ARROW_PATH } from "../../lib/icons";
 
 const partners = await getPartners();
-const placeholders = partners.length === 0 ? Array.from({ length: 4 }) : [];
+const placeholders = partners.length === 0 ? Array.from({ length: 2 }) : [];
 ---
 
 <section id="partners" class="scroll-mt-24 bg-white">
   <div class="container-block flex flex-col gap-12 pb-22 max-lg:gap-8 max-lg:pb-12">
     <h2 class="text-h2 text-ink" data-reveal>Партнёры</h2>
-    <div
-      class="grid grid-cols-4 gap-6 max-lg:grid-cols-2 max-lg:gap-4"
-      data-reveal-stagger
-    >
+    <div class="grid grid-cols-2 gap-6 max-lg:gap-4" data-reveal-stagger>
       {
         partners.map((partner) => {
           const Box = partner.url ? "a" : "div";
@@ -25,19 +25,41 @@ const placeholders = partners.length === 0 ? Array.from({ length: 4 }) : [];
               href={partner.url}
               target={partner.url ? "_blank" : undefined}
               rel={partner.url ? "noopener noreferrer" : undefined}
-              class="flex h-[204px] items-center justify-center border border-border p-6 max-lg:h-[120px] max-lg:p-4"
+              class="group relative flex h-[240px] items-center justify-center border border-border p-6 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-ink/25 max-lg:h-[152px] max-lg:p-4"
             >
-              {partner.logo ? (
-                <CmsPicture
-                  image={partner.logo}
-                  alt={partner.name}
-                  widths={[200, 400]}
-                  sizes="200px"
-                  class="max-h-full w-auto object-contain"
-                />
-              ) : (
-                <span class="px-4 text-center font-display text-[15px] font-semibold text-ink/70">
-                  {partner.name}
+              {/* Квадратный фрейм: лого вписывается в него, не растягивая плашку */}
+              <span class="flex aspect-square h-full items-center justify-center">
+                {partner.logo ? (
+                  <CmsPicture
+                    image={partner.logo}
+                    alt={partner.name}
+                    widths={[200, 400]}
+                    sizes="(max-width: 1023px) 120px, 192px"
+                    class="max-h-full max-w-full object-contain"
+                  />
+                ) : (
+                  <span class="px-4 text-center font-display text-[15px] font-semibold text-ink/70">
+                    {partner.name}
+                  </span>
+                )}
+              </span>
+
+              {partner.url && (
+                <span
+                  aria-hidden="true"
+                  class="absolute right-4 top-4 text-ink/35 transition-[color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent max-lg:right-3 max-lg:top-3"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-6 w-6 max-lg:h-5 max-lg:w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d={EXTERNAL_ARROW_PATH} />
+                  </svg>
                 </span>
               )}
             </Box>
@@ -48,7 +70,7 @@ const placeholders = partners.length === 0 ? Array.from({ length: 4 }) : [];
         placeholders.map(() => (
           <div
             data-reveal-item
-            class="flex h-[204px] items-center justify-center border border-border max-lg:h-[120px]"
+            class="flex h-[240px] items-center justify-center border border-border max-lg:h-[152px]"
           >
             <span class="px-4 text-center font-display text-[15px] font-semibold text-ink/35">
               Скоро здесь будет логотип
