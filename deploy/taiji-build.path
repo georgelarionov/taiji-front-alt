@@ -1,0 +1,13 @@
+[Unit]
+Description=Запрос на публикацию из админки CMS
+
+# Кнопка «Опубликовать на сайте» пишет метку времени в этот файл
+# (apps/cms/src/lib/publish.ts, переменная REBUILD_TRIGGER_FILE).
+# systemd видит запись и запускает сборку — веб-процессу не нужны права
+# на systemctl и вообще на запуск чего-либо.
+[Path]
+PathModified=/var/lib/taiji/publish.request
+Unit=taiji-build.service
+
+[Install]
+WantedBy=multi-user.target

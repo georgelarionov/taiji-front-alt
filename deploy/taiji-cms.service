@@ -1,0 +1,25 @@
+[Unit]
+Description=Taiji CMS (Payload 3 / Next.js)
+Documentation=https://payloadcms.com/docs
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+[Service]
+Type=simple
+User=taiji
+Group=taiji
+WorkingDirectory=/opt/taiji/app/apps/cms
+EnvironmentFile=/etc/taiji/cms.env
+ExecStart=/opt/taiji/app/apps/cms/node_modules/.bin/next start --port 3000 --hostname 127.0.0.1
+Restart=on-failure
+RestartSec=5
+
+# Пишет только в свои каталоги: медиа-том, кеш сборки и файл-триггер публикации.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/taiji /opt/taiji/app/apps/cms/.next
+
+[Install]
+WantedBy=multi-user.target

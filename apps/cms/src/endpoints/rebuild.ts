@@ -1,8 +1,9 @@
 import type { Endpoint } from 'payload'
 
-import { triggerSiteRebuild } from '../lib/railway'
+import { triggerSiteRebuild } from '../lib/publish'
 
-// POST /api/rebuild-site — просит Railway пересобрать сайт.
+// POST /api/rebuild-site — ставит пересборку сайта в очередь.
+// Куда именно уходит запрос (свой сервер или Railway) — решает ../lib/publish.
 // Только для залогиненных редакторов: кнопка живёт в админке.
 export const rebuildEndpoint: Endpoint = {
   path: '/rebuild-site',

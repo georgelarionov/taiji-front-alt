@@ -1,0 +1,15 @@
+[Unit]
+Description=Сборка статического сайта из контента CMS
+After=taiji-cms.service
+Wants=taiji-cms.service
+
+[Service]
+Type=oneshot
+User=taiji
+Group=taiji
+WorkingDirectory=/opt/taiji/app
+EnvironmentFile=/etc/taiji/web.env
+ExecStart=/opt/taiji/app/deploy/build-site.sh
+# Полная сборка Astro с оптимизацией картинок на 2 vCPU идёт несколько минут.
+TimeoutStartSec=1800
+Nice=10

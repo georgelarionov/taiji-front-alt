@@ -11,10 +11,10 @@ const fontsDir = './src/assets/fonts';
 
 // https://astro.build/config
 export default defineConfig({
-  // Текущий прод-домен Railway (временный — заменим на постоянный/кастомный позже).
-  // Питает canonical / og:url / og:image / sitemap (через Astro.site). При смене
-  // домена обновить здесь И в public/robots.txt (Sitemap-директива).
-  site: 'https://taiji-front-production.up.railway.app',
+  // Постоянный прод-домен. Питает canonical / og:url / og:image / sitemap
+  // (через Astro.site). При смене домена обновить здесь И в public/robots.txt
+  // (Sitemap-директива).
+  site: 'https://taiji-society.ru',
 
   // Sitemap → dist/sitemap-index.xml (+ sitemap-0.xml). Исключаем служебную
   // 404-страницу (она noindex и не должна быть в карте сайта). Матч строго по концу
@@ -87,6 +87,8 @@ export default defineConfig({
   image: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'http', hostname: '127.0.0.1' },
+      { protocol: 'https', hostname: 'cms.taiji-society.ru' },
       { protocol: 'https', hostname: 'cms-production-4b9a.up.railway.app' },
     ],
   },
