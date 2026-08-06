@@ -88,7 +88,12 @@ export default defineConfig({
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'http', hostname: '127.0.0.1' },
-      { protocol: 'https', hostname: 'cms.taiji-society.ru' },
+      // Боевая CMS. Без протокола — чтобы совпадало и с http (сборка на самом
+      // сервере, до выпуска сертификата), и с https.
+      { hostname: 'cms.taiji-society.ru' },
+      // IP боевого сервера: на нём же собирается сайт, и пока DNS не переключён,
+      // Payload отдаёт медиа именно по этому адресу.
+      { protocol: 'http', hostname: '5.129.221.211' },
       { protocol: 'https', hostname: 'cms-production-4b9a.up.railway.app' },
     ],
   },
