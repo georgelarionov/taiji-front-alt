@@ -28,10 +28,12 @@ for host in taiji-society.ru cms.taiji-society.ru; do
 	fi
 done
 
+# CMS_URL в web.env НЕ трогаем: API удобнее читать напрямую по 127.0.0.1:3000,
+# минуя прокси и TLS. Публичный адрес нужен только в абсолютных URL медиа и
+# документов — их отдаёт сам Payload, из PAYLOAD_PUBLIC_SERVER_URL.
 echo "==> Боевые адреса в окружении"
 sed -i "s|^PAYLOAD_PUBLIC_SERVER_URL=.*|PAYLOAD_PUBLIC_SERVER_URL=$CMS|" /etc/taiji/cms.env
 sed -i "s|^PUBLIC_SITE_URL=.*|PUBLIC_SITE_URL=$SITE|" /etc/taiji/cms.env
-sed -i "s|^CMS_URL=.*|CMS_URL=$CMS|" /etc/taiji/web.env
 
 echo "==> Caddy на домены"
 install -m 0644 "$APP_DIR/deploy/Caddyfile" /etc/caddy/Caddyfile
