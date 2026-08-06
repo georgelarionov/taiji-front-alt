@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Выкатка новой версии кода: git pull → пересборка CMS → пересборка сайта.
 #
-#   sudo taiji-update            # ветка main
-#   sudo taiji-update <ветка>
+#   sudo taiji-update            # текущая ветка сервера
+#   sudo taiji-update <ветка>    # переключиться на другую
+#
+# По умолчанию берём именно ТЕКУЩУЮ ветку, а не main: иначе запуск без аргумента
+# молча откатил бы сервер на другую ветку.
 #
 # Контент при этом не трогается: он в базе и на диске, а не в репозитории.
 set -euo pipefail
@@ -10,7 +13,8 @@ set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "Нужен root: sudo taiji-update"; exit 1; }
 
 APP_DIR=/opt/taiji/app
-BRANCH=${1:-main}
+BRANCH=${1:-$(sudo -u taiji git -C "$APP_DIR" rev-parse --abbrev-ref HEAD)}
+echo "==> Ветка: $BRANCH"
 
 echo "==> git pull ($BRANCH)"
 sudo -u taiji git -C "$APP_DIR" fetch --prune origin

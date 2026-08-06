@@ -51,9 +51,12 @@ journalctl -u taiji-cms -f      # логи админки
 ## Как обновляется код
 
 ```sh
-sudo taiji-update            # ветка main
-sudo taiji-update <ветка>
+sudo taiji-update            # текущая ветка сервера
+sudo taiji-update <ветка>    # переключиться на другую
 ```
+
+Сейчас сервер сидит на ветке `deploy/self-hosted` — на ней приехали конфиги
+этого деплоя. После её слияния в `main` переключить сервер: `sudo taiji-update main`.
 
 Автодеплоя по пушу нет — выкатка ручная и осознанная.
 
