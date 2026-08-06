@@ -30,7 +30,7 @@ All run from the repo root (pnpm workspace; the web app's package name is `web`)
 - `pnpm --filter cms dev` — админка Payload на http://localhost:3000/admin
 - `pnpm --filter cms generate:types` / `generate:importmap` — после правок схемы/компонентов админки
 - `pnpm --filter cms migrate:content` — первичное наполнение базы из `apps/web/src/data/**`
-- Сборка сайта против прод-CMS: `CMS_URL=https://cms-production-4b9a.up.railway.app pnpm build`
+- Сборка сайта против прод-CMS: `CMS_URL=https://cms.taiji-society.ru pnpm build`
 
 Scoped operations on the web app:
 
@@ -54,12 +54,16 @@ Current state — **страницы собраны, контент переве
 Сайт остаётся статикой: данные читаются **на сборке** через REST, изменения выезжают
 следующей пересборкой.
 
-- **Админка:** `https://cms-production-4b9a.up.railway.app/admin`, интерфейс на русском
+- **Админка:** `https://cms.taiji-society.ru/admin`, интерфейс на русском
   (`i18n.fallbackLanguage: 'ru'`). Первый пользователь заводится там же при первом входе.
 - **Локально:** `pnpm --filter cms dev` (порт 3000). `apps/cms/.env` (не в репозитории) держит
-  `DATABASE_URL` (публичный адрес того же Postgres на Railway), `PAYLOAD_SECRET`,
-  `PAYLOAD_PUBLIC_SERVER_URL`. То есть локальная разработка и прод смотрят в ОДНУ базу —
-  контент, залитый с ноутбука, сразу виден в боевой админке.
+  `DATABASE_URL`, `PAYLOAD_SECRET`, `PAYLOAD_PUBLIC_SERVER_URL`. Боевой Postgres слушает
+  только localhost и закрыт файрволом, поэтому локальная разработка ходит в него **через
+  SSH-туннель**: `ssh -N -L 5433:127.0.0.1:5432 root@5.129.221.211`, а в `.env`
+  `DATABASE_URL=postgresql://taiji:<пароль>@127.0.0.1:5433/taiji` (пароль — в
+  `/etc/taiji/dbpass` на сервере). То есть ноутбук и прод смотрят в ОДНУ базу — контент,
+  залитый локально, сразу виден в боевой админке. **`PAYLOAD_SECRET` должен совпадать с
+  боевым** (`/etc/taiji/cms.env`): им подписаны сессии и зашифрованы поля в базе.
 - **Коллекции:** `news` (тело — конструктор блоков: абзац/подзаголовок/список/изображение/
   цитата/видео, черновики+версии), `events`, `videos` (медиа-архив), `research`, `team`,
   `partners`, `persons` + `taiji-sources` (связь), `media`, `documents` (PDF), `users`.
@@ -79,31 +83,20 @@ Current state — **страницы собраны, контент переве
   (esbuild подменяет импорты картинок на пути к файлам) и заливает всё в Payload.
   Идемпотентно по слагам. **`src/data/**` сайтом больше НЕ читается** — это исходник для
   сидинга; правки контента делаются в админке.
-- **Кнопка «Опубликовать на сайте»** в админке (`components/RebuildButton.tsx` →
-  `POST /api/rebuild-site` → `endpoints/rebuild.ts` → `lib/railway.ts`) запускает пересборку
-  сервиса `web`. Нужны переменные сервиса `cms`: `RAILWAY_API_TOKEN` (создаётся в дашборде
-  Railway), `WEB_SERVICE_ID`, `WEB_ENVIRONMENT_ID` (заданы), плюс `RAILWAY_PROJECT_ID` —
-  её Railway подставляет сам.
-- **ВАЖНО: голый redeploy при неизменном репозитории сайт НЕ пересобирает.** Railpack
-  кеширует слои по содержимому исходников: если с прошлой сборки в git ничего не менялось,
-  слой `pnpm --filter web build` берётся из кеша (билд отрабатывает за ~4 секунды), в образ
-  уезжает старый `dist`, и свежий контент из CMS на сайт не попадает. Поэтому кнопка
-  публикации шлёт **не `serviceInstanceRedeploy`, а `variableUpsert`** — пишет сервису `web`
-  переменную **`CONTENT_REVISION`** с текущим временем: переменные входят в хеш сборки, кеш
-  ломается, и Railway сам ставит деплой в очередь. `serviceInstanceRedeploy` остался
-  фолбэком на случай отказа. Вручную то же самое: `railway variables --service web
-  --set CONTENT_REVISION=<время>` (просто `railway redeploy` — бесполезен).
-- **Пуш в `main` пересобирает `web` только при изменениях внутри `apps/web/**`** — таков
-  watch-паттерн сервиса. Коммиты, трогающие лишь `apps/cms/**` или доки, дают деплой со
-  статусом **SKIPPED** (без сборки).
-- Проверять выкат нужно по **содержимому** страницы, а не по коду ответа: у сервиса включён
-  SPA-фолбэк Caddy, поэтому **несуществующий URL отдаёт 200 с главной страницей**.
+- **Кнопка «Опубликовать на сайте»** в админке: `components/RebuildButton.tsx` →
+  `POST /api/rebuild-site` → `endpoints/rebuild.ts` → **`lib/publish.ts`**. На своём сервере
+  она пишет метку времени в файл `REBUILD_TRIGGER_FILE`, а systemd-юнит `taiji-build.path`
+  запускает сборку (подробности — в разделе Deploy). Старый Railway-путь остался в
+  `lib/railway.ts` как фолбэк: он включается, только если `REBUILD_TRIGGER_FILE` не задана.
+- Выкат проверяется по коду ответа: у Caddy настроена честная 404 (`handle_errors` →
+  `404.html`), SPA-фолбэка главной больше нет.
 - **Импорт новостей пачкой** — `apps/cms/scripts/import-archive.ts`
   (`ARCHIVE_JSON=<файл> ARCHIVE_PHOTOS=<папка> node scripts/import-archive.ts` через
-  `tsx/esm` из `apps/cms`). Идемпотентен по слагу; фото льёт в `media`. **Файлы после
-  этого нужно вручную положить на том Railway** (`railway volume files -v cms-volume
-  upload <абсолютный путь> /media/<имя> --overwrite`) — локальный запуск пишет в
-  `apps/cms/media`, а прод отдаёт файлы с тома, иначе сборка сайта упадёт на 500.
+  `tsx/esm` из `apps/cms`). Идемпотентен по слагу; фото льёт в `media`. Скрипт пишет
+  файлы в тот каталог, где запущен (локально — `apps/cms/media`), а прод отдаёт их из
+  `/var/lib/taiji/media`, поэтому **после локального импорта фото нужно залить на сервер**
+  (`rsync -av apps/cms/media/ root@5.129.221.211:/var/lib/taiji/media/`) — иначе сборка
+  сайта упадёт на 500 при скачивании картинки. Проще запускать импорт прямо на сервере.
 
 ### Гочи Payload, на которые уже наступили
 
@@ -126,18 +119,23 @@ Current state — **страницы собраны, контент переве
   `railway volume files -v cms-volume upload <абсолютный путь> / --overwrite` (корень тома
   = `/data`; заливка в `/media` даёт вложенность `media/media`).
 
-## Deploy (Railway · Railpack)
+## Deploy (свой сервер · Ubuntu + Caddy + systemd)
 
-Production is on **Railway** (проект `unique-transformation`), built by **Railpack**. Три сервиса: **`web`** (статика Astro → Caddy), **`cms`** (Payload/Next, домен `cms-production-4b9a.up.railway.app`, том `/data` под медиа) и **`Postgres`**. The site is **static** (Astro SSG → `apps/web/dist`), served by Caddy — no Node server in prod.
+Прод — **VPS `5.129.221.211`** (Ubuntu 26.04, 2 vCPU / 4 ГБ). Один сервер держит всё: статику Astro, админку Payload и Postgres. Полный свод — **`deploy/README.md`**; конфиги и скрипты лежат в **`deploy/`** и версионируются вместе с кодом. Здесь — то, что нужно помнить при работе с репозиторием:
 
-- **Сервису `web` нужна переменная `CMS_URL`** (уже задана) — иначе сборка пойдёт в `localhost:3000` и упадёт.
-- **Сервис `cms` деплоится из `apps/cms`** (`railway up` из этой папки), настройки сборки — в `apps/cms/railway.json`. К GitHub он пока НЕ подключён: автодеплой по пушу работает только у `web`.
+- **Домены:** сайт `https://taiji-society.ru` (+ `www` → редирект), админка `https://cms.taiji-society.ru`. Всё это питает `site` в `astro.config.mjs` и `Sitemap` в `public/robots.txt` — **менять оба вместе**. TLS выпускает и продлевает сам Caddy.
+- **Раскладка:** репозиторий в `/opt/taiji/app` (пользователь `taiji`), собранная статика в `/var/www/taiji`, загрузки Payload в `/var/lib/taiji/{media,documents}`, секреты в `/etc/taiji/{cms,web}.env` (в git их нет).
+- **Сервисы:** `taiji-cms.service` (Next на `127.0.0.1:3000`, наружу только через Caddy), `taiji-build.service` (oneshot — пересборка сайта), `taiji-build.path` (следит за файлом-триггером), `taiji-backup.timer` (ежедневный дамп базы + зеркало загрузок в `/var/backups/taiji`), `caddy`, `postgresql`.
+- **Кнопка «Опубликовать на сайте» больше не ходит в Railway API.** `apps/cms/src/lib/publish.ts` выбирает способ по переменной `REBUILD_TRIGGER_FILE`: задана (свой сервер) → пишет метку времени в `/var/lib/taiji/publish.request`, а `taiji-build.path` видит запись и запускает сборку; не задана → прежний Railway-путь из `lib/railway.ts`. Смысл в правах: веб-процесс умеет только писать в один файл, `systemctl` ему не нужен.
+- **Команды на сервере:** `taiji-publish` (пересобрать сайт), `sudo taiji-update [ветка]` (git pull → пересборка CMS → пересборка сайта), `sudo taiji-golive` (переключение с временного IP на боевые домены). Автодеплоя по пушу нет — выкатка ручная.
+- **Сборка сайта раскладывается в `/var/www` только после успеха** — упавший билд не сносит живой сайт. Идёт ~1 минуту; логи `journalctl -u taiji-build -f`.
+- **`CMS_URL` для сборки — `http://127.0.0.1:3000`** (API читается напрямую, минуя прокси), а абсолютные URL медиа приходят из `PAYLOAD_PUBLIC_SERVER_URL`. Поэтому в `astro.config.mjs` → `image.remotePatterns` разрешены и `127.0.0.1`, и `cms.taiji-society.ru` (без протокола — совпадает и с http, и с https), и IP сервера.
+- **404 отдаётся честным кодом 404** (Caddy `handle_errors` → `404.html`), а не SPA-фолбэком главной, как было на Railway. Проверять выкат можно по коду ответа.
+- OG/Twitter image по умолчанию — брендированная заглушка `public/og-default.png` (1200×630, сгенерирована через `sharp`); страницы переопределяют пропом `ogImage` у `BaseLayout`.
 
-- **REQUIRED service env var: `RAILPACK_SPA_OUTPUT_DIR=apps/web/dist`.** Without it the build fails with *“No start command detected”* (Railpack defaults to expecting a server). This var triggers the Railpack `node`-provider SPA mode → Caddy serves the dir, no start command.
-- **The service Start Command MUST be empty.** SPA mode = Caddy serves the static dir with **no start command**. If a custom Start Command is set (e.g. `pnpm --filter web dev`), it overrides Caddy: without the SPA var it runs the dev server on `localhost:4321` (Railway edge can’t reach it → *“Application failed to respond”*); with the SPA var the runtime is the Caddy image **without pnpm** → crash loop `pnpm: command not found`. Real cause of the 2026-06-29 outage on the **new** project `unique-transformation` (service `web`, domain `web-production-f86bab.up.railway.app`): missing SPA var **+** a `pnpm --filter web dev` Start Command. Fix on any fresh Railway project: set the SPA var **and** clear the Start Command (keep Build Command `pnpm --filter web build`).
-- **It is NOT committable.** Railpack reads it from the real service environment at *plan/detect* time; `railpack.json` `deploy.variables` is **not** read then. And monorepo auto-detect doesn’t fire — Railpack checks only the **root** `package.json` for an `astro build` script + a root `astro.config` (we have neither; root build is `pnpm --filter web build`). So set it as a **Railway service variable** (dashboard, or `railway link` + `railway variables --set …`).
-- **Keep build context at the repo root** (do *not* set a Service Root Directory) — that’s why the path is `apps/web/dist`, not `dist` (the root build script filters to `web`). Node 22 (`.nvmrc`) + pnpm (`packageManager`) auto-detected; build (`pnpm install` → `pnpm --filter web build`) runs before serving.
-- **Prod domain (SEO):** `site` in `astro.config.mjs` (+ `public/robots.txt` Sitemap) is set to the **temporary Railway domain** `https://taiji-front-production.up.railway.app` — canonical/OG/sitemap resolve from it. Update **both** when a permanent/custom domain is assigned. OG/Twitter image defaults to the branded placeholder `public/og-default.png` (1200×630, generated via `sharp`); pages can override via the `ogImage` BaseLayout prop.
+### Railway (предыдущий деплой — архив)
+
+Проект `unique-transformation`: сервисы `web` (статика → Caddy), `cms` (`cms-production-4b9a.up.railway.app`, том `/data`) и `Postgres`. С него сняты дамп базы и все загрузки; сайт оттуда больше ничего не читает. Что помнить, если придётся туда вернуться: сервису `web` нужны `CMS_URL` и `RAILPACK_SPA_OUTPUT_DIR=apps/web/dist` (без второй — падение «No start command detected»; переменная НЕ коммитится, Railpack читает её из окружения сервиса на этапе detect), Start Command должен быть **пустым** (иначе он перебивает Caddy — причина простоя 2026-06-29), контекст сборки — корень монорепо, а голый `redeploy` при неизменном репозитории берёт `dist` из кеша и сайт не обновляет (отсюда трюк с `CONTENT_REVISION`, см. `apps/cms/src/lib/railway.ts`).
 
 ### apps/web key patterns
 
@@ -247,8 +245,8 @@ A foundation pass (audit fixes + globalization + design-system + a11y/SEO) is **
 - **Loader:** re-enabled but in **DEBUG “show on every load”** mode — the per-session `sessionStorage('taiji:loaded')` check is **commented out** in BaseLayout's inline `<head>` script; un-comment that one line to restore once-per-session. FOUC backstop: `[data-loader]` has a solid `bg-[#dddbda]` (base tone of the frosted texture) + its bg `<Image>` is `loading="eager"` `fetchpriority="high"`, so the overlay is opaque from the first paint. **`smooth.ts` defers its own init** (Lenis + ScrollTrigger) until `taiji:loader-done` while `html.loading` is set, so the scroll runtime doesn't fight the loader animation for the main thread.
 
 **Open / deferred (don't forget):**
-- **Domain is the temporary Railway one** — `astro.config.mjs` `site` and `public/robots.txt` use `https://taiji-front-production.up.railway.app` (set 2026-06-09, replacing the `.example` placeholder). Swap **both** for the permanent/custom domain when assigned (canonical/OG/sitemap all depend on it).
-- **`robots.txt` is TEMPORARILY a full `Disallow: /`** (set 2026-06-11) — the temporary Railway domain is closed to all crawlers so it doesn't get indexed/cited before the real launch. The file holds a ready-to-uncomment **permanent** block (`Allow: /` + explicit AI-bot allows for AEO + `Sitemap:`). On the domain swap: flip to that block (it's the same "update both" as the domain bullet). Note: `Disallow` blocks crawl, not indexing-by-link — fine for an unlinked temp domain; if a stray index appears, add a site-wide `noindex` (BaseLayout already has a `noindex` prop) until the flip.
+- **Домен постоянный — `https://taiji-society.ru`** (задан 2026-08-06 в `astro.config.mjs` `site` и в `public/robots.txt`). Оба места меняются вместе: от них зависят canonical/OG/sitemap.
+- **`robots.txt` открыт** (2026-08-06): `Allow: /` + явные allow AI-краулерам (AEO-цель проекта) + `Sitemap:` на постоянном домене. Временный `Disallow: /`, закрывавший Railway-домен, снят.
 - **Structured data (JSON-LD) is wired site-wide** — `src/lib/seo.ts` builds the `@graph` (site-wide `Organization` + `WebSite`, parsed via `siteGraph()`), plus per-page node builders (`webPageSchema`/`aboutPageSchema`/`contactPageSchema`/`collectionPageSchema`/`personCollectionSchema`/`articleSchema`, and `ruDateToISO` for news `datePublished`). `BaseLayout` accepts a **`schema` prop** (object|array) and emits one `<script type="application/ld+json">` (site graph + page nodes); `Breadcrumbs.astro` emits its own `BreadcrumbList` from its `items`; both render via `src/components/JsonLd.astro`. **New pages:** pass a `schema={…}` built from a `lib/seo` helper (NewsArticle/Article for content, CollectionPage for lists, AboutPage/ContactPage/WebPage otherwise) — `@id` cross-refs to `#organization`/`#website` link the nodes into one graph.
 - Non-hero sliders kept `client:load`; moving them to `client:idle` was deferred pending a visual flicker check (only `AboutInfo` is `client:idle`).
 

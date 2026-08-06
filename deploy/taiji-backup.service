@@ -1,0 +1,7 @@
+[Unit]
+Description=Бэкап контента CMS (база + загруженные файлы)
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/taiji/app/deploy/backup.sh

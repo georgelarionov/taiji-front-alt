@@ -1,0 +1,11 @@
+[Unit]
+Description=Ежедневный бэкап контента CMS
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30m
+# Пропущенный запуск (сервер был выключен) отрабатывает при старте.
+Persistent=true
+
+[Install]
+WantedBy=timers.target
