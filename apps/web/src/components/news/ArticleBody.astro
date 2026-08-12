@@ -7,7 +7,9 @@
 //   • image      → <figure> с оптимизированным <Image> (w-full) + подпись (caption);
 //   • quote      → font-serif, border-l accent;
 //   • video      → встроенный <iframe> 16:9 (pointer-events:auto — обходит глобальный
-//                  .lenis-smooth iframe{pointer-events:none}, иначе плеер не кликается).
+//                  .lenis-smooth iframe{pointer-events:none}, иначе плеер не кликается);
+//   • html       → произвольная разметка редактора (set:html) в .article-html —
+//                  типографику чужих тегов возвращает <style> внизу файла.
 // Заголовки внутри тела — <h2> (единственный <h1> — заголовок статьи в ArticleIntro).
 import CmsPicture from "../CmsPicture.astro";
 import type { Block } from "../../lib/cms/news";
@@ -84,7 +86,126 @@ const { body } = Astro.props;
           </div>
         );
       }
+      if (block.type === "html") {
+        return <div class="article-html" set:html={block.html} />;
+      }
       return null;
     })
   }
 </div>
+
+<style>
+  /* Блок «HTML-код» из админки. Tailwind preflight обнуляет заголовки, списки и
+     таблицы, поэтому чужой разметке возвращаем базовую типографику статьи — иначе
+     вставка выглядит голым браузерным дефолтом. overflow-x на контейнере страхует
+     от широких таблиц/эмбедов (глобальная гоча: горизонтальный скролл страницы). */
+  .article-html {
+    max-width: 100%;
+    overflow-x: auto;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.625;
+    color: color-mix(in srgb, var(--color-ink) 80%, transparent);
+    overflow-wrap: break-word;
+  }
+  @media (max-width: 1023px) {
+    .article-html {
+      font-size: 15px;
+    }
+  }
+  .article-html > :global(* + *) {
+    margin-top: 1rem;
+  }
+  .article-html :global(h2),
+  .article-html :global(h3),
+  .article-html :global(h4) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  .article-html :global(h2) {
+    font-size: 32px;
+  }
+  .article-html :global(h3) {
+    font-size: 22px;
+  }
+  .article-html :global(h4) {
+    font-size: 18px;
+  }
+  @media (max-width: 1023px) {
+    .article-html :global(h2) {
+      font-size: 26px;
+    }
+    .article-html :global(h3) {
+      font-size: 20px;
+    }
+  }
+  .article-html :global(strong),
+  .article-html :global(b) {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .article-html :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .article-html :global(ul),
+  .article-html :global(ol) {
+    padding-left: 1.25rem;
+  }
+  .article-html :global(ul) {
+    list-style: disc;
+  }
+  .article-html :global(ol) {
+    list-style: decimal;
+  }
+  .article-html :global(li + li) {
+    margin-top: 0.5rem;
+  }
+  .article-html :global(blockquote) {
+    border-left: 2px solid var(--color-accent);
+    padding-left: 1.5rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.375;
+    color: var(--color-ink);
+  }
+  .article-html :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+  /* Эмбеды: снимаем глобальный .lenis-smooth iframe{pointer-events:none}, иначе
+     вставленный плеер/карта не кликаются. */
+  .article-html :global(iframe),
+  .article-html :global(video) {
+    max-width: 100%;
+    pointer-events: auto;
+  }
+  .article-html :global(iframe) {
+    border: 0;
+  }
+  .article-html :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .article-html :global(th),
+  .article-html :global(td) {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .article-html :global(th) {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .article-html :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+</style>

@@ -19,6 +19,8 @@ export type Block =
   | { type: 'image'; src: CmsImage; alt: string; caption?: string }
   | { type: 'quote'; text: string }
   | { type: 'video'; embed: string; title?: string }
+  // Произвольная разметка из админки — выводится через set:html как есть.
+  | { type: 'html'; html: string }
 
 export interface NewsArticle {
   slug: string
@@ -63,6 +65,12 @@ function toBlocks(raw: any[]): Block[] {
         break
       case 'video':
         blocks.push({ type: 'video', embed: block.embed, title: block.title || undefined })
+        break
+      case 'html':
+        // Пустую вставку не выводим — иначе в статье остаётся лишний отступ.
+        if (typeof block.html === 'string' && block.html.trim()) {
+          blocks.push({ type: 'html', html: block.html })
+        }
         break
     }
   }

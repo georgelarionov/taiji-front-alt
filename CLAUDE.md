@@ -65,8 +65,20 @@ Current state — **страницы собраны, контент переве
   залитый локально, сразу виден в боевой админке. **`PAYLOAD_SECRET` должен совпадать с
   боевым** (`/etc/taiji/cms.env`): им подписаны сессии и зашифрованы поля в базе.
 - **Коллекции:** `news` (тело — конструктор блоков: абзац/подзаголовок/список/изображение/
-  цитата/видео, черновики+версии), `events`, `videos` (медиа-архив), `research`, `team`,
-  `partners`, `persons` + `taiji-sources` (связь), `media`, `documents` (PDF), `users`.
+  цитата/видео/**HTML-код**, черновики+версии), `events`, `videos` (медиа-архив), `research`,
+  `team`, `partners`, `persons` + `taiji-sources` (связь), `media`, `documents` (PDF), `users`.
+- **Блок «HTML-код»** (`News.ts` → `Html`, поле `code` с подсветкой html) выводится
+  `ArticleBody.astro` через `set:html` в `.article-html` **как есть** — санитайзинга нет
+  (источник доверенный: закрытая админка, сайт статический). Tailwind preflight обнуляет
+  чужие теги, поэтому базовую типографику вставки (заголовки/списки/таблицы/ссылки/эмбеды)
+  возвращает `<style>` в самом `ArticleBody.astro`; там же `pointer-events:auto` для
+  `iframe`/`video` (глобальное `.lenis-smooth iframe{pointer-events:none}`) и `overflow-x`
+  на контейнере — страховка от широких вставок.
+- **Новый блок = новая таблица в Postgres.** Схема обновляется только `push`-ем в dev
+  (`NODE_ENV=production` его отключает, миграций в проекте нет): поднять SSH-туннель к
+  боевой базе и запустить `pnpm --filter cms dev`, дёрнуть `/api/access` — Payload создаст
+  таблицы (у новости их две: `news_blocks_<slug>` и `_news_v_blocks_<slug>` для черновиков).
+  Без этого шага админка упадёт при сохранении блока, а `taiji-update` схему не трогает.
 - **Глобалы:** `home`, `about-block`, `society-page`, `contacts-page`, `navigation`,
   `site-settings` (телефон, почта, адрес, строка академической поддержки, соцсети, карта).
 - **Слой на сайте:** `apps/web/src/lib/cms/*` — тонкие мапперы, возвращающие ТЕ ЖЕ типы, что

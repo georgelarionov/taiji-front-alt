@@ -3,8 +3,8 @@ import type { Block, CollectionConfig } from 'payload'
 import { slugField } from '../fields/slug'
 
 // Блоки тела статьи повторяют объединение Block во фронтенде (apps/web) один в один:
-// p / h2 / list / image / quote / video. Благодаря этому ArticleBody.astro остаётся
-// без изменений — маппер лишь переименовывает поля.
+// p / h2 / list / image / quote / video / html. Благодаря этому ArticleBody.astro
+// остаётся без изменений — маппер лишь переименовывает поля.
 
 const Paragraph: Block = {
   slug: 'paragraph',
@@ -74,6 +74,26 @@ const Video: Block = {
       admin: { description: 'Вида https://rutube.ru/play/embed/<код>' },
     },
     { name: 'title', type: 'text', label: 'Название ролика' },
+  ],
+}
+
+const Html: Block = {
+  slug: 'html',
+  labels: { singular: 'HTML-код', plural: 'HTML-код' },
+  fields: [
+    {
+      name: 'html',
+      type: 'code',
+      label: 'Разметка',
+      required: true,
+      admin: {
+        language: 'html',
+        description:
+          'Вставляется в статью как есть — виджеты, таблицы, карты, iframe. Код никак не проверяется: ' +
+          'ошибка в разметке может поехать по вёрстке страницы. Вставки со <script> оживают только после ' +
+          'полной перезагрузки страницы.',
+      },
+    },
   ],
 }
 
@@ -159,7 +179,7 @@ export const News: CollectionConfig = {
       type: 'blocks',
       label: 'Тело статьи',
       labels: { singular: 'Блок', plural: 'Блоки' },
-      blocks: [Paragraph, Heading, List, ImageBlock, Quote, Video],
+      blocks: [Paragraph, Heading, List, ImageBlock, Quote, Video, Html],
     },
     {
       name: 'author',

@@ -230,6 +230,15 @@ export interface News {
             blockName?: string | null;
             blockType: 'video';
           }
+        | {
+            /**
+             * Вставляется в статью как есть — виджеты, таблицы, карты, iframe. Код никак не проверяется: ошибка в разметке может поехать по вёрстке страницы. Вставки со <script> оживают только после полной перезагрузки страницы.
+             */
+            html: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'html';
+          }
       )[]
     | null;
   author?: {
@@ -759,6 +768,13 @@ export interface NewsSelect<T extends boolean = true> {
           | {
               embed?: T;
               title?: T;
+              id?: T;
+              blockName?: T;
+            };
+        html?:
+          | T
+          | {
+              html?: T;
               id?: T;
               blockName?: T;
             };
