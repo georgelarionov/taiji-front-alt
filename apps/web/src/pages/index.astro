@@ -8,20 +8,28 @@ import News from "../components/News.astro";
 import Society from "../components/Society.astro";
 import Contacts from "../components/Contacts.astro";
 import Footer from "../components/Footer.astro";
-import { webPageSchema, SITE_NAME, SITE_DESCRIPTION } from "../lib/seo";
+import {
+  webPageSchema,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  SITE_OG_DESCRIPTION,
+} from "../lib/seo";
 
 const schema = webPageSchema({
   site: Astro.site,
   path: Astro.url.pathname,
   name: SITE_NAME,
   description: SITE_DESCRIPTION,
-  image: "/og-default.png",
+  image: "/og-main.png",
 });
 ---
 
+{/* description — длинное, для поиска; ogDescription — короткое, для карточки
+    при шеринге (в превью мессенджеров длинное обрезается на полуслове). */}
 <BaseLayout
   title="Общество изучения традиционного тайцзицюань"
   description={SITE_DESCRIPTION}
+  ogDescription={SITE_OG_DESCRIPTION}
   schema={schema}
 >
   {/* Главная — собирается поблочно. 1-block — новый вводный экран HomeIntro

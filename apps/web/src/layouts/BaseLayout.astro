@@ -11,6 +11,9 @@ import { siteGraph, graph, SITE_NAME, SITE_DESCRIPTION } from "../lib/seo";
 interface Props {
   title?: string;
   description?: string;
+  // Отдельный текст для превью в соцсетях. Нужен там, где SEO-описание длиннее,
+  // чем влезает в карточку мессенджера (главная). Не задан → берётся description.
+  ogDescription?: string;
   ogImage?: string;
   noindex?: boolean;
   // Per-page узел(ы) structured data (билдеры из lib/seo: article/collectionPage/…).
@@ -21,6 +24,7 @@ interface Props {
 const {
   title = SITE_NAME,
   description = SITE_DESCRIPTION,
+  ogDescription,
   ogImage,
   noindex,
   schema,
@@ -30,9 +34,10 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 // OG/Twitter-картинка: пер-страничный проп ogImage или брендовый дефолт
-// (public/og-default.png, 1200×630). Всегда абсолютный URL на домене из site —
-// иначе превью при шеринге (VK/Telegram + своя ShareControls) уходят без картинки.
-const ogImageURL = new URL(ogImage ?? "/og-default.png", Astro.site);
+// (public/og-main.png, 1200×630 — фирменный лого-локап). Всегда абсолютный URL на
+// домене из site — иначе превью при шеринге (VK/Telegram + своя ShareControls)
+// уходят без картинки.
+const ogImageURL = new URL(ogImage ?? "/og-main.png", Astro.site);
 
 // JSON-LD граф: site-wide Organization + WebSite, плюс per-page узлы (если переданы).
 // Один <script> на @graph; BreadcrumbList идёт отдельным скриптом из Breadcrumbs.
@@ -62,7 +67,7 @@ const jsonLdGraph = graph([...siteGraph(Astro.site), ...pageNodes]);
     <meta property="og:site_name" content="Общество изучения традиционного тайцзицюань" />
     <meta property="og:locale" content="ru_RU" />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={ogDescription ?? description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={ogImageURL} />
     {/* Twitter card. */}

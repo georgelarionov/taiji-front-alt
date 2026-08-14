@@ -16,6 +16,11 @@
 export const SITE_NAME = "Общество изучения традиционного тайцзицюань";
 export const SITE_DESCRIPTION =
   "Информационный портал Общества изучения традиционного тайцзицюань: исследования, сохранение и развитие традиции в России.";
+// Короткий вариант для карточки при шеринге (og:description главной): в превью
+// VK/Telegram помещается 2–3 строки, длинное SEO-описание там обрезается.
+// Текст — подпись карточки «Общество» с первого экрана главной.
+export const SITE_OG_DESCRIPTION =
+  "Исследование, сохранение и развитие традиционного тайцзицюань в России";
 
 const SCHEMA_CONTEXT = "https://schema.org";
 const LANG = "ru-RU";
@@ -58,7 +63,7 @@ export function siteGraph(site: URL | undefined): object[] {
       name: SITE_NAME,
       url: home,
       logo: new URL("/web-app-manifest-512x512.png", site).href,
-      image: new URL("/og-default.png", site).href,
+      image: new URL("/og-main.png", site).href,
       email: ORG.email,
       telephone: ORG.phone,
       address: {
