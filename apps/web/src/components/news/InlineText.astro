@@ -1,0 +1,28 @@
+---
+// Текст абзаца/пункта/подписи со ссылками. Разметка ссылок в CMS — markdown
+// [подпись](адрес); голые https-адреса тоже становятся кликабельными (см.
+// lib/inline-links). Рендерим узлами, а не set:html — текст остаётся экранированным.
+import { parseInlineLinks, isExternal } from "../../lib/inline-links";
+
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const nodes = parseInlineLinks(text);
+---
+
+{
+  nodes.map((node) =>
+    node.type === "text" ? (
+      node.value
+    ) : (
+      <a
+        href={node.href}
+        class="text-accent underline decoration-accent/40 underline-offset-[3px] transition-colors hover:decoration-accent"
+        {...(isExternal(node.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
+        {node.text}
+      </a>
+    ),
+  )
+}

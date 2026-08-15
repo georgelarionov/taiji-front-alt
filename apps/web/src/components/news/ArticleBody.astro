@@ -11,7 +11,11 @@
 //   • html       → произвольная разметка редактора (set:html) в .article-html —
 //                  типографику чужих тегов возвращает <style> внизу файла.
 // Заголовки внутри тела — <h2> (единственный <h1> — заголовок статьи в ArticleIntro).
+//
+// Ссылки внутри текста абзацев/пунктов/цитат/подписей задаются в CMS markdown-разметкой
+// [подпись](адрес) и рендерятся через <InlineText> (см. lib/inline-links).
 import CmsPicture from "../CmsPicture.astro";
+import InlineText from "./InlineText.astro";
 import type { Block } from "../../lib/cms/news";
 
 interface Props {
@@ -26,7 +30,7 @@ const { body } = Astro.props;
       if (block.type === "p") {
         return (
           <p class={block.lead ? "text-body font-medium" : "text-body text-ink/80"}>
-            {block.text}
+            <InlineText text={block.text} />
           </p>
         );
       }
@@ -42,7 +46,9 @@ const { body } = Astro.props;
                   class="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
                   aria-hidden="true"
                 />
-                <span>{item}</span>
+                <span>
+                  <InlineText text={item} />
+                </span>
               </li>
             ))}
           </ul>
@@ -59,7 +65,9 @@ const { body } = Astro.props;
               class="h-auto w-full bg-field"
             />
             {block.caption && (
-              <figcaption class="text-caption text-ink/55">{block.caption}</figcaption>
+              <figcaption class="text-caption text-ink/55">
+                <InlineText text={block.caption} />
+              </figcaption>
             )}
           </figure>
         );
@@ -67,7 +75,7 @@ const { body } = Astro.props;
       if (block.type === "quote") {
         return (
           <blockquote class="my-2 border-l-2 border-accent pl-6 font-serif text-2xl font-medium italic leading-snug text-ink max-lg:pl-4 max-lg:text-[22px]">
-            {block.text}
+            <InlineText text={block.text} />
           </blockquote>
         );
       }
