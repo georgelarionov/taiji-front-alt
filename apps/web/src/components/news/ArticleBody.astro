@@ -12,11 +12,11 @@
 //                  типографику чужих тегов возвращает <style> внизу файла.
 // Заголовки внутри тела — <h2> (единственный <h1> — заголовок статьи в ArticleIntro).
 //
-// Оформление внутри текста абзацев/пунктов/цитат/подписей (**жирный**, *курсив*,
-// ~~зачёркнутый~~, [подпись](адрес), переносы строк) задаётся в CMS markdown-разметкой
-// и рендерится через <InlineText> (см. lib/inline-markup).
+// Тексты абзацев/пунктов/цитат набираются в визуальном редакторе CMS (жирный, курсив,
+// зачёркнутый, ссылки, переносы) и приходят из маппера готовым экранированным HTML
+// (lib/cms/rich-text) — выводятся через set:html. Абзац-блок может содержать несколько
+// абзацев (Enter в редакторе) — каждый становится своим <p>.
 import CmsPicture from "../CmsPicture.astro";
-import InlineText from "./InlineText.astro";
 import type { Block } from "../../lib/cms/news";
 
 interface Props {
@@ -29,11 +29,9 @@ const { body } = Astro.props;
   {
     body.map((block) => {
       if (block.type === "p") {
-        return (
-          <p class={block.lead ? "text-body font-medium" : "text-body text-ink/80"}>
-            <InlineText text={block.text} />
-          </p>
-        );
+        return block.paragraphs.map((html) => (
+          <p class={block.lead ? "text-body font-medium" : "text-body text-ink/80"} set:html={html} />
+        ));
       }
       if (block.type === "h2") {
         return <h2 class="text-h2-compact mt-4 text-ink">{block.text}</h2>;
@@ -47,9 +45,7 @@ const { body } = Astro.props;
                   class="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
                   aria-hidden="true"
                 />
-                <span>
-                  <InlineText text={item} />
-                </span>
+                <span set:html={item} />
               </li>
             ))}
           </ul>
@@ -66,18 +62,17 @@ const { body } = Astro.props;
               class="h-auto w-full bg-field"
             />
             {block.caption && (
-              <figcaption class="text-caption text-ink/55">
-                <InlineText text={block.caption} />
-              </figcaption>
+              <figcaption class="text-caption text-ink/55">{block.caption}</figcaption>
             )}
           </figure>
         );
       }
       if (block.type === "quote") {
         return (
-          <blockquote class="my-2 border-l-2 border-accent pl-6 font-serif text-2xl font-medium italic leading-snug text-ink max-lg:pl-4 max-lg:text-[22px]">
-            <InlineText text={block.text} />
-          </blockquote>
+          <blockquote
+            class="my-2 border-l-2 border-accent pl-6 font-serif text-2xl font-medium italic leading-snug text-ink max-lg:pl-4 max-lg:text-[22px]"
+            set:html={block.html}
+          />
         );
       }
       if (block.type === "video") {
@@ -104,7 +99,7 @@ const { body } = Astro.props;
 </div>
 
 <style>
-  /* Оформление внутри текстов (InlineText). Жирный — как в блоке «HTML-код»: 600 и
+  /* Оформление внутри текстов из редактора. Жирный — как в блоке «HTML-код»: 600 и
      полный ink поверх приглушённого ink/80 абзаца. Цитата и так набрана курсивом,
      поэтому выделение внутри неё по типографской традиции — прямое начертание. */
   .article-body :global(strong) {

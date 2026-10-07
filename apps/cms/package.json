@@ -15,7 +15,9 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "migrate:content": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/migrate-from-code.ts"
+    "migrate:content": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/migrate-from-code.ts",
+    "migrate:rich-text": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/migrate-rich-text.ts",
+    "push-schema": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/push-schema.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.86.0",
@@ -37,6 +39,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "esbuild": "^0.25.0",
+    "markdown-it": "^15.0.2",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   }

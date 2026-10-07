@@ -21,6 +21,7 @@ import * as esbuild from 'esbuild'
 import { getPayload } from 'payload'
 
 import config from '../src/payload.config'
+import { markdownToLexical } from './markdown-to-lexical'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../..')
@@ -194,13 +195,20 @@ async function migrateNews() {
     for (const block of article.body) {
       switch (block.type) {
         case 'p':
-          body.push({ blockType: 'paragraph', text: block.text, lead: Boolean(block.lead) })
+          body.push({
+            blockType: 'paragraph',
+            content: markdownToLexical(block.text),
+            lead: Boolean(block.lead),
+          })
           break
         case 'h2':
           body.push({ blockType: 'heading', text: block.text })
           break
         case 'list':
-          body.push({ blockType: 'list', items: strip(block.items) })
+          body.push({
+            blockType: 'list',
+            items: strip(block.items).map((i) => ({ content: markdownToLexical(i.text) })),
+          })
           break
         case 'image':
           body.push({
@@ -211,7 +219,7 @@ async function migrateNews() {
           })
           break
         case 'quote':
-          body.push({ blockType: 'quote', text: block.text })
+          body.push({ blockType: 'quote', content: markdownToLexical(block.text) })
           break
         case 'video':
           body.push({ blockType: 'video', embed: block.embed, title: block.title })

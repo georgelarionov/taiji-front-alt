@@ -4,6 +4,7 @@
 // Payload) — её рендерит <CmsPicture>.
 
 import { fetchCollection, formatRuDate, toImage, type CmsImage } from './client'
+import { richTextInline, richTextParagraphs } from './rich-text'
 
 export interface NewsAuthor {
   name: string
@@ -11,13 +12,15 @@ export interface NewsAuthor {
 }
 
 // Блоки тела статьи. Дискриминанты те же, что были в коде, — ArticleBody.astro
-// разбирает их без изменений.
+// разбирает их без изменений. Тексты из визуального редактора CMS приходят уже
+// готовым HTML (см. rich-text.ts): абзац — HTML каждого абзаца, пункт списка и
+// цитата — одной строкой.
 export type Block =
-  | { type: 'p'; text: string; lead?: boolean }
+  | { type: 'p'; paragraphs: string[]; lead?: boolean }
   | { type: 'h2'; text: string }
   | { type: 'list'; items: string[] }
   | { type: 'image'; src: CmsImage; alt: string; caption?: string }
-  | { type: 'quote'; text: string }
+  | { type: 'quote'; html: string }
   | { type: 'video'; embed: string; title?: string }
   // Произвольная разметка из админки — выводится через set:html как есть.
   | { type: 'html'; html: string }
@@ -45,14 +48,19 @@ function toBlocks(raw: any[]): Block[] {
 
   for (const block of raw || []) {
     switch (block.blockType) {
-      case 'paragraph':
-        blocks.push({ type: 'p', text: block.text, lead: Boolean(block.lead) })
+      case 'paragraph': {
+        const paragraphs = richTextParagraphs(block.content)
+        if (paragraphs.length) blocks.push({ type: 'p', paragraphs, lead: Boolean(block.lead) })
         break
+      }
       case 'heading':
         blocks.push({ type: 'h2', text: block.text })
         break
       case 'list':
-        blocks.push({ type: 'list', items: (block.items || []).map((i: any) => i.text) })
+        blocks.push({
+          type: 'list',
+          items: (block.items || []).map((i: any) => richTextInline(i.content)).filter(Boolean),
+        })
         break
       case 'image': {
         const src = toImage(block.image, block.alt)
@@ -61,7 +69,7 @@ function toBlocks(raw: any[]): Block[] {
         break
       }
       case 'quote':
-        blocks.push({ type: 'quote', text: block.text })
+        blocks.push({ type: 'quote', html: richTextInline(block.content) })
         break
       case 'video':
         blocks.push({ type: 'video', embed: block.embed, title: block.title || undefined })

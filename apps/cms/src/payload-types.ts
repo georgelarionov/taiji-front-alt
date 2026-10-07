@@ -181,9 +181,23 @@ export interface News {
     | (
         | {
             /**
-             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+             * Выделите слово — появятся кнопки: жирный, курсив, зачёркнутый, ссылка. Enter — новый абзац, Shift+Enter — перенос строки.
              */
-            text: string;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
             lead?: boolean | null;
             id?: string | null;
             blockName?: string | null;
@@ -199,9 +213,23 @@ export interface News {
             items?:
               | {
                   /**
-                   * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+                   * Выделите слово — появятся кнопки: жирный, курсив, зачёркнутый, ссылка.
                    */
-                  text: string;
+                  content: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
                   id?: string | null;
                 }[]
               | null;
@@ -215,9 +243,6 @@ export interface News {
              * Если пусто — возьмётся из карточки файла.
              */
             alt?: string | null;
-            /**
-             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес).
-             */
             caption?: string | null;
             id?: string | null;
             blockName?: string | null;
@@ -225,9 +250,23 @@ export interface News {
           }
         | {
             /**
-             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+             * Выделите слово — появятся кнопки: жирный, курсив, зачёркнутый, ссылка.
              */
-            text: string;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
             id?: string | null;
             blockName?: string | null;
             blockType: 'quote';
@@ -735,7 +774,7 @@ export interface NewsSelect<T extends boolean = true> {
         paragraph?:
           | T
           | {
-              text?: T;
+              content?: T;
               lead?: T;
               id?: T;
               blockName?: T;
@@ -753,7 +792,7 @@ export interface NewsSelect<T extends boolean = true> {
               items?:
                 | T
                 | {
-                    text?: T;
+                    content?: T;
                     id?: T;
                   };
               id?: T;
@@ -771,7 +810,7 @@ export interface NewsSelect<T extends boolean = true> {
         quote?:
           | T
           | {
-              text?: T;
+              content?: T;
               id?: T;
               blockName?: T;
             };

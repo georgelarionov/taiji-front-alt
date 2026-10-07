@@ -14,6 +14,7 @@ import path from 'path'
 import { getPayload } from 'payload'
 
 import config from '../src/payload.config'
+import { markdownToLexical } from './markdown-to-lexical'
 
 type Block =
   | { type: 'p'; text: string; lead?: boolean }
@@ -89,13 +90,16 @@ for (const article of articles) {
   for (const b of article.blocks) {
     switch (b.type) {
       case 'p':
-        body.push({ blockType: 'paragraph', text: b.text, lead: Boolean(b.lead) })
+        body.push({ blockType: 'paragraph', content: markdownToLexical(b.text), lead: Boolean(b.lead) })
         break
       case 'h2':
         body.push({ blockType: 'heading', text: b.text })
         break
       case 'list':
-        body.push({ blockType: 'list', items: b.items.map((text) => ({ text })) })
+        body.push({
+          blockType: 'list',
+          items: b.items.map((text) => ({ content: markdownToLexical(text) })),
+        })
         break
       case 'image':
         body.push({ blockType: 'image', image: await mediaId(b.file, b.alt), alt: b.alt })

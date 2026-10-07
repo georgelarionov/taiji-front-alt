@@ -1,27 +1,27 @@
 import type { Block, CollectionConfig } from 'payload'
 
+import { INLINE_EDITOR_HINT, inlineEditor } from '../fields/inline-editor'
 import { slugField } from '../fields/slug'
 
-// Блоки тела статьи повторяют объединение Block во фронтенде (apps/web) один в один:
-// p / h2 / list / image / quote / video / html. Благодаря этому ArticleBody.astro
-// остаётся без изменений — маппер лишь переименовывает поля.
-
-// Подсказка под текстовыми полями: оформление пишется markdown-разметкой прямо в тексте,
-// разбирает её сайт (apps/web → lib/inline-markup).
-const MARKUP_HINT =
-  'Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес).'
-const MARKUP_HINT_MULTILINE = `${MARKUP_HINT} Enter внутри поля — перенос строки.`
+// Блоки тела статьи повторяют объединение Block во фронтенде (apps/web):
+// p / h2 / list / image / quote / video / html. Тексты абзаца, пункта списка и цитаты —
+// richText-поля `content` с визуальным редактором (fields/inline-editor); сайт
+// превращает их в HTML в lib/cms/rich-text.ts. Колонки `text` от прежних текстовых
+// полей перенесены в `content` скриптом scripts/migrate-rich-text.ts.
 
 const Paragraph: Block = {
   slug: 'paragraph',
   labels: { singular: 'Абзац', plural: 'Абзацы' },
   fields: [
     {
-      name: 'text',
-      type: 'textarea',
+      name: 'content',
+      type: 'richText',
       label: 'Текст',
       required: true,
-      admin: { description: MARKUP_HINT_MULTILINE },
+      editor: inlineEditor,
+      admin: {
+        description: `${INLINE_EDITOR_HINT} Enter — новый абзац, Shift+Enter — перенос строки.`,
+      },
     },
     {
       name: 'lead',
@@ -50,11 +50,12 @@ const List: Block = {
       labels: { singular: 'Пункт', plural: 'Пункты' },
       fields: [
         {
-          name: 'text',
-          type: 'textarea',
+          name: 'content',
+          type: 'richText',
           label: 'Текст',
           required: true,
-          admin: { description: MARKUP_HINT_MULTILINE },
+          editor: inlineEditor,
+          admin: { description: INLINE_EDITOR_HINT },
         },
       ],
     },
@@ -72,12 +73,7 @@ const ImageBlock: Block = {
       label: 'Альтернативный текст',
       admin: { description: 'Если пусто — возьмётся из карточки файла.' },
     },
-    {
-      name: 'caption',
-      type: 'text',
-      label: 'Подпись под фотографией',
-      admin: { description: MARKUP_HINT },
-    },
+    { name: 'caption', type: 'text', label: 'Подпись под фотографией' },
   ],
 }
 
@@ -86,11 +82,12 @@ const Quote: Block = {
   labels: { singular: 'Цитата', plural: 'Цитаты' },
   fields: [
     {
-      name: 'text',
-      type: 'textarea',
+      name: 'content',
+      type: 'richText',
       label: 'Текст цитаты',
       required: true,
-      admin: { description: MARKUP_HINT_MULTILINE },
+      editor: inlineEditor,
+      admin: { description: INLINE_EDITOR_HINT },
     },
   ],
 }
