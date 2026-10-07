@@ -36,7 +36,9 @@ export default defineConfig({
       name: 'Inter',
       cssVariable: '--font-inter',
       weights: [400, 500, 600, 700],
-      styles: ['normal'],
+      // italic — для *курсива* в текстах новостей (иначе браузер наклоняет прямое
+      // начертание). Без preload файлы качаются, только когда курсив есть на странице.
+      styles: ['normal', 'italic'],
       subsets: ['latin', 'cyrillic'],
     },
 

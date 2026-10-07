@@ -180,6 +180,9 @@ export interface News {
   body?:
     | (
         | {
+            /**
+             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+             */
             text: string;
             lead?: boolean | null;
             id?: string | null;
@@ -195,6 +198,9 @@ export interface News {
         | {
             items?:
               | {
+                  /**
+                   * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+                   */
                   text: string;
                   id?: string | null;
                 }[]
@@ -209,12 +215,18 @@ export interface News {
              * Если пусто — возьмётся из карточки файла.
              */
             alt?: string | null;
+            /**
+             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес).
+             */
             caption?: string | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'image';
           }
         | {
+            /**
+             * Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес). Enter внутри поля — перенос строки.
+             */
             text: string;
             id?: string | null;
             blockName?: string | null;

@@ -74,6 +74,14 @@ Current state — **страницы собраны, контент переве
   возвращает `<style>` в самом `ArticleBody.astro`; там же `pointer-events:auto` для
   `iframe`/`video` (глобальное `.lenis-smooth iframe{pointer-events:none}`) и `overflow-x`
   на контейнере — страховка от широких вставок.
+- **Оформление внутри текстов** (абзац, пункт списка, цитата, подпись к фото) — markdown-
+  разметка прямо в поле: `**жирный**`, `*курсив*`, `~~зачёркнутый~~`, `[подпись](адрес)`,
+  голые https-адреса, Enter → `<br>`. Разбор — `lib/inline-markup.ts` (markdown-it
+  `renderInline`, `html: false` → вписанный HTML экранируется; ссылки только `/`, `#`,
+  http(s), mailto, tel), вывод — `InlineText.astro`, стили `strong`/`em` — в
+  `ArticleBody.astro`. Ради настоящего курсива у Inter подключено начертание italic
+  (без preload — файлы качаются только там, где курсив есть). Подсказка с синтаксисом
+  висит под полями в админке (`MARKUP_HINT` в `News.ts`).
 - **Новый блок = новая таблица в Postgres.** Схема обновляется только `push`-ем в dev
   (`NODE_ENV=production` его отключает, миграций в проекте нет): поднять SSH-туннель к
   боевой базе и запустить `pnpm --filter cms dev`, дёрнуть `/api/access` — Payload создаст

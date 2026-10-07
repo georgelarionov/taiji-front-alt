@@ -6,11 +6,23 @@ import { slugField } from '../fields/slug'
 // p / h2 / list / image / quote / video / html. Благодаря этому ArticleBody.astro
 // остаётся без изменений — маппер лишь переименовывает поля.
 
+// Подсказка под текстовыми полями: оформление пишется markdown-разметкой прямо в тексте,
+// разбирает её сайт (apps/web → lib/inline-markup).
+const MARKUP_HINT =
+  'Оформление: **жирный**, *курсив*, ~~зачёркнутый~~, [текст ссылки](https://адрес).'
+const MARKUP_HINT_MULTILINE = `${MARKUP_HINT} Enter внутри поля — перенос строки.`
+
 const Paragraph: Block = {
   slug: 'paragraph',
   labels: { singular: 'Абзац', plural: 'Абзацы' },
   fields: [
-    { name: 'text', type: 'textarea', label: 'Текст', required: true },
+    {
+      name: 'text',
+      type: 'textarea',
+      label: 'Текст',
+      required: true,
+      admin: { description: MARKUP_HINT_MULTILINE },
+    },
     {
       name: 'lead',
       type: 'checkbox',
@@ -36,7 +48,15 @@ const List: Block = {
       label: 'Пункты',
       minRows: 1,
       labels: { singular: 'Пункт', plural: 'Пункты' },
-      fields: [{ name: 'text', type: 'textarea', label: 'Текст', required: true }],
+      fields: [
+        {
+          name: 'text',
+          type: 'textarea',
+          label: 'Текст',
+          required: true,
+          admin: { description: MARKUP_HINT_MULTILINE },
+        },
+      ],
     },
   ],
 }
@@ -52,14 +72,27 @@ const ImageBlock: Block = {
       label: 'Альтернативный текст',
       admin: { description: 'Если пусто — возьмётся из карточки файла.' },
     },
-    { name: 'caption', type: 'text', label: 'Подпись под фотографией' },
+    {
+      name: 'caption',
+      type: 'text',
+      label: 'Подпись под фотографией',
+      admin: { description: MARKUP_HINT },
+    },
   ],
 }
 
 const Quote: Block = {
   slug: 'quote',
   labels: { singular: 'Цитата', plural: 'Цитаты' },
-  fields: [{ name: 'text', type: 'textarea', label: 'Текст цитаты', required: true }],
+  fields: [
+    {
+      name: 'text',
+      type: 'textarea',
+      label: 'Текст цитаты',
+      required: true,
+      admin: { description: MARKUP_HINT_MULTILINE },
+    },
+  ],
 }
 
 const Video: Block = {
