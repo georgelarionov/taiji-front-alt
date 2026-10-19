@@ -2,10 +2,13 @@ import type { Field } from 'payload'
 
 import { slugify } from '../lib/slugify'
 
-// Поле слага для коллекций с собственными адресами (новости, видео).
+// Поле слага для коллекций с собственными адресами (новости, видео, люди).
 // Пустое поле заполняется транслитерацией заголовка при сохранении; заполненное
 // не трогаем — адреса опубликованных материалов должны быть стабильными.
-export const slugField = (from = 'title'): Field => ({
+export const slugField = (
+  from = 'title',
+  description = 'Латиницей. Оставьте пустым — соберётся из заголовка.',
+): Field => ({
   name: 'slug',
   type: 'text',
   label: 'Слаг (адрес)',
@@ -13,7 +16,7 @@ export const slugField = (from = 'title'): Field => ({
   index: true,
   admin: {
     position: 'sidebar',
-    description: 'Латиницей. Оставьте пустым — соберётся из заголовка.',
+    description,
   },
   hooks: {
     beforeValidate: [

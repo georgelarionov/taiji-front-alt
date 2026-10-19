@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Drawer from "../Drawer";
+import { setPersonHash, usePersonFromHash } from "../../lib/person-hash";
 import type { HistoryEntry, TeamBio } from "../../lib/cms/society";
 
 // Дровер «Подробнее» блока «Команда» (/society). Открывается по клику на любой
@@ -76,16 +77,28 @@ export default function SocietyTeamDrawer({ people }: { people: DrawerPerson[] }
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
-    pendingOpen = (id) => setOpenId(id);
+    pendingOpen = (id) => {
+      setOpenId(id);
+      setPersonHash(id);
+    };
     return () => {
       pendingOpen = null;
     };
   }, []);
+  // #<слаг> в адресе → сразу открыть панель этого человека.
+  usePersonFromHash(people, setOpenId, "data-team-open");
 
   const person = people.find((p) => p.id === openId) || null;
 
   return (
-    <Drawer open={!!person} onClose={() => setOpenId(null)} label={person?.name}>
+    <Drawer
+      open={!!person}
+      onClose={() => {
+        setOpenId(null);
+        setPersonHash(null);
+      }}
+      label={person?.name}
+    >
       {person && (
         <div className="flex flex-col gap-9 max-lg:gap-7">
           {/* шапка: портрет + роль/имя */}

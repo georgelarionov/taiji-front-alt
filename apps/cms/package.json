@@ -17,6 +17,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "migrate:content": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/migrate-from-code.ts",
     "migrate:rich-text": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/migrate-rich-text.ts",
+    "fill-person-slugs": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/fill-person-slugs.ts",
     "push-schema": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" node scripts/push-schema.ts"
   },
   "dependencies": {

@@ -38,7 +38,9 @@ export interface SocietyContent {
 export async function getTeam(): Promise<TeamBio[]> {
   const docs = await fetchCollection<any>('team', { sort: 'order' })
   return docs.map((doc) => ({
-    id: String(doc.id),
+    // id = слаг: он же якорь человека в адресе (#<слаг> открывает его панель).
+    // Пока слаг не заполнен (запись не пересохраняли) — номер записи.
+    id: doc.slug || String(doc.id),
     role: doc.role,
     name: doc.name,
     photo: toImage(doc.portrait, `${doc.name} — ${doc.role}`),

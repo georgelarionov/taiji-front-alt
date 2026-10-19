@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Drawer from "../Drawer";
+import { setPersonHash, usePersonFromHash } from "../../lib/person-hash";
 import type { PersonSource, TaijiPerson } from "../../lib/cms/persons";
 import { EXTERNAL_ARROW_PATH } from "../../lib/icons";
 
@@ -76,16 +77,28 @@ export default function TaijiPersonsDrawer({ people }: { people: DrawerPerson[] 
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
-    pendingOpen = (id) => setOpenId(id);
+    pendingOpen = (id) => {
+      setOpenId(id);
+      setPersonHash(id);
+    };
     return () => {
       pendingOpen = null;
     };
   }, []);
+  // #<слаг> в адресе → сразу открыть панель этого человека.
+  usePersonFromHash(people, setOpenId, "data-person-open");
 
   const person = people.find((p) => p.id === openId) || null;
 
   return (
-    <Drawer open={!!person} onClose={() => setOpenId(null)} label={person?.name}>
+    <Drawer
+      open={!!person}
+      onClose={() => {
+        setOpenId(null);
+        setPersonHash(null);
+      }}
+      label={person?.name}
+    >
       {person && (
         <div className="flex flex-col gap-9 max-lg:gap-7">
           {/* Шапка: портрет (или плейсхолдер) + линия/имя */}

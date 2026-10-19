@@ -40,7 +40,9 @@ export async function getPersonSources(): Promise<PersonSource[]> {
 export async function getPersons(): Promise<TaijiPerson[]> {
   const docs = await fetchCollection<any>('persons', { sort: 'order' })
   return docs.map((doc) => ({
-    id: String(doc.id),
+    // id = слаг: он же якорь человека в адресе (#<слаг> открывает его панель).
+    // Пока слаг не заполнен (запись не пересохраняли) — номер записи.
+    id: doc.slug || String(doc.id),
     name: doc.name,
     cjk: doc.cjk || '',
     line: doc.line,

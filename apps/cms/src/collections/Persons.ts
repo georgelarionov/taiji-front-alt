@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '../fields/slug'
+
 // Персоналии тайцзицюань (/taijiquan/person): карточка + панель «Подробнее»
 // с биографией и списком источников.
 export const Persons: CollectionConfig = {
@@ -74,5 +76,11 @@ export const Persons: CollectionConfig = {
       defaultValue: 0,
       admin: { position: 'sidebar', description: 'Меньше — выше в сетке.' },
     },
+    // Якорь человека на сайте: по ссылке <страница>#<слаг> сразу открывается его панель.
+    slugField(
+      'name',
+      'Адрес человека на сайте: /taijiquan/person#<слаг> — эту ссылку можно ставить в тексты новостей. ' +
+        'Китайские имена — пиньинем: yang-luchan. Пустое поле соберётся транслитом (yan-luchan).',
+    ),
   ],
 }

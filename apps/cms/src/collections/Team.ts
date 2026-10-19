@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '../fields/slug'
+
 // Правление Общества — блок «Команда» на /society: карточка (роль + имя + портрет)
 // и выезжающая панель «Подробнее» (описание + биография).
 export const Team: CollectionConfig = {
@@ -54,5 +56,11 @@ export const Team: CollectionConfig = {
       defaultValue: 0,
       admin: { position: 'sidebar', description: 'Меньше — выше. Председатели идут первыми.' },
     },
+    // Якорь человека на сайте: по ссылке <страница>#<слаг> сразу открывается его панель.
+    slugField(
+      'name',
+      'Адрес человека на сайте: /society#<слаг> — эту ссылку можно ставить в тексты новостей. ' +
+        'Латиницей и коротко, по фамилии: voskresensky. Пустое поле соберётся из полного ФИО.',
+    ),
   ],
 }

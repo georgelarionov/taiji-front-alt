@@ -495,6 +495,10 @@ export interface Team {
    * Меньше — выше. Председатели идут первыми.
    */
   order?: number | null;
+  /**
+   * Адрес человека на сайте: /society#<слаг> — эту ссылку можно ставить в тексты новостей. Латиницей; оставьте пустым — соберётся из имени.
+   */
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -561,6 +565,10 @@ export interface Person {
    * Меньше — выше в сетке.
    */
   order?: number | null;
+  /**
+   * Адрес человека на сайте: /taijiquan/person#<слаг> — эту ссылку можно ставить в тексты новостей. Латиницей; оставьте пустым — соберётся из имени.
+   */
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -925,6 +933,7 @@ export interface TeamSelect<T extends boolean = true> {
         id?: T;
       };
   order?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -965,6 +974,7 @@ export interface PersonsSelect<T extends boolean = true> {
       };
   sources?: T;
   order?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
